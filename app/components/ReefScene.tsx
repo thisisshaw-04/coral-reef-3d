@@ -19,6 +19,8 @@ type ReefSceneProps = {
   mappedIds?: string[];
   fallbackSrc?: string;
   phase?: ReefPhase;
+  stressor?: "heat" | "co2" | "plastic" | "runoff" | null;
+  restoredIds?: string[];
   className?: string;
   onHotspotSelect?: (id: string) => void;
   onReady?: () => void;
@@ -92,6 +94,8 @@ export default function ReefScene({
   mappedIds = [],
   fallbackSrc = "/reef-entry-v4.webp",
   phase = "healthy",
+  stressor = null,
+  restoredIds = [],
   className,
   onHotspotSelect,
   onReady,
@@ -105,6 +109,8 @@ export default function ReefScene({
   const activeRef = useRef(active);
   const focusRef = useRef(focusId);
   const phaseRef = useRef(phase);
+  const stressorRef = useRef(stressor);
+  const restoredRef = useRef(restoredIds);
   const hotspotsRef = useRef(hotspots);
   const callbacksRef = useRef({ onHotspotSelect, onReady, onEngineChange, onZoneChange });
   const [activatedOnce, setActivatedOnce] = useState(active);
@@ -127,6 +133,9 @@ export default function ReefScene({
   useEffect(() => {
     phaseRef.current = phase;
   }, [phase]);
+
+  useEffect(() => { stressorRef.current = stressor; }, [stressor]);
+  useEffect(() => { restoredRef.current = restoredIds; }, [restoredIds]);
 
   useEffect(() => {
     hotspotsRef.current = hotspots;
@@ -185,7 +194,7 @@ export default function ReefScene({
 
         const world = new THREE.Group();
         scene.add(world);
-        const livingMaterials: Array<{ material: Material & { color?: Color; emissive?: Color }; base: Color }> = [];
+        const livingMaterials: Array<{ material: Material & { color?: Color; emissive?: Color }; base: Color; hotspotId: string }> = [];
         const coralTargets: Object3D[] = [];
         const fishActors: Array<{ object: Object3D; offset: number; lane: number; depth: number }> = [];
         const textures: Array<{ dispose: () => void }> = [];
@@ -391,7 +400,7 @@ export default function ReefScene({
               if (living.emissive) living.emissive.setHex(0x120b08);
               if (typeof living.roughness === "number") living.roughness = Math.max(0.58, living.roughness);
               if (typeof living.metalness === "number") living.metalness = 0;
-              livingMaterials.push({ material: living, base: living.color.clone() });
+              livingMaterials.push({ material: living, base: living.color.clone(), hotspotId: hotspot.id });
             }
           });
           const pedestal = new THREE.Group();
@@ -547,11 +556,13 @@ export default function ReefScene({
           const delta = Math.min(clock.getDelta(), 0.05);
           const elapsed = clock.elapsedTime;
           const currentPhase = phaseColors[phaseRef.current];
+          const runoff = stressorRef.current === "runoff";
           scene.fog!.color.lerp(currentPhase.fog, 1 - Math.exp(-delta * 1.4));
-          (scene.fog as InstanceType<typeof THREE.FogExp2>).density = THREE.MathUtils.lerp((scene.fog as InstanceType<typeof THREE.FogExp2>).density, currentPhase.density, 1 - Math.exp(-delta * 1.4));
+          (scene.fog as InstanceType<typeof THREE.FogExp2>).density = THREE.MathUtils.lerp((scene.fog as InstanceType<typeof THREE.FogExp2>).density, currentPhase.density + (runoff ? 0.016 : 0), 1 - Math.exp(-delta * 1.4));
           for (const entry of livingMaterials) {
             if (!entry.material.color) continue;
-            targetColor.copy(entry.base).lerp(currentPhase.wash, currentPhase.blend);
+            const blend = restoredRef.current.includes(entry.hotspotId) ? 0.02 : currentPhase.blend;
+            targetColor.copy(entry.base).lerp(currentPhase.wash, blend);
             entry.material.color.lerp(targetColor, 1 - Math.exp(-delta * 1.8));
           }
 

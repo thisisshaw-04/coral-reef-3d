@@ -2,6 +2,12 @@
 
 An oceanarium-grade, first-person coral reef expedition for learners ages 8–13. Reef Relay replaces the usual wall of text with a living underwater field lesson: swim through three nursery zones, inspect real digitized coral skeletons, identify colonies from shape, and watch the same reef respond to heat, bleaching, and recovery.
 
+## v5 — Living Reef Lab
+
+The experience is now a research-submarine expedition: enter or join a crew, scan/mark/note/restore colonies, apply bounded environmental stressors, and move the same reef through a historical time current. The compact species instrument exposes living cover, Degree Heating Weeks and pH without obscuring the reef.
+
+The water system is a browser-native Three.js WebGPU implementation inspired by the visual goal of Poseidon: transparent `WaterMesh`, animated caustics, particulate drift, volumetric light and depth fog. Poseidon itself is a Unity asset and is not bundled or claimed as a web dependency.
+
 **Live site:** https://reef-relay.arnz.chatgpt.site
 
 ## What is inside

@@ -1,502 +1,79 @@
 "use client";
 
-/* Local, already-compressed Smithsonian renders must bypass framework image proxying. */
 /* eslint-disable @next/next/no-img-element */
-
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import {
-  ArrowRight,
-  Check,
-  Clock3,
-  Compass,
-  Eye,
-  ExternalLink,
-  MapPin,
-  MousePointer2,
-  RotateCcw,
-  ScanSearch,
-  Share2,
-  Sparkles,
-  Volume2,
-  VolumeX,
-  Waves,
-  X,
-} from "lucide-react";
-import ReefScene, {
-  type ReefPhase,
-  type ReefSceneHotspot,
-} from "./components/ReefScene";
-import ReefTimeline from "./components/ReefTimeline";
+import { Activity, AudioLines, Check, ChevronDown, CircleDot, Clock3, FlaskConical, Globe2, Map, MessageCircle, MousePointer2, ScanLine, Share2, Sparkles, Sprout, ThermometerSun, Waves, X } from "lucide-react";
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import ReefScene, { type ReefPhase, type ReefSceneHotspot } from "./components/ReefScene";
 import { useReefGuide } from "./hooks/useReefGuide";
 
-type Choice = {
-  id: string;
-  label: string;
-  scientific: string;
-  image: string;
-};
+type Tool = "scan" | "mark" | "note" | "restore";
+type Stressor = "heat" | "co2" | "plastic" | "runoff";
+type Explorer = { id: string; name: string; color: string; lastSeen: number };
+type Annotation = { hotspotId: string; label: string; health: string; by: string; note?: string };
+type ReefRoom = { code: string; explorers: Explorer[]; annotations: Record<string, Annotation>; updatedAt: number };
+type Colony = ReefSceneHotspot & { species: string; common: string; image: string; zone: string };
 
-type Hotspot = ReefSceneHotspot & {
-  zone: string;
-  depth: string;
-  eyebrow: string;
-  prompt: string;
-  choices: Choice[];
-  correct: string;
-  fact: string;
-  takeaway: string;
-  voiceLine: string;
-  sourceLabel: string;
-  sourceUrl: string;
-};
-
-type Annotation = {
-  hotspotId: string;
-  label: string;
-  health: string;
-  by: string;
-};
-
-type Explorer = {
-  id: string;
-  name: string;
-  color: string;
-  lastSeen: number;
-};
-
-type ReefRoom = {
-  code: string;
-  explorers: Explorer[];
-  annotations: Record<string, Annotation>;
-  updatedAt: number;
-};
-
-const choices: Choice[] = [
-  {
-    id: "acropora-table",
-    label: "Table coral",
-    scientific: "Acropora hyacinthus",
-    image: "/specimens/acropora-hyacinthus.jpg",
-  },
-  {
-    id: "acropora-compact",
-    label: "Compact branches",
-    scientific: "Acropora humilis",
-    image: "/specimens/acropora-humilis.jpg",
-  },
-  {
-    id: "plesiastraea",
-    label: "Massive colony",
-    scientific: "Plesiastraea armata",
-    image: "/specimens/plesiastraea-armata.jpg",
-  },
+const colonies: Colony[] = [
+  { id: "acro-table", label: "Colony A7", species: "Acropora hyacinthus", common: "Table coral", image: "/specimens/acropora-hyacinthus.jpg", position: [-8, 2.6, -11], zone: "Current Gate" },
+  { id: "acro-compact", label: "Colony P3", species: "Acropora humilis", common: "Compact branching coral", image: "/specimens/acropora-humilis.jpg", position: [8, 2.2, -27], zone: "Turbid Shelf" },
+  { id: "massive-star", label: "Colony R12", species: "Plesiastraea armata", common: "Massive star coral", image: "/specimens/plesiastraea-armata.jpg", position: [24, 2.7, -47], zone: "Archive Garden" },
 ];
-
-const hotspots: Hotspot[] = [
-  {
-    id: "acro-table",
-    label: "Colony A",
-    position: [-8, 2.6, -11],
-    zone: "Current Gate",
-    depth: "14 m",
-    eyebrow: "FOLLOW THE FLOW",
-    prompt: "Which shape catches light while leaving shelter below?",
-    choices,
-    correct: "acropora-table",
-    fact: "Wide tables harvest sunlight; the branches beneath become shelter for young fish.",
-    takeaway: "Skeleton → shelter",
-    voiceLine:
-      "Look at the colony before naming it. Which shape catches the most light while leaving a sheltered maze below?",
-    sourceLabel: "Smithsonian Open Access",
-    sourceUrl:
-      "https://3d.si.edu/object/3d/madrepora-surculosa%3Afb975479-5faf-4ab7-aaae-6fad92f7fd55",
-  },
-  {
-    id: "acro-compact",
-    label: "Colony B",
-    position: [8, 2.2, -27],
-    zone: "Turbid Shelf",
-    depth: "17 m",
-    eyebrow: "READ THE FORM",
-    prompt: "Which colony keeps its branches short and tightly packed?",
-    choices,
-    correct: "acropora-compact",
-    fact: "Shape is evidence, not certainty. Coral identification also needs corallites, place and close inspection.",
-    takeaway: "Observe → infer",
-    voiceLine:
-      "These branches are short and crowded. Shape is useful evidence, but a careful scientist keeps room for uncertainty.",
-    sourceLabel: "Smithsonian Open Access",
-    sourceUrl:
-      "https://3d.si.edu/object/3d/madrepora-humilis%3Ac921c012-5a3e-4e6f-9c24-7dda761115f4",
-  },
-  {
-    id: "massive-star",
-    label: "Colony C",
-    position: [24, 2.7, -47],
-    zone: "Archive Garden",
-    depth: "20 m",
-    eyebrow: "A REEF WITH MEMORY",
-    prompt: "Which form invests in a dense, massive skeleton?",
-    choices,
-    correct: "plesiastraea",
-    fact: "Massive colonies grow slowly, creating durable habitat that can outlast many human lifetimes.",
-    takeaway: "Growth → memory",
-    voiceLine:
-      "This colony grows like a stone city instead of a fast branch. What might a slow, dense skeleton preserve?",
-    sourceLabel: "Smithsonian Open Access",
-    sourceUrl:
-      "https://3d.si.edu/object/3d/plesiastraea-armata%3A0c967ce1-ef2f-420f-8d65-c371b5be3346",
-  },
+const moments = [
+  { year: "1998", title: "First global event", phase: "heat" as ReefPhase, temp: 0.9, dhw: 4.1, ph: 8.10, health: 72 },
+  { year: "2016", title: "Mass bleaching", phase: "bleaching" as ReefPhase, temp: 1.5, dhw: 8.2, ph: 8.07, health: 43 },
+  { year: "2024", title: "Record ocean heat", phase: "bleaching" as ReefPhase, temp: 1.8, dhw: 10.4, ph: 8.05, health: 31 },
+  { year: "2026", title: "Today · intervene", phase: "healthy" as ReefPhase, temp: 0.7, dhw: 3.2, ph: 8.06, health: 68 },
+  { year: "2035", title: "Recovery window", phase: "recovery" as ReefPhase, temp: 0.4, dhw: 1.1, ph: 8.08, health: 84 },
 ];
-
-const emptyRoom: ReefRoom = {
-  code: "DIVE",
-  explorers: [],
-  annotations: {},
-  updatedAt: 0,
+const reefWorlds = ["Great Barrier Reef", "Sisters’ Islands", "Coral Triangle", "Caribbean Reef"];
+const emptyRoom: ReefRoom = { code: "DIVE", explorers: [], annotations: {}, updatedAt: 0 };
+const stressCopy: Record<Stressor, { label: string; effect: string }> = {
+  heat: { label: "Heat +1.5°C", effect: "Thermal stress accumulates over weeks; bleaching risk rises." },
+  co2: { label: "CO₂ / pH −0.1", effect: "Acidification reduces the carbonate corals use to build skeletons." },
+  plastic: { label: "Plastic debris", effect: "Debris can shade, abrade and increase disease risk locally." },
+  runoff: { label: "Runoff pulse", effect: "Sediment blocks light and raises background turbidity." },
 };
-
-function randomId() {
-  return Math.random().toString(36).slice(2, 10);
-}
+function randomCode() { return `R${Math.random().toString(36).slice(2, 7)}`.toUpperCase(); }
 
 export default function Home() {
-  const [entered, setEntered] = useState(false);
-  const [screen, setScreen] = useState<"dive" | "timeline" | "complete">("dive");
-  const [reefPhase, setReefPhase] = useState<ReefPhase>("healthy");
-  const [selected, setSelected] = useState<Hotspot | null>(null);
-  const [answer, setAnswer] = useState("");
-  const [wrong, setWrong] = useState(false);
-  const [zone, setZone] = useState("Current Gate");
-  const [depth, setDepth] = useState("14 m");
-  const [sceneReady, setSceneReady] = useState(false);
-  const [engine, setEngine] = useState("Reef");
-  const [roomCode, setRoomCode] = useState("DIVE");
-  const [room, setRoom] = useState<ReefRoom>(emptyRoom);
-  const [localMapped, setLocalMapped] = useState<string[]>([]);
-  const [copied, setCopied] = useState(false);
-  const [showCoach, setShowCoach] = useState(false);
-  const playerId = useId().replace(/[^a-zA-Z0-9]/g, "") || "explorer";
-  const channel = useRef<BroadcastChannel | null>(null);
+  const [entered, setEntered] = useState(false), [selected, setSelected] = useState<Colony | null>(null);
+  const [tool, setTool] = useState<Tool>("scan"), [phase, setPhase] = useState<ReefPhase>("healthy");
+  const [momentIndex, setMomentIndex] = useState(3), [stressor, setStressor] = useState<Stressor | null>(null);
+  const [showTimeline, setShowTimeline] = useState(true), [showStress, setShowStress] = useState(false);
+  const [showWorlds, setShowWorlds] = useState(false), [showSignals, setShowSignals] = useState(false);
+  const [world, setWorld] = useState("Great Barrier Reef"), [roomCode, setRoomCode] = useState("DIVE");
+  const [joinCode, setJoinCode] = useState(""), [room, setRoom] = useState<ReefRoom>(emptyRoom);
+  const [note, setNote] = useState(""), [restored, setRestored] = useState<string[]>([]);
+  const [sceneReady, setSceneReady] = useState(false), [engine, setEngine] = useState("Reef engine"), [copied, setCopied] = useState(false);
+  const playerId = useId().replace(/[^a-zA-Z0-9]/g, "") || "diver", channel = useRef<BroadcastChannel | null>(null);
+  const mappedIds = useMemo(() => Array.from(new Set([...Object.keys(room.annotations), ...restored])), [room.annotations, restored]);
+  const activeMoment = moments[momentIndex];
+  const guide = useReefGuide({ roomCode, context: selected ? `${world}. Observing ${selected.species}. Reef phase: ${phase}.` : `${world}. Research submersible expedition.` });
+  const sync = useCallback(async (action?: Record<string, unknown>) => { try { const response = await fetch(`/api/room?code=${encodeURIComponent(roomCode)}`, action ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(action) } : undefined); if (!response.ok) return; const data = await response.json() as ReefRoom; setRoom(data); channel.current?.postMessage(data); } catch {} }, [roomCode]);
+  useEffect(() => { const timer = window.setTimeout(() => setRoomCode(new URL(window.location.href).searchParams.get("room")?.toUpperCase().slice(0, 6) || randomCode()), 0); return () => window.clearTimeout(timer); }, []);
+  useEffect(() => { if (!entered || roomCode === "DIVE") return; const name = `Diver ${playerId.slice(0, 2).toUpperCase()}`; const joinTimer = window.setTimeout(() => void sync({ type: "join", id: playerId, name }), 0); channel.current = new BroadcastChannel(`reef-relay-${roomCode}`); channel.current.onmessage = (event) => setRoom(event.data as ReefRoom); const timer = window.setInterval(() => void sync({ type: "presence", id: playerId, name }), 2500); return () => { window.clearTimeout(joinTimer); window.clearInterval(timer); channel.current?.close(); channel.current = null; }; }, [entered, playerId, roomCode, sync]);
+  const begin = (code?: string) => { const cleaned = code?.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6); if (cleaned) setRoomCode(cleaned); setEntered(true); guide.announce("Welcome aboard. Move freely, then choose a glowing colony. We will read the reef together."); };
+  const inspect = (id: string) => { const colony = colonies.find((item) => item.id === id) || null; setSelected(colony); setTool("scan"); if (colony) guide.announce(`Scanning ${colony.common}. Form is evidence: inspect the colony before you name its condition.`); };
+  const applyTool = (next: Tool) => { setTool(next); if (!selected) return; const name = `Diver ${playerId.slice(0, 2).toUpperCase()}`; if (next === "mark") void sync({ type: "annotate", id: playerId, name, hotspotId: selected.id, label: selected.species, health: `${activeMoment.health}% living cover` }); if (next === "restore") { setRestored((items) => items.includes(selected.id) ? items : [...items, selected.id]); setPhase("recovery"); guide.announce("Restoration preview placed. This can help local recovery, but it cannot replace clean water and climate action."); } };
+  const saveNote = () => { if (!selected || !note.trim()) return; const name = `Diver ${playerId.slice(0, 2).toUpperCase()}`; void sync({ type: "annotate", id: playerId, name, hotspotId: selected.id, label: selected.species, health: `${activeMoment.health}% living cover` }); void sync({ type: "note", hotspotId: selected.id, note: note.trim() }); setNote(""); };
+  const chooseMoment = (index: number) => { setMomentIndex(index); setPhase(moments[index].phase); setStressor(null); guide.announce(`${moments[index].year}. ${moments[index].title}. The same reef changes before your eyes.`); };
+  const applyStress = (next: Stressor) => { setStressor(next); setPhase(next === "heat" ? "bleaching" : next === "co2" || next === "runoff" ? "heat" : phase); setShowStress(false); guide.announce(stressCopy[next].effect); };
+  const share = async () => { const url = new URL(window.location.href); url.searchParams.set("room", roomCode); await navigator.clipboard?.writeText(url.toString()); setCopied(true); window.setTimeout(() => setCopied(false), 1300); };
+  const graph = moments.map((m) => ({ year: m.year, health: m.health }));
 
-  const mappedIds = useMemo(
-    () => Array.from(new Set([...localMapped, ...Object.keys(room.annotations)])),
-    [localMapped, room.annotations],
-  );
-
-  const mappedCount = mappedIds.length;
-  const guideContext = selected
-    ? `${selected.zone}. The explorer is observing ${selected.label}. ${selected.fact}`
-    : `${zone}, Sisters' Islands Marine Park expedition. ${mappedCount} of 3 observations complete.`;
-  const guide = useReefGuide({ roomCode, context: guideContext });
-  const announce = guide.announce;
-
-  const sync = useCallback(
-    async (action?: Record<string, unknown>) => {
-      try {
-        const response = await fetch(
-          `/api/room?code=${encodeURIComponent(roomCode)}`,
-          action
-            ? {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify(action),
-              }
-            : undefined,
-        );
-        if (!response.ok) return null;
-        const data = (await response.json()) as ReefRoom;
-        setRoom(data);
-        channel.current?.postMessage(data);
-        return data;
-      } catch {
-        return null;
-      }
-    },
-    [roomCode],
-  );
-
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    const shared = (url.searchParams.get("room") || "")
-      .toUpperCase()
-      .replace(/[^A-Z0-9]/g, "")
-      .slice(0, 6);
-    const timer = window.setTimeout(
-      () => setRoomCode(shared || `R${randomId().slice(0, 5)}`.toUpperCase()),
-      0,
-    );
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (!entered || roomCode === "DIVE") return;
-    const name = `Explorer ${playerId.slice(0, 2).toUpperCase()}`;
-    const joinTimer = window.setTimeout(
-      () => void sync({ type: "join", id: playerId, name }),
-      0,
-    );
-    channel.current = new BroadcastChannel(`reef-relay-${roomCode}`);
-    channel.current.onmessage = (event) => setRoom(event.data as ReefRoom);
-    const timer = window.setInterval(
-      () => void sync({ type: "presence", id: playerId, name }),
-      2200,
-    );
-    return () => {
-      window.clearTimeout(joinTimer);
-      window.clearInterval(timer);
-      channel.current?.close();
-      channel.current = null;
-    };
-  }, [entered, playerId, roomCode, sync]);
-
-  useEffect(() => {
-    if (!entered || !showCoach) return;
-    const timer = window.setTimeout(() => setShowCoach(false), 5600);
-    return () => window.clearTimeout(timer);
-  }, [entered, showCoach]);
-
-  useEffect(() => {
-    if (!selected || guide.status === "off") return;
-    announce(selected.voiceLine);
-  }, [announce, guide.status, selected]);
-
-  const enterWater = () => {
-    setEntered(true);
-    setShowCoach(true);
-    setScreen("dive");
-    setReefPhase("healthy");
-  };
-
-  const inspect = (hotspotId: string) => {
-    const hotspot = hotspots.find((item) => item.id === hotspotId);
-    if (!hotspot) return;
-    setSelected(hotspot);
-    setZone(hotspot.zone);
-    setDepth(hotspot.depth);
-    setAnswer("");
-    setWrong(false);
-    setShowCoach(false);
-  };
-
-  const choose = (choiceId: string) => {
-    if (!selected) return;
-    setAnswer(choiceId);
-    if (choiceId !== selected.correct) {
-      setWrong(true);
-      return;
-    }
-
-    setWrong(false);
-    setLocalMapped((current) =>
-      current.includes(selected.id) ? current : [...current, selected.id],
-    );
-    const name = `Explorer ${playerId.slice(0, 2).toUpperCase()}`;
-    void sync({
-      type: "annotate",
-      id: playerId,
-      name,
-      hotspotId: selected.id,
-      label: selected.choices.find((item) => item.id === choiceId)?.scientific,
-      health: "Observed",
-    });
-  };
-
-  const continueDive = () => {
-    const willComplete = mappedCount >= 3;
-    setSelected(null);
-    setAnswer("");
-    if (willComplete) setScreen("complete");
-  };
-
-  const shareDive = async () => {
-    const url = new URL(window.location.href);
-    url.searchParams.set("room", roomCode);
-    await navigator.clipboard?.writeText(url.toString());
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1400);
-  };
-
-  const restart = () => {
-    setLocalMapped([]);
-    setSelected(null);
-    setAnswer("");
-    setScreen("dive");
-    setReefPhase("healthy");
-    void sync({ type: "reset" });
-  };
-
-  const observers = room.explorers.slice(0, 4);
-
-  return (
-    <main className={`expedition${entered ? " is-entered" : " is-at-surface"}`}>
-      <ReefScene
-        active={entered && screen === "dive"}
-        focusId={selected?.id ?? null}
-        hotspots={hotspots}
-        mappedIds={mappedIds}
-        fallbackSrc="/reef-entry-v4.webp"
-        phase={reefPhase}
-        onHotspotSelect={inspect}
-        onReady={() => setSceneReady(true)}
-        onEngineChange={setEngine}
-        onZoneChange={(nextZone, nextDepth) => {
-          if (selected) return;
-          setZone(nextZone);
-          setDepth(nextDepth);
-        }}
-      />
-
-      <header className="expedition-bar">
-        <div className="reef-wordmark"><Waves /> <span>REEF RELAY</span></div>
-        {entered && (
-          <div className="reef-location" aria-live="polite">
-            <MapPin />
-            <span><strong>{zone}</strong><small>{depth} · Sisters&apos; Islands</small></span>
-          </div>
-        )}
-        {entered && (
-          <div className="reef-actions">
-            <button
-              type="button"
-              className={guide.status !== "off" ? "is-active" : ""}
-              onClick={guide.toggle}
-              aria-label={guide.status === "off" ? "Turn on expedition guide" : "Turn off expedition guide"}
-              title="Expedition guide"
-            >
-              {guide.status === "off" ? <VolumeX /> : <Volume2 />}
-              <span>Guide</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setSelected(null);
-                setScreen("timeline");
-              }}
-              aria-label="Open reef time dive"
-            >
-              <Clock3 /><span>Time dive</span>
-            </button>
-            <button type="button" onClick={shareDive} aria-label="Copy an invitation link">
-              {copied ? <Check /> : <Share2 />}
-              <span>{copied ? "Copied" : "Crew"}</span>
-            </button>
-          </div>
-        )}
-      </header>
-
-      {!entered && (
-        <section className="entry" aria-labelledby="entry-title">
-          <div className="entry-kicker"><span /> SMALL SISTER&apos;S ISLAND · SINGAPORE</div>
-          <h1 id="entry-title">Enter the<br /><em>living city.</em></h1>
-          <p>Less than 1% of the ocean. Nearly one-quarter of ocean species.</p>
-          <button type="button" className="enter-button" onClick={enterWater}>
-            <span>Enter the water</span><ArrowRight />
-          </button>
-          <div className="entry-actions" aria-label="Expedition steps">
-            <span><Compass /><b>Move</b></span>
-            <span><Eye /><b>Observe</b></span>
-            <span><ScanSearch /><b>Identify</b></span>
-          </div>
-          <small>{sceneReady ? `${engine} ready` : "Preparing the reef…"}</small>
-        </section>
-      )}
-
-      {entered && screen === "dive" && (
-        <>
-          <div className="discovery-progress" aria-label={`${mappedCount} of 3 discoveries`}>
-            <span>{mappedCount}/3</span>
-            <div>{[0, 1, 2].map((step) => <i key={step} className={mappedCount > step ? "is-done" : ""} />)}</div>
-            <small>READ THE REEF</small>
-          </div>
-
-          <div className="crew-lights" aria-label={`${observers.length || 1} explorers in this dive`}>
-            {(observers.length ? observers : [{ id: playerId, name: "You", color: "#65e8d0", lastSeen: 0 }]).map((explorer) => (
-              <i key={explorer.id} style={{ "--diver": explorer.color } as React.CSSProperties} title={explorer.name} />
-            ))}
-          </div>
-
-          {showCoach && (
-            <div className="control-coach">
-              <MousePointer2 />
-              <span><b>Look around</b><small>Drag · W A S D to swim</small></span>
-              <button type="button" onClick={() => setShowCoach(false)} aria-label="Dismiss controls"><X /></button>
-            </div>
-          )}
-
-          {guide.caption && guide.status !== "off" && (
-            <div className="guide-caption" aria-live="polite">
-              <Sparkles /> <span>{guide.caption}</span>
-            </div>
-          )}
-        </>
-      )}
-
-      {selected && screen === "dive" && (
-        <section className="specimen" aria-labelledby="specimen-title">
-          <button type="button" className="specimen-close" onClick={() => setSelected(null)} aria-label="Return to swimming"><X /></button>
-          <div className="specimen-heading">
-            <span>{selected.eyebrow}</span>
-            <h2 id="specimen-title">{selected.label}</h2>
-            <p>{selected.prompt}</p>
-          </div>
-          <div className="visual-choices">
-            {selected.choices.map((choice) => {
-              const isCorrect = answer === choice.id && choice.id === selected.correct;
-              const isWrong = answer === choice.id && choice.id !== selected.correct;
-              return (
-                <button
-                  type="button"
-                  key={choice.id}
-                  className={`${isCorrect ? "is-correct" : ""}${isWrong ? " is-wrong" : ""}`}
-                  onClick={() => choose(choice.id)}
-                  aria-label={`${choice.label}, ${choice.scientific}`}
-                >
-                  <img src={choice.image} alt="" width={480} height={360} loading="eager" />
-                  <span><b>{choice.label}</b><small>{choice.scientific}</small></span>
-                  {isCorrect && <Check />}
-                </button>
-              );
-            })}
-          </div>
-          <div className={`specimen-result${answer === selected.correct ? " is-visible" : ""}`} aria-live="polite">
-            {answer === selected.correct ? (
-              <>
-                <span><b>{selected.takeaway}</b>{selected.fact}</span>
-                <a href={selected.sourceUrl} target="_blank" rel="noreferrer" aria-label={`Open ${selected.sourceLabel}`}><ExternalLink /></a>
-                <button type="button" onClick={continueDive}>{mappedCount >= 3 ? "See what changed" : "Keep exploring"}<ArrowRight /></button>
-              </>
-            ) : wrong ? <span><b>Look closer.</b> Compare the whole silhouette before the color.</span> : null}
-          </div>
-        </section>
-      )}
-
-      {screen === "timeline" && (
-        <ReefTimeline
-          guideOn={guide.status !== "off"}
-          onNarrate={announce}
-          onStageChange={setReefPhase}
-          onClose={() => {
-            setReefPhase("healthy");
-            setScreen(mappedCount >= 3 ? "complete" : "dive");
-          }}
-        />
-      )}
-
-      {screen === "complete" && (
-        <section className="complete" aria-labelledby="complete-title">
-          <Sparkles />
-          <span>EXPEDITION COMPLETE</span>
-          <h2 id="complete-title">You read the<br />living city.</h2>
-          <p>Currents connect it. Skeletons shelter it. Care changes what comes next.</p>
-          <strong>What we map, we can protect.</strong>
-          <div>
-            <button type="button" onClick={() => setScreen("timeline")}><Clock3 /> Time dive</button>
-            <button type="button" onClick={restart}><RotateCcw /> Dive again</button>
-          </div>
-          <small>Science: NOAA · NParks Singapore · AIMS · Smithsonian Open Access</small>
-        </section>
-      )}
-    </main>
-  );
+  return <main className={`expedition-v5${entered ? " is-live" : ""}`} data-phase={phase}>
+    <ReefScene active={entered} focusId={selected?.id || null} hotspots={colonies} mappedIds={mappedIds} fallbackSrc="/reef-cockpit.webp" phase={phase} stressor={stressor} restoredIds={restored} onHotspotSelect={inspect} onReady={() => setSceneReady(true)} onEngineChange={setEngine} />
+    <div className="submarine-frame" aria-hidden="true" />
+    <header className="mission-bar"><button className="world-button" type="button" onClick={() => setShowWorlds(!showWorlds)}><Globe2 /><span><small>GLOBAL NAVIGATOR</small><strong>{world}</strong></span><ChevronDown /></button><div className="mission-brand"><Waves /><span>REEF RELAY<small>Living Reef Lab</small></span></div><div className="mission-room"><span>{room.explorers.length || 1} DIVER{(room.explorers.length || 1) === 1 ? "" : "S"}</span><button type="button" onClick={share}>{copied ? <Check /> : <Share2 />} {roomCode}</button><strong>22 m</strong></div></header>
+    {showWorlds && <aside className="world-drawer"><span>CHOOSE A LIVING CITY</span>{reefWorlds.map((item) => <button type="button" key={item} className={item === world ? "is-active" : ""} onClick={() => { setWorld(item); setShowWorlds(false); }}>{item}<small>{item === "Sisters’ Islands" ? "Singapore · tropical reef" : item === "Great Barrier Reef" ? "Australia · shelf reef" : "Global field station"}</small></button>)}</aside>}
+    {!entered && <section className="expedition-entry"><span className="entry-status"><CircleDot /> LIVE REEF FEED · {sceneReady ? engine : "PREPARING SUB"}</span><h1>The ocean’s living city.<br/><em>Under your command.</em></h1><p>Explore, annotate and restore a shared reef—then move through time to see what survives.</p><button type="button" className="begin-button" onClick={() => begin()}>BEGIN EXPEDITION <Waves /></button><form onSubmit={(event) => { event.preventDefault(); begin(joinCode); }}><input value={joinCode} onChange={(e) => setJoinCode(e.target.value)} placeholder="JOIN CREW CODE" aria-label="Crew code" maxLength={6}/><button>JOIN</button></form><small>REAL 3D SCANS · LIVE COLLABORATION · AI FIELD GUIDE</small></section>}
+    {entered && <><div className="sub-title"><span>EXPEDITION 01</span><strong>{selected ? selected.zone : "LANTERN NURSERY"}</strong><small>{selected ? selected.species : "Move freely · select a glowing colony"}</small></div><div className="diver-cursors" aria-hidden="true">{room.explorers.slice(0, 3).map((diver, index) => <span key={diver.id} style={{ "--diver-color": diver.color, left: `${52 + index * 9}%`, top: `${30 + index * 13}%` } as React.CSSProperties}><MousePointer2 />{diver.name}</span>)}</div>
+      {selected && <aside className="specimen-monitor"><button type="button" onClick={() => setSelected(null)} aria-label="Close specimen"><X /></button><span>SPECIES HEALTH</span><div className="specimen-id"><img src={selected.image} alt=""/><div><strong>{selected.common}</strong><small>{selected.species}</small></div></div><dl><div><dt>Living cover</dt><dd>{restored.includes(selected.id) ? 92 : activeMoment.health}%</dd></div><div><dt>Heat stress</dt><dd>{activeMoment.dhw.toFixed(1)} °C-weeks</dd></div><div><dt>pH</dt><dd>{stressor === "co2" ? (activeMoment.ph - .1).toFixed(2) : activeMoment.ph.toFixed(2)}</dd></div></dl><button className="signal-button" type="button" onClick={() => setShowSignals(!showSignals)}><Activity /> {showSignals ? "Hide signals" : "Open signals"}</button>{showSignals && <div className="signal-chart"><ResponsiveContainer width="100%" height={118}><AreaChart data={graph}><defs><linearGradient id="healthFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#5de9cd" stopOpacity={.55}/><stop offset="100%" stopColor="#5de9cd" stopOpacity={0}/></linearGradient></defs><XAxis dataKey="year" tick={{fill:"#83a5a2",fontSize:9}} axisLine={false}/><YAxis hide domain={[0,100]}/><Tooltip contentStyle={{background:"#031116",border:"1px solid #34635f",fontSize:11}}/><Area type="monotone" dataKey="health" stroke="#5de9cd" fill="url(#healthFill)"/></AreaChart></ResponsiveContainer><p><b>DHW = Σ weekly heat anomaly</b> above the bleaching threshold. Around 4 °C-weeks signals risk.</p></div>} {tool === "note" && <form className="note-form" onSubmit={(e) => { e.preventDefault(); saveNote(); }}><input value={note} onChange={(e) => setNote(e.target.value)} placeholder="What do you notice?" autoFocus/><button><MessageCircle /> Save</button></form>} {stressor && <p className="effect-note"><FlaskConical />{stressCopy[stressor].effect}</p>}</aside>}
+      {guide.caption && guide.status !== "off" && <div className="ai-guide"><Sparkles /><span><small>GPT REALTIME FIELD GUIDE</small>{guide.caption}</span></div>}
+      <nav className="tool-console" aria-label="Research tools">{([["scan", ScanLine, "Scan"], ["mark", Map, "Mark"], ["note", MessageCircle, "Note"], ["restore", Sprout, "Restore"]] as const).map(([id, Icon, label]) => <button key={id} type="button" className={tool === id ? "is-active" : ""} onClick={() => applyTool(id)}><Icon /><span>{label}</span></button>)}<button type="button" className="guide-toggle" onClick={guide.toggle}><AudioLines /><span>{guide.status === "off" ? "Guide" : "Listening"}</span></button></nav>
+      <button type="button" className="stress-trigger" onClick={() => setShowStress(!showStress)}><ThermometerSun /> STRESS TEST</button>{showStress && <aside className="stress-menu"><header><span>CHANGE ONE VARIABLE</span><button type="button" onClick={() => setShowStress(false)}><X /></button></header>{(Object.keys(stressCopy) as Stressor[]).map((item) => <button key={item} type="button" onClick={() => applyStress(item)}><strong>{stressCopy[item].label}</strong><small>{stressCopy[item].effect}</small></button>)}<p>Interactive forecast · not a prediction</p></aside>}
+      {showTimeline && <footer className="time-current"><button type="button" onClick={() => setShowTimeline(false)}><Clock3 /> TIME CURRENT</button><div className="timeline-readout"><span>{activeMoment.year}</span><strong>{activeMoment.title}</strong></div><nav>{moments.map((moment, index) => <button type="button" key={moment.year} className={index === momentIndex ? "is-active" : index < momentIndex ? "is-past" : ""} onClick={() => chooseMoment(index)}><i/><span>{moment.year}</span></button>)}</nav><div className="timeline-metrics"><span>SST <b>+{activeMoment.temp}°C</b></span><span>DHW <b>{activeMoment.dhw}</b></span><span>pH <b>{activeMoment.ph}</b></span></div></footer>}{!showTimeline && <button type="button" className="timeline-reopen" onClick={() => setShowTimeline(true)}><Clock3 /> TIME</button>}
+    </>}
+  </main>;
 }

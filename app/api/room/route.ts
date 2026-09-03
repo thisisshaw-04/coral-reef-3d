@@ -12,7 +12,7 @@ export async function POST(request:NextRequest){
  const room=roomFor(request.nextUrl.searchParams.get("code")||"DIVE1"),body=await request.json() as Record<string,unknown>,id=String(body.id||"guest"),name=String(body.name||"Explorer").slice(0,24);
  if(body.type==="join"||body.type==="presence")touch(room,id,name);
  if(body.type==="annotate"){touch(room,id,name);const hotspotId=String(body.hotspotId||"");if(hotspotId)room.annotations[hotspotId]={hotspotId,label:String(body.label||"Observed"),health:String(body.health||"Unreviewed"),by:name}}
- if(body.type==="note"){const hotspotId=String(body.hotspotId||"");if(room.annotations[hotspotId])room.annotations[hotspotId].note=String(body.note||"").slice(0,180)}
+ if(body.type==="note"){const hotspotId=String(body.hotspotId||"");if(hotspotId){room.annotations[hotspotId]??={hotspotId,label:String(body.label||"Observed colony"),health:String(body.health||"Unreviewed"),by:name};room.annotations[hotspotId].note=String(body.note||"").slice(0,180)}}
  if(body.type==="reset")room.annotations={};
  room.updatedAt=Date.now();return NextResponse.json(room,{headers:{"cache-control":"no-store"}})
 }

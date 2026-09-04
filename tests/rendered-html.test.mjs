@@ -110,3 +110,12 @@ test("rounds the crew-code join control as a single capsule", async () => {
   assert.match(css, /\.expedition-entry form button\s*{[\s\S]*?border-radius: 999px/);
   assert.match(css, /\.expedition-entry form button\s*{[\s\S]*?min-height: 56px/);
 });
+
+test("keeps the intro glass transparent enough to show the reef", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v15 - clearer intro glass/);
+  assert.match(css, /\.expedition-entry\s*{[\s\S]*?rgb\(5 18 24 \/ 0\.26\)/);
+  assert.match(css, /\.expedition-entry\s*{[\s\S]*?backdrop-filter: blur\(26px\) saturate\(1\.1\) brightness\(0\.98\)/);
+  assert.match(css, /\.begin-button,[\s\S]*?\.expedition-entry form\s*{[\s\S]*?rgb\(255 255 255 \/ 0\.045\)/);
+});

@@ -5987,3 +5987,31 @@ a:focus-visible,
     radial-gradient(circle at 50% 0%, rgb(255 255 255 / 0.44), transparent 48%),
     linear-gradient(145deg, rgb(255 255 255 / 0.26), rgb(255 255 255 / 0.1));
 }
+
+/* v15 - clearer intro glass */
+.expedition-entry {
+  background:
+    radial-gradient(circle at 18% 0%, rgb(255 255 255 / 0.115), transparent 32%),
+    radial-gradient(circle at 85% 42%, rgb(255 255 255 / 0.07), transparent 36%),
+    linear-gradient(135deg, rgb(255 255 255 / 0.105), rgb(255 255 255 / 0.045) 52%, rgb(255 255 255 / 0.028)),
+    rgb(5 18 24 / 0.26);
+  box-shadow:
+    0 30px 90px rgb(0 10 18 / 0.3),
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    inset 0 -26px 58px rgb(0 13 20 / 0.1);
+  backdrop-filter: blur(26px) saturate(1.1) brightness(0.98);
+  -webkit-backdrop-filter: blur(26px) saturate(1.1) brightness(0.98);
+}
+
+.begin-button,
+.expedition-entry form {
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 0.125), rgb(255 255 255 / 0.045)),
+    rgb(255 255 255 / 0.045);
+}
+
+.expedition-entry form button {
+  background:
+    radial-gradient(circle at 50% 0%, rgb(255 255 255 / 0.22), transparent 48%),
+    linear-gradient(145deg, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0.045));
+}

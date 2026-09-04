@@ -6521,3 +6521,163 @@ a:focus-visible,
     grid-template-columns: 1fr;
   }
 }
+
+/* v26 - sleek mapped timeline rail */
+.tool-console {
+  bottom: clamp(112px, 13.4vh, 144px);
+  padding: 4px;
+}
+
+.tool-console button {
+  height: 50px;
+  min-width: clamp(88px, 6.8vw, 118px);
+}
+
+.stress-trigger {
+  bottom: clamp(116px, 13.7vh, 148px);
+  min-height: 46px;
+  padding-inline: 22px;
+}
+
+.time-current {
+  height: 62px;
+  padding: 6px clamp(12px, 1.5vw, 18px);
+  border-radius: 24px;
+  grid-template-columns: minmax(136px, 0.55fr) minmax(130px, 0.55fr) minmax(460px, 3fr) minmax(210px, 0.82fr);
+  gap: clamp(10px, 1.4vw, 18px);
+}
+
+.time-current > button {
+  min-height: 42px;
+  padding: 0 14px;
+  font-family: var(--reef-ui-font);
+}
+
+.timeline-readout {
+  padding-left: clamp(14px, 1.6vw, 20px);
+}
+
+.timeline-readout span {
+  font-family: var(--reef-ui-font);
+  font-size: clamp(20px, 1.8vw, 28px);
+  font-weight: 380;
+}
+
+.time-current nav {
+  height: 50px;
+}
+
+.time-current nav::before,
+.time-current nav::after {
+  left: 10%;
+  right: 10%;
+  top: 18px;
+  height: 2px;
+}
+
+.time-current nav::before {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.42), rgb(255 255 255 / 0.08)),
+    rgb(255 255 255 / 0.12);
+}
+
+.time-current nav::after {
+  width: calc(var(--timeline-progress) * 0.8);
+  background:
+    linear-gradient(90deg, rgb(255 255 255 / 0.96), rgb(164 255 231 / 0.92), rgb(255 255 255 / 0.9));
+  box-shadow:
+    0 0 16px rgb(180 255 235 / 0.34),
+    0 0 34px rgb(255 255 255 / 0.12);
+}
+
+.time-current nav button {
+  height: 50px;
+  grid-template-rows: 28px 1fr;
+  padding: 0;
+  color: rgb(255 255 255 / 0.56);
+  font-family: var(--reef-ui-font);
+  font-size: 10px;
+  font-weight: 450;
+}
+
+.time-current nav button,
+.time-current nav button.is-active {
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+.time-current nav button::after,
+.time-current nav button.is-active::after {
+  content: none;
+  display: none;
+}
+
+.time-current nav button i {
+  align-self: center;
+  width: 18px;
+  height: 18px;
+  transform: translateY(4px);
+  background:
+    radial-gradient(circle at 34% 24%, #ffffff 0 15%, rgb(255 255 255 / 0.78) 16% 29%, transparent 30%),
+    radial-gradient(circle at 58% 64%, rgb(126 255 221 / 0.78) 0 30%, rgb(255 255 255 / 0.28) 55%, rgb(255 255 255 / 0.08) 100%),
+    linear-gradient(145deg, rgb(255 255 255 / 0.62), rgb(255 255 255 / 0.16));
+  box-shadow:
+    0 0 0 7px rgb(255 255 255 / 0.035),
+    0 7px 18px rgb(0 15 24 / 0.2),
+    inset 0 2px 3px rgb(255 255 255 / 0.72),
+    inset -3px -5px 9px rgb(46 176 155 / 0.16);
+}
+
+.time-current nav button.is-past i,
+.time-current nav button.is-active i {
+  background:
+    radial-gradient(circle at 34% 24%, #ffffff 0 16%, rgb(255 255 255 / 0.86) 17% 31%, transparent 32%),
+    radial-gradient(circle at 58% 64%, rgb(132 255 224 / 0.96) 0 32%, rgb(255 255 255 / 0.4) 56%, rgb(255 255 255 / 0.1) 100%),
+    linear-gradient(145deg, rgb(255 255 255 / 0.78), rgb(188 255 236 / 0.3));
+}
+
+.time-current nav button.is-active i {
+  transform: translateY(4px) scale(1.16);
+}
+
+.time-current nav button span {
+  margin-top: 2px;
+  font-family: var(--reef-ui-font);
+}
+
+.timeline-metrics,
+.timeline-metrics span,
+.timeline-metrics b {
+  font-family: var(--reef-ui-font);
+}
+
+.timeline-metrics {
+  gap: 7px;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.timeline-metrics span {
+  min-height: 26px;
+  padding: 0 9px;
+}
+
+.timeline-metrics b {
+  font-weight: 460;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 900px) {
+  .tool-console {
+    bottom: 92px;
+  }
+
+  .stress-trigger {
+    bottom: 156px;
+  }
+
+  .time-current {
+    height: 64px;
+  }
+}

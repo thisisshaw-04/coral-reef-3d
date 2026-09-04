@@ -232,3 +232,15 @@ test("keeps the main intro modal near half the page width", async () => {
   assert.match(css, /\.entry-actions\s*{[\s\S]*?margin-top: clamp\(28px, 3vw, 42px\)/);
   assert.match(css, /@media \(max-width: 1100px\)[\s\S]*?\.entry-actions\s*{[\s\S]*?grid-template-columns: 1fr/);
 });
+
+test("uses a sleek rail-only timeline selection", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v26 - sleek mapped timeline rail/);
+  assert.match(css, /\.time-current\s*{[\s\S]*?height: 62px/);
+  assert.match(css, /\.time-current nav::before,[\s\S]*?\.time-current nav::after\s*{[\s\S]*?top: 18px/);
+  assert.match(css, /\.time-current nav button,[\s\S]*?\.time-current nav button\.is-active\s*{[\s\S]*?background: transparent/);
+  assert.match(css, /\.time-current nav button::after,[\s\S]*?\.time-current nav button\.is-active::after\s*{[\s\S]*?content: none/);
+  assert.match(css, /\.time-current nav button i\s*{[\s\S]*?transform: translateY\(4px\)/);
+  assert.match(css, /\.timeline-metrics,[\s\S]*?\.timeline-metrics span,[\s\S]*?\.timeline-metrics b\s*{[\s\S]*?font-family: var\(--reef-ui-font\)/);
+});

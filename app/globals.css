@@ -6015,3 +6015,132 @@ a:focus-visible,
     radial-gradient(circle at 50% 0%, rgb(255 255 255 / 0.22), transparent 48%),
     linear-gradient(145deg, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0.045));
 }
+
+/* v16 - fluid Frutiger Aero timeline */
+.time-current nav::before,
+.time-current nav::after {
+  left: calc(10% - 2px);
+  right: calc(10% - 2px);
+  top: 30px;
+  height: 3px;
+}
+
+.time-current nav::before {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.34), rgb(255 255 255 / 0.08)),
+    rgb(255 255 255 / 0.08);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.18),
+    0 9px 20px rgb(0 14 22 / 0.16);
+}
+
+.time-current nav::after {
+  right: auto;
+  width: calc(var(--timeline-progress) * 0.8);
+  background:
+    linear-gradient(90deg, rgb(255 255 255 / 0.98), rgb(180 255 233 / 0.96) 52%, rgb(255 255 255 / 0.88)),
+    linear-gradient(180deg, rgb(255 255 255 / 0.55), transparent);
+  box-shadow:
+    0 0 18px rgb(174 255 232 / 0.38),
+    0 0 46px rgb(255 255 255 / 0.14);
+  animation: timeline-flow 2.8s ease-in-out infinite;
+  transition: width 720ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.time-current nav button {
+  grid-template-rows: 36px 1fr;
+  height: 72px;
+  padding-top: 0;
+  transform: none;
+}
+
+.time-current nav button::after,
+.time-current nav button.is-active::after {
+  inset: auto;
+  opacity: 0;
+  transform: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.time-current nav button.is-active {
+  transform: none;
+}
+
+.time-current nav button i {
+  width: 19px;
+  height: 19px;
+  align-self: end;
+  background:
+    radial-gradient(circle at 34% 28%, #ffffff 0 16%, rgb(238 255 249 / 0.86) 17% 29%, transparent 30%),
+    radial-gradient(circle at 56% 62%, rgb(137 255 224 / 0.82) 0 27%, rgb(255 255 255 / 0.34) 52%, rgb(255 255 255 / 0.08) 100%),
+    linear-gradient(145deg, rgb(255 255 255 / 0.72), rgb(255 255 255 / 0.15));
+  box-shadow:
+    0 0 0 8px rgb(255 255 255 / 0.035),
+    0 8px 20px rgb(0 15 24 / 0.22),
+    inset 0 2px 3px rgb(255 255 255 / 0.75),
+    inset -3px -5px 9px rgb(46 176 155 / 0.16);
+  transform: translateY(1px);
+}
+
+.time-current nav button.is-past i,
+.time-current nav button.is-active i {
+  background:
+    radial-gradient(circle at 34% 28%, #ffffff 0 17%, rgb(238 255 249 / 0.9) 18% 31%, transparent 32%),
+    radial-gradient(circle at 56% 62%, rgb(126 255 221 / 0.95) 0 29%, rgb(255 255 255 / 0.42) 54%, rgb(255 255 255 / 0.1) 100%),
+    linear-gradient(145deg, rgb(255 255 255 / 0.82), rgb(188 255 236 / 0.34));
+  box-shadow:
+    0 0 0 9px rgb(190 255 235 / 0.06),
+    0 0 22px rgb(176 255 233 / 0.42),
+    0 10px 26px rgb(0 14 22 / 0.2),
+    inset 0 2px 3px rgb(255 255 255 / 0.82),
+    inset -3px -5px 10px rgb(46 176 155 / 0.18);
+}
+
+.time-current nav button.is-active i {
+  transform: translateY(1px) scale(1.18);
+  animation: timeline-orb-breathe 1.9s ease-in-out infinite;
+}
+
+.time-current nav button span {
+  margin-top: 7px;
+}
+
+@keyframes timeline-flow {
+  0%,
+  100% {
+    filter: brightness(0.98);
+  }
+
+  50% {
+    filter: brightness(1.18);
+  }
+}
+
+@keyframes timeline-orb-breathe {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 9px rgb(190 255 235 / 0.06),
+      0 0 22px rgb(176 255 233 / 0.42),
+      0 10px 26px rgb(0 14 22 / 0.2),
+      inset 0 2px 3px rgb(255 255 255 / 0.82),
+      inset -3px -5px 10px rgb(46 176 155 / 0.18);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 13px rgb(190 255 235 / 0.08),
+      0 0 34px rgb(176 255 233 / 0.58),
+      0 12px 30px rgb(0 14 22 / 0.24),
+      inset 0 2px 4px rgb(255 255 255 / 0.92),
+      inset -3px -5px 10px rgb(46 176 155 / 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .time-current nav::after,
+  .time-current nav button.is-active i {
+    animation: none;
+  }
+}

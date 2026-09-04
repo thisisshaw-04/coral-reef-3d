@@ -119,3 +119,14 @@ test("keeps the intro glass transparent enough to show the reef", async () => {
   assert.match(css, /\.expedition-entry\s*{[\s\S]*?backdrop-filter: blur\(26px\) saturate\(1\.1\) brightness\(0\.98\)/);
   assert.match(css, /\.begin-button,[\s\S]*?\.expedition-entry form\s*{[\s\S]*?rgb\(255 255 255 \/ 0\.045\)/);
 });
+
+test("uses an animated Frutiger Aero timeline without a harsh selected block", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v16 - fluid Frutiger Aero timeline/);
+  assert.match(css, /\.time-current nav::after\s*{[\s\S]*?width: calc\(var\(--timeline-progress\) \* 0\.8\)/);
+  assert.match(css, /\.time-current nav::after\s*{[\s\S]*?animation: timeline-flow 2\.8s ease-in-out infinite/);
+  assert.match(css, /\.time-current nav button::after,[\s\S]*?\.time-current nav button\.is-active::after\s*{[\s\S]*?opacity: 0/);
+  assert.match(css, /\.time-current nav button i\s*{[\s\S]*?radial-gradient\(circle at 34% 28%, #ffffff/);
+  assert.match(css, /@keyframes timeline-orb-breathe/);
+});

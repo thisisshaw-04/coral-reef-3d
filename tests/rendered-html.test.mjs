@@ -221,3 +221,14 @@ test("uses a lighter field objective type hierarchy", async () => {
   assert.match(css, /\.field-lesson p\s*{[\s\S]*?font-weight: 300/);
   assert.match(css, /\.field-lesson > small\s*{[\s\S]*?font-size: clamp\(12px, 1vw, 15px\)/);
 });
+
+test("keeps the main intro modal near half the page width", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v25 - half-page intro modal/);
+  assert.match(css, /\.expedition-entry\s*{[\s\S]*?width: min\(960px, 50vw\)/);
+  assert.match(css, /\.expedition-entry\s*{[\s\S]*?max-height: min\(720px, calc\(100vh - 96px\)\)/);
+  assert.match(css, /\.expedition-entry h1\s*{[\s\S]*?font-size: clamp\(42px, 4\.4vw, 76px\)/);
+  assert.match(css, /\.entry-actions\s*{[\s\S]*?margin-top: clamp\(28px, 3vw, 42px\)/);
+  assert.match(css, /@media \(max-width: 1100px\)[\s\S]*?\.entry-actions\s*{[\s\S]*?grid-template-columns: 1fr/);
+});

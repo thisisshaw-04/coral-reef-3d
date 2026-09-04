@@ -39,19 +39,19 @@ const SCANS: Record<string, { desktop: string; mobile: string; size: number; tin
     desktop: "/models/acropora-hyacinthus.glb",
     mobile: "/models/acropora-hyacinthus-mobile.glb",
     size: 7.4,
-    tint: 0xd2a084,
+    tint: 0xffb58f,
   },
   "acro-compact": {
     desktop: "/models/acropora-humilis.glb",
     mobile: "/models/acropora-humilis-mobile.glb",
     size: 6.2,
-    tint: 0xb98675,
+    tint: 0xe9867a,
   },
   "massive-star": {
     desktop: "/models/plesiastraea-armata.glb",
     mobile: "/models/plesiastraea-armata-mobile.glb",
     size: 6.8,
-    tint: 0xc8aa82,
+    tint: 0xe8c889,
   },
 };
 
@@ -206,11 +206,11 @@ export default function ReefScene({
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowPower ? 1.15 : 1.65));
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.12;
+        renderer.toneMappingExposure = 1.42;
 
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x021219);
-        scene.fog = new THREE.FogExp2(0x063845, 0.017);
+        scene.background = new THREE.Color(0x0b5362);
+        scene.fog = new THREE.FogExp2(0x36aeb6, 0.011);
 
         const camera = new THREE.PerspectiveCamera(64, 1, 0.1, 320);
         camera.rotation.order = "YXZ";
@@ -223,14 +223,14 @@ export default function ReefScene({
         const fishActors: Array<{ object: Object3D; offset: number; lane: number; depth: number }> = [];
         const textures: Array<{ dispose: () => void }> = [];
 
-        scene.add(new THREE.HemisphereLight(0x86d9d4, 0x071014, 1.6));
-        const sun = new THREE.DirectionalLight(0xbafef1, 3.2);
+        scene.add(new THREE.HemisphereLight(0xd8fffa, 0x164556, 2.25));
+        const sun = new THREE.DirectionalLight(0xf7fff2, 4.7);
         sun.position.set(-24, 36, 18);
         world.add(sun);
-        const blueFill = new THREE.PointLight(0x35b7bd, 32, 70, 1.8);
+        const blueFill = new THREE.PointLight(0x53f4ff, 58, 116, 1.5);
         blueFill.position.set(4, 9, -18);
         world.add(blueFill);
-        const warmFill = new THREE.PointLight(0xffb68c, 14, 34, 2);
+        const warmFill = new THREE.PointLight(0xffc28d, 38, 58, 1.7);
         warmFill.position.set(22, 5, -43);
         world.add(warmFill);
 
@@ -259,7 +259,7 @@ export default function ReefScene({
         floorGeometry.computeVertexNormals();
         const floor = new THREE.Mesh(
           floorGeometry,
-          new THREE.MeshStandardMaterial({ map: gravel, normalMap: gravelNormal, aoMap: gravelArm, roughnessMap: gravelArm, metalnessMap: gravelArm, color: 0x9b9180, roughness: 0.96, metalness: 0.02 }),
+          new THREE.MeshStandardMaterial({ map: gravel, normalMap: gravelNormal, aoMap: gravelArm, roughnessMap: gravelArm, metalnessMap: gravelArm, color: 0xc4b68c, roughness: 0.93, metalness: 0.02 }),
         );
         world.add(floor);
 
@@ -267,16 +267,16 @@ export default function ReefScene({
         causticCanvas.width = causticCanvas.height = 512;
         const causticContext = causticCanvas.getContext("2d");
         if (causticContext) {
-          causticContext.fillStyle = "#001218";
+          causticContext.fillStyle = "#063645";
           causticContext.fillRect(0, 0, 512, 512);
           causticContext.globalCompositeOperation = "screen";
-          for (let index = 0; index < 90; index += 1) {
+          for (let index = 0; index < 130; index += 1) {
             const x = random() * 512;
             const y = random() * 512;
             const radius = 10 + random() * 45;
             const gradient = causticContext.createRadialGradient(x, y, radius * 0.35, x, y, radius);
-            gradient.addColorStop(0, "rgba(190,255,242,.35)");
-            gradient.addColorStop(0.48, "rgba(105,240,223,.11)");
+            gradient.addColorStop(0, "rgba(230,255,240,.52)");
+            gradient.addColorStop(0.48, "rgba(112,248,226,.18)");
             gradient.addColorStop(0.68, "rgba(0,0,0,0)");
             causticContext.strokeStyle = gradient;
             causticContext.lineWidth = 2 + random() * 2.5;
@@ -291,7 +291,7 @@ export default function ReefScene({
         textures.push(causticTexture);
         const caustics = new THREE.Mesh(
           new THREE.PlaneGeometry(FLOOR_WIDTH * 0.96, FLOOR_DEPTH * 0.94),
-          new THREE.MeshBasicMaterial({ map: causticTexture, color: 0x8fe9dd, transparent: true, opacity: 0.13, blending: THREE.AdditiveBlending, depthWrite: false }),
+          new THREE.MeshBasicMaterial({ map: causticTexture, color: 0xcffff1, transparent: true, opacity: 0.24, blending: THREE.AdditiveBlending, depthWrite: false }),
         );
         caustics.rotation.x = -Math.PI / 2;
         caustics.position.set(0, -0.38, FLOOR_CENTER_Z);
@@ -320,12 +320,12 @@ export default function ReefScene({
         textures.push(waterNormals);
         const water = new WaterMesh(new THREE.PlaneGeometry(380, 430), {
           waterNormals,
-          alpha: 0.68,
-          waterColor: 0x0d5667,
+          alpha: 0.46,
+          waterColor: 0x20a9bb,
           sunColor: 0xd9fff8,
           sunDirection: new THREE.Vector3(0.42, 0.82, 0.2).normalize(),
-          distortionScale: 3.8,
-          size: 1.45,
+          distortionScale: 3.05,
+          size: 1.16,
           resolutionScale: lowPower ? 0.22 : 0.42,
         });
         water.rotation.x = -Math.PI / 2;
@@ -333,7 +333,7 @@ export default function ReefScene({
         water.material.side = THREE.DoubleSide;
         world.add(water);
 
-        const rayMaterial = new THREE.MeshBasicMaterial({ color: 0x8de5dc, transparent: true, opacity: lowPower ? 0.035 : 0.055, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
+        const rayMaterial = new THREE.MeshBasicMaterial({ color: 0xdbfff0, transparent: true, opacity: lowPower ? 0.052 : 0.085, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
         for (let index = 0; index < (lowPower ? 7 : 15); index += 1) {
           const ray = new THREE.Mesh(new THREE.ConeGeometry(5 + random() * 9, 62, 24, 1, true), rayMaterial);
           ray.position.set(-82 + index * 13 + random() * 9, 27, 10 - random() * 178);
@@ -342,7 +342,7 @@ export default function ReefScene({
           world.add(ray);
         }
 
-        const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x0d3034, roughness: 0.98, transparent: true, opacity: 0.72, side: THREE.DoubleSide });
+        const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x1a746f, roughness: 0.98, transparent: true, opacity: 0.46, side: THREE.DoubleSide });
         const makeReefWall = (width: number, height: number, wallPosition: [number, number, number], rotationY = 0) => {
           const wallGeometry = new THREE.PlaneGeometry(width, height, lowPower ? 18 : 34, 7);
           const wallPositionAttribute = wallGeometry.attributes.position;
@@ -361,7 +361,7 @@ export default function ReefScene({
         makeReefWall(250, 34, [-128, 9, -78], Math.PI / 2);
         makeReefWall(250, 34, [128, 9, -78], -Math.PI / 2);
 
-        const rocks = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), new THREE.MeshStandardMaterial({ color: 0x223b36, roughness: 0.93 }), lowPower ? 116 : 220);
+        const rocks = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), new THREE.MeshStandardMaterial({ color: 0x40665c, roughness: 0.93 }), lowPower ? 116 : 220);
         const matrix = new THREE.Matrix4();
         const quaternion = new THREE.Quaternion();
         const position = new THREE.Vector3();
@@ -382,7 +382,7 @@ export default function ReefScene({
         rocks.instanceMatrix.needsUpdate = true;
         world.add(rocks);
 
-        const sponges = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.2, 0.52, 1.9, 14, 3, false), new THREE.MeshStandardMaterial({ color: 0x7f6b46, roughness: 0.72 }), lowPower ? 70 : 130);
+        const sponges = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.2, 0.52, 1.9, 14, 3, false), new THREE.MeshStandardMaterial({ color: 0xc7955a, roughness: 0.72 }), lowPower ? 70 : 130);
         const clusters: Array<[number, number, number, number]> = [[-8, 0, -11, 12], [8, 0, -27, 12], [24, 0, -47, 14], [-38, 0, -64, 20], [42, 0, -86, 24], [-12, 0, -126, 28], [58, 0, -150, 22]];
         for (let index = 0; index < sponges.count; index += 1) {
           const cluster = clusters[index % clusters.length];
@@ -400,7 +400,7 @@ export default function ReefScene({
         sponges.instanceMatrix.needsUpdate = true;
         world.add(sponges);
 
-        const grass = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.22, 2.1, 1, 4), new THREE.MeshStandardMaterial({ color: 0x245d50, roughness: 0.84, side: THREE.DoubleSide }), lowPower ? 240 : 540);
+        const grass = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.22, 2.1, 1, 4), new THREE.MeshStandardMaterial({ color: 0x26a37e, roughness: 0.84, side: THREE.DoubleSide }), lowPower ? 260 : 620);
         for (let index = 0; index < grass.count; index += 1) {
           const x = (random() - 0.5) * 205;
           const z = 28 - random() * 216;
@@ -416,9 +416,10 @@ export default function ReefScene({
 
         const coralHeads = new THREE.InstancedMesh(
           new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2),
-          new THREE.MeshStandardMaterial({ color: 0x6f5f45, roughness: 0.88 }),
-          lowPower ? 72 : 148,
+          new THREE.MeshStandardMaterial({ color: 0xe3a96d, roughness: 0.86 }),
+          lowPower ? 86 : 178,
         );
+        const reefColor = new THREE.Color();
         for (let index = 0; index < coralHeads.count; index += 1) {
           const cluster = clusters[(index + 2) % clusters.length];
           const theta = random() * Math.PI * 2;
@@ -431,14 +432,17 @@ export default function ReefScene({
           scale.set(size * (0.9 + random() * 0.45), size * (0.36 + random() * 0.24), size * (0.82 + random() * 0.52));
           matrix.compose(position, quaternion, scale);
           coralHeads.setMatrixAt(index, matrix);
+          reefColor.setHSL(0.055 + random() * 0.09, 0.46 + random() * 0.2, 0.46 + random() * 0.16);
+          coralHeads.setColorAt(index, reefColor);
         }
         coralHeads.instanceMatrix.needsUpdate = true;
+        if (coralHeads.instanceColor) coralHeads.instanceColor.needsUpdate = true;
         world.add(coralHeads);
 
         const seaFans = new THREE.InstancedMesh(
           new THREE.PlaneGeometry(1, 1.8, 1, 5),
-          new THREE.MeshStandardMaterial({ color: 0x1f8b7f, roughness: 0.8, transparent: true, opacity: 0.58, side: THREE.DoubleSide }),
-          lowPower ? 48 : 105,
+          new THREE.MeshStandardMaterial({ color: 0x35c8a2, roughness: 0.8, transparent: true, opacity: 0.68, side: THREE.DoubleSide }),
+          lowPower ? 58 : 128,
         );
         for (let index = 0; index < seaFans.count; index += 1) {
           const x = (random() - 0.5) * 188;
@@ -449,9 +453,58 @@ export default function ReefScene({
           scale.set(0.65 + random() * 0.9, height, 1);
           matrix.compose(position, quaternion, scale);
           seaFans.setMatrixAt(index, matrix);
+          reefColor.setHSL(0.39 + random() * 0.1, 0.5 + random() * 0.2, 0.42 + random() * 0.16);
+          seaFans.setColorAt(index, reefColor);
         }
         seaFans.instanceMatrix.needsUpdate = true;
+        if (seaFans.instanceColor) seaFans.instanceColor.needsUpdate = true;
         world.add(seaFans);
+
+        const lifeParticleCount = lowPower ? 720 : 1650;
+        const lifeGeometry = new THREE.BufferGeometry();
+        const lifePositions = new Float32Array(lifeParticleCount * 3);
+        const lifeBase = new Float32Array(lifeParticleCount * 3);
+        const lifeMeta = new Float32Array(lifeParticleCount * 4);
+        const lifeColors = new Float32Array(lifeParticleCount * 3);
+        const livingPalette = [0xffa889, 0xffd36e, 0x7bf5d2, 0xc98fff, 0xeaffb7];
+        for (let index = 0; index < lifeParticleCount; index += 1) {
+          const hotspot = hotspotsRef.current[index % hotspotsRef.current.length] || DEFAULT_HOTSPOTS[0];
+          const theta = random() * Math.PI * 2;
+          const radius = 0.9 + random() * 5.4;
+          const height = -0.12 + random() * 2.8;
+          const x = hotspot.position[0] + Math.cos(theta) * radius;
+          const y = hotspot.position[1] + height;
+          const z = hotspot.position[2] + Math.sin(theta) * radius * 0.68;
+          lifeBase[index * 3] = x;
+          lifeBase[index * 3 + 1] = y;
+          lifeBase[index * 3 + 2] = z;
+          lifePositions[index * 3] = x;
+          lifePositions[index * 3 + 1] = y;
+          lifePositions[index * 3 + 2] = z;
+          lifeMeta[index * 4] = random() * Math.PI * 2;
+          lifeMeta[index * 4 + 1] = 0.28 + random() * 1.15;
+          lifeMeta[index * 4 + 2] = 0.22 + random() * 0.92;
+          lifeMeta[index * 4 + 3] = radius;
+          reefColor.setHex(livingPalette[Math.floor(random() * livingPalette.length)]);
+          reefColor.multiplyScalar(0.76 + random() * 0.36);
+          lifeColors[index * 3] = reefColor.r;
+          lifeColors[index * 3 + 1] = reefColor.g;
+          lifeColors[index * 3 + 2] = reefColor.b;
+        }
+        const lifePositionAttribute = new THREE.BufferAttribute(lifePositions, 3);
+        lifeGeometry.setAttribute("position", lifePositionAttribute);
+        lifeGeometry.setAttribute("color", new THREE.BufferAttribute(lifeColors, 3));
+        const lifeMaterial = new THREE.PointsMaterial({
+          vertexColors: true,
+          size: lowPower ? 0.07 : 0.09,
+          transparent: true,
+          opacity: 0.82,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          sizeAttenuation: true,
+        });
+        const reefLife = new THREE.Points(lifeGeometry, lifeMaterial);
+        world.add(reefLife);
 
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath("/draco/");
@@ -482,8 +535,8 @@ export default function ReefScene({
               const living = material as Material & { color?: Color; emissive?: Color; roughness?: number; metalness?: number };
               if (!living.color) continue;
               living.color.setHex(asset.tint);
-              if (living.emissive) living.emissive.setHex(0x120b08);
-              if (typeof living.roughness === "number") living.roughness = Math.max(0.58, living.roughness);
+              if (living.emissive) living.emissive.setHex(0x231008);
+              if (typeof living.roughness === "number") living.roughness = Math.max(0.5, living.roughness);
               if (typeof living.metalness === "number") living.metalness = 0;
               livingMaterials.push({ material: living, base: living.color.clone(), hotspotId: hotspot.id });
             }
@@ -532,7 +585,7 @@ export default function ReefScene({
           particlePositions[index * 3 + 2] = 36 - random() * 245;
         }
         particleGeometry.setAttribute("position", new THREE.BufferAttribute(particlePositions, 3));
-        const particles = new THREE.Points(particleGeometry, new THREE.PointsMaterial({ color: 0xc4f3e9, size: lowPower ? 0.035 : 0.045, transparent: true, opacity: 0.38, depthWrite: false }));
+        const particles = new THREE.Points(particleGeometry, new THREE.PointsMaterial({ color: 0xd8fff1, size: lowPower ? 0.04 : 0.052, transparent: true, opacity: 0.5, depthWrite: false }));
         world.add(particles);
 
         const nav = { yaw: 0, pitch: -0.08, velocity: new THREE.Vector3(), keys: new Set<string>(), dragging: false, moved: false, lastX: 0, lastY: 0, mobileForward: false, zone: "", lastFocus: "" as string | null };
@@ -628,10 +681,10 @@ export default function ReefScene({
         setLoaded(true);
 
         const phaseColors = {
-          healthy: { fog: new THREE.Color(0x063845), density: 0.021, wash: new THREE.Color(0xb68d72), blend: 0.03 },
-          heat: { fog: new THREE.Color(0x193e42), density: 0.024, wash: new THREE.Color(0xd99a77), blend: 0.28 },
-          bleaching: { fog: new THREE.Color(0x385057), density: 0.027, wash: new THREE.Color(0xf0e6d5), blend: 0.84 },
-          recovery: { fog: new THREE.Color(0x0a3d3c), density: 0.022, wash: new THREE.Color(0x78a485), blend: 0.13 },
+          healthy: { fog: new THREE.Color(0x36aeb6), density: 0.011, wash: new THREE.Color(0xe5aa83), blend: 0.02, life: 0.9 },
+          heat: { fog: new THREE.Color(0x54a6a8), density: 0.013, wash: new THREE.Color(0xffaa78), blend: 0.2, life: 0.68 },
+          bleaching: { fog: new THREE.Color(0x8bbac0), density: 0.015, wash: new THREE.Color(0xf4ead8), blend: 0.72, life: 0.36 },
+          recovery: { fog: new THREE.Color(0x35bca7), density: 0.01, wash: new THREE.Color(0x9bcf8e), blend: 0.09, life: 0.96 },
         };
         const targetColor = new THREE.Color();
         const spotVector = new THREE.Vector3();
@@ -650,11 +703,39 @@ export default function ReefScene({
             targetColor.copy(entry.base).lerp(currentPhase.wash, blend);
             entry.material.color.lerp(targetColor, 1 - Math.exp(-delta * 1.8));
           }
+          lifeMaterial.opacity = THREE.MathUtils.lerp(lifeMaterial.opacity, currentPhase.life, 1 - Math.exp(-delta * 1.8));
 
           causticTexture.offset.x = (elapsed * 0.012) % 1;
           causticTexture.offset.y = (elapsed * -0.008) % 1;
           particles.position.x = Math.sin(elapsed * 0.04) * 6;
           grass.rotation.z = reduced ? 0 : Math.sin(elapsed * 0.42) * 0.014;
+          seaFans.rotation.z = reduced ? 0 : Math.sin(elapsed * 0.28) * 0.012;
+          coralTargets.forEach((target, index) => {
+            const pulse = reduced ? 1 : 1 + Math.sin(elapsed * 0.8 + index * 1.7) * 0.008;
+            target.scale.setScalar(pulse);
+          });
+          if (!reduced) {
+            for (let index = 0; index < lifeParticleCount; index += 1) {
+              const offset = index * 3;
+              const meta = index * 4;
+              const phase = lifeMeta[meta] + elapsed * lifeMeta[meta + 1];
+              const radius = lifeMeta[meta + 3];
+              const buoyancy = (Math.sin(phase * 1.8) + Math.cos(elapsed * 0.52 + index)) * 0.055;
+              lifePositions[offset] =
+                lifeBase[offset] +
+                Math.cos(phase) * radius * 0.08 +
+                Math.sin(elapsed * 0.34 + lifeBase[offset + 2] * 0.05) * 0.16;
+              lifePositions[offset + 1] =
+                lifeBase[offset + 1] +
+                Math.sin(phase * 1.35) * lifeMeta[meta + 2] * 0.18 +
+                buoyancy;
+              lifePositions[offset + 2] =
+                lifeBase[offset + 2] +
+                Math.sin(phase) * radius * 0.1 +
+                Math.cos(elapsed * 0.25 + lifeBase[offset] * 0.04) * 0.12;
+            }
+            lifePositionAttribute.needsUpdate = true;
+          }
           fishActors.forEach((actor, index) => {
             const t = elapsed * (0.12 + (index % 4) * 0.013) + actor.offset;
             actor.object.position.set(actor.lane + Math.sin(t * 0.7) * 8, 3.4 + (index % 5) * 0.68 + Math.sin(t * 1.4) * 0.35, actor.depth + Math.cos(t * 0.55) * 7);
@@ -731,9 +812,12 @@ export default function ReefScene({
           resizeObserver?.disconnect();
           void renderer.setAnimationLoop(null);
           world.traverse((object) => {
-            if (!isMesh(object)) return;
-            object.geometry.dispose();
-            disposeMaterial(object.material);
+            const disposable = object as Object3D & {
+              geometry?: { dispose: () => void };
+              material?: Material | Material[];
+            };
+            disposable.geometry?.dispose();
+            if (disposable.material) disposeMaterial(disposable.material);
           });
           textures.forEach((texture) => texture.dispose());
           dracoLoader.dispose();

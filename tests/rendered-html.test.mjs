@@ -37,9 +37,25 @@ test("uses a broader scan-based coral survey without cone light meshes", async (
   assert.match(data, /scan: "pavona-lettuce"/);
   assert.match(scene, /AMBIENT_SCAN_COLONIES/);
   assert.match(scene, /smithsonian-diodon-hystrix\.glb/);
-  assert.match(scene, /const FLOOR_WIDTH = 380/);
-  assert.match(scene, /new THREE\.PlaneGeometry\(560, 720\)/);
+  assert.match(scene, /const FLOOR_WIDTH = 560/);
+  assert.match(scene, /new WaterMesh\(new THREE\.PlaneGeometry\(FLOOR_WIDTH \* 1\.42, FLOOR_DEPTH \* 1\.18\)/);
   assert.doesNotMatch(scene, /ConeGeometry\(5 \+ random\(\) \* 9, 62/);
+});
+
+test("loads research-based biome terrains from the global navigator", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const data = await readFile(new URL("../app/reef-data.ts", import.meta.url), "utf8");
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
+  assert.match(data, /id: "sisters-islands"/);
+  assert.match(data, /name: "Coral Triangle"/);
+  assert.match(data, /NOAA identifies elkhorn, staghorn, and star corals/);
+  assert.match(data, /NParks and Singapore reef studies/);
+  assert.match(page, /biome=\{activeWorld\.id\}/);
+  assert.match(page, /activeWorld\.objectiveSteps\.map/);
+  assert.match(scene, /BIOME_CONFIG/);
+  assert.match(scene, /terrain: "caribbean-spur"/);
+  assert.match(scene, /BIOME_AMBIENT_SCAN_COLONIES/);
 });
 
 test("uses the clean Google Sans entry action system", async () => {

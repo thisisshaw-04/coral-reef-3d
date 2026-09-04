@@ -24,11 +24,13 @@ import { SpecimenMonitor } from "./components/SpecimenMonitor";
 import { useReefGuide } from "./hooks/useReefGuide";
 import { useRoomSync } from "./hooks/useRoomSync";
 import {
-  colonies,
+  defaultWorldId,
+  getWorldById,
   moments,
   reefWorlds,
   stressCopy,
   type Colony,
+  type ReefWorld,
   type Stressor,
   type Tool,
 } from "./reef-data";
@@ -67,7 +69,7 @@ export default function Home() {
   const [showStress, setShowStress] = useState(false);
   const [showWorlds, setShowWorlds] = useState(false);
   const [showSignals, setShowSignals] = useState(false);
-  const [world, setWorld] = useState("Great Barrier Reef");
+  const [worldId, setWorldId] = useState(defaultWorldId);
   const [joinCode, setJoinCode] = useState("");
   const [note, setNote] = useState("");
   const [restored, setRestored] = useState<string[]>([]);
@@ -78,6 +80,8 @@ export default function Home() {
     useRoomSync({ entered, restoredIds: restored });
 
   const activeMoment = moments[momentIndex];
+  const activeWorld = useMemo(() => getWorldById(worldId), [worldId]);
+  const activeColonies = activeWorld.colonies;
   const timelineProgress = (momentIndex / Math.max(1, moments.length - 1)) * 100;
   const timelineStyle = {
     "--timeline-progress": `${timelineProgress}%`,
@@ -91,8 +95,8 @@ export default function Home() {
   const guide = useReefGuide({
     roomCode,
     context: selected
-      ? `${world}. Observing ${selected.species}. Reef phase: ${phase}.`
-      : `${world}. Research submersible expedition.`,
+      ? `${activeWorld.name}. Observing ${selected.species}. Reef phase: ${phase}.`
+      : `${activeWorld.name}. ${activeWorld.researchBasis}`,
   });
 
   const begin = (code?: string) => {
@@ -101,19 +105,19 @@ export default function Home() {
     setShowBriefing(true);
     setBriefingStep(0);
     guide.announce(
-      "Welcome aboard. Start with the mission briefing, then choose any scanned colony.",
+      `Welcome aboard ${activeWorld.name}. Start with the mission briefing, then choose any scanned colony.`,
     );
   };
 
   const finishBriefing = () => {
     setShowBriefing(false);
     guide.announce(
-      "Mission started. Scan several colonies, mark their health, then compare the reef through time.",
+      `Mission started. Scan ${activeColonies.length} research-based colonies, mark their health, then compare the reef through time.`,
     );
   };
 
   const inspect = (id: string) => {
-    const colony = colonies.find((item) => item.id === id) || null;
+    const colony = activeColonies.find((item) => item.id === id) || null;
     setSelected(colony);
     setTool("scan");
     if (!colony) return;
@@ -150,6 +154,22 @@ export default function Home() {
         "Restoration preview placed. This can help local recovery, but it cannot replace clean water and climate action.",
       );
     }
+  };
+
+  const chooseWorld = (nextWorld: ReefWorld) => {
+    if (nextWorld.id === activeWorld.id) {
+      setShowWorlds(false);
+      return;
+    }
+
+    setWorldId(nextWorld.id);
+    setSelected(null);
+    setRestored([]);
+    setSceneReady(false);
+    setShowWorlds(false);
+    guide.announce(
+      `${nextWorld.name} terrain loaded. ${nextWorld.objectiveTitle}.`,
+    );
   };
 
   const saveNote = () => {
@@ -198,8 +218,9 @@ export default function Home() {
     >
       <ReefScene
         active={entered}
+        biome={activeWorld.id}
         focusId={selected?.id || null}
-        hotspots={colonies}
+        hotspots={activeColonies}
         mappedIds={mappedIds}
         fallbackSrc="/reef-cockpit.webp"
         phase={phase}
@@ -220,7 +241,7 @@ export default function Home() {
           <Globe2 />
           <span>
             <small>GLOBAL NAVIGATOR</small>
-            <strong>{world}</strong>
+            <strong>{activeWorld.name}</strong>
           </span>
           <ChevronDown />
         </button>
@@ -248,21 +269,13 @@ export default function Home() {
           {reefWorlds.map((item) => (
             <button
               type="button"
-              key={item}
-              className={item === world ? "is-active" : ""}
-              onClick={() => {
-                setWorld(item);
-                setShowWorlds(false);
-              }}
+              key={item.id}
+              className={item.id === activeWorld.id ? "is-active" : ""}
+              onClick={() => chooseWorld(item)}
             >
-              {item}
-              <small>
-                {item === "Sisters' Islands"
-                  ? "Singapore · tropical reef"
-                  : item === "Great Barrier Reef"
-                    ? "Australia · shelf reef"
-                    : "Global field station"}
-              </small>
+              {item.name}
+              <small>{item.region} · {item.reefType}</small>
+              <em>{item.researchBasis}</em>
             </button>
           ))}
         </aside>
@@ -359,11 +372,11 @@ export default function Home() {
         <>
           <div className="sub-title">
             <span>EXPEDITION 01</span>
-            <strong>{selected ? selected.zone : "LANTERN NURSERY"}</strong>
+            <strong>{selected ? selected.zone : activeWorld.expedition}</strong>
             <small>
               {selected
                 ? selected.species
-                : "Move freely · select a scanned colony"}
+                : "Move freely · select a research-based colony"}
             </small>
           </div>
           <div className="diver-cursors" aria-hidden="true">
@@ -387,16 +400,14 @@ export default function Home() {
           {!selected && (
             <aside className="field-lesson">
               <span>FIELD OBJECTIVE</span>
-              <strong>Survey {colonies.length} scanned colonies</strong>
-              <p>
-                Start with any marker. Compare plates, branches, and boulder
-                forms, then use the time current to ask what changed.
-              </p>
+              <strong>{activeWorld.objectiveTitle}</strong>
+              <p>{activeWorld.objectiveBody}</p>
               <ol>
-                <li>Observe form before naming species.</li>
-                <li>Compare living cover, DHW, and pH.</li>
-                <li>Use restore as a local recovery preview.</li>
+                {activeWorld.objectiveSteps.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
               </ol>
+              <small>{activeWorld.researchBasis}</small>
             </aside>
           )}
 

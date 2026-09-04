@@ -5603,3 +5603,57 @@ a:focus-visible,
     inset-inline: 2px;
   }
 }
+
+/* v12 - research biome navigator polish */
+.world-drawer {
+  width: min(520px, calc(100vw - 40px));
+  padding: 18px;
+}
+
+.world-drawer > button {
+  gap: 7px;
+  padding: 18px 20px;
+  border-radius: 24px;
+}
+
+.world-drawer > button small {
+  color: rgb(255 255 255 / 0.66);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.world-drawer > button em,
+.field-lesson > small {
+  display: block;
+  max-width: 58ch;
+  color: rgb(255 255 255 / 0.46);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+}
+
+.field-lesson > small {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgb(255 255 255 / 0.08);
+  text-transform: none;
+}
+
+@media (max-width: 620px) {
+  .world-drawer {
+    width: calc(100vw - 24px);
+    padding: 12px;
+  }
+
+  .world-drawer > button {
+    padding: 15px 16px;
+  }
+
+  .world-drawer > button em {
+    display: none;
+  }
+}

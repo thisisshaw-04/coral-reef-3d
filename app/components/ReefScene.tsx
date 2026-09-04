@@ -5,6 +5,11 @@ import { ArrowUp, Check } from "lucide-react";
 import type { Color, Material, Mesh, Object3D } from "three";
 
 export type ReefPhase = "healthy" | "heat" | "bleaching" | "recovery";
+export type ReefBiomeId =
+  | "great-barrier"
+  | "sisters-islands"
+  | "coral-triangle"
+  | "caribbean-reef";
 export type ScanAssetKey =
   | "acro-table"
   | "acro-compact"
@@ -32,6 +37,7 @@ export type ReefSceneHotspot = {
 
 type ReefSceneProps = {
   active?: boolean;
+  biome?: ReefBiomeId;
   focusId?: string | null;
   hotspots?: ReefSceneHotspot[];
   mappedIds?: string[];
@@ -207,17 +213,351 @@ const AMBIENT_SCAN_COLONIES: ReefSceneHotspot[] = [
   { id: "nursery-scan-36", label: "Nursery scan", scan: "porites-mound", position: [-34, 2.92, -96], size: 5.2, tint: 0xdac27a, yaw: -0.38 },
 ];
 
-const WORLD_BOUNDS = {
-  x: 138,
-  yMin: 2.8,
-  yMax: 14.4,
-  zMin: -320,
-  zMax: 48,
+type AmbientSeed = [ScanAssetKey, number, number, number, number, number?];
+
+const makeAmbientScanColonies = (
+  prefix: string,
+  seeds: AmbientSeed[],
+): ReefSceneHotspot[] =>
+  seeds.map(([scan, x, z, size, tint, yaw], index) => ({
+    id: `${prefix}-scan-${String(index + 1).padStart(2, "0")}`,
+    label: "Survey scan",
+    scan,
+    position: [x, 2.35 + (index % 7) * 0.16, z],
+    size,
+    tint,
+    yaw: yaw ?? index * 0.37,
+  }));
+
+const BIOME_AMBIENT_SCAN_COLONIES: Record<ReefBiomeId, ReefSceneHotspot[]> = {
+  "great-barrier": AMBIENT_SCAN_COLONIES,
+  "sisters-islands": makeAmbientScanColonies("sisters", [
+    ["pavona-lettuce", -132, -26, 5.2, 0xd7bc78, 0.2],
+    ["agaricia-plate", -78, -42, 4.9, 0xd8b172, -0.6],
+    ["porites-mound", 18, -38, 4.8, 0xd5bd76, 0.3],
+    ["goniopora-column", 74, -58, 4.7, 0xd09572, 0.9],
+    ["fungia-disc", 128, -82, 4.2, 0xe3a772, -0.2],
+    ["massive-star", -118, -118, 5.3, 0xdcc58a, -0.8],
+    ["pavona-lettuce", -42, -128, 5.8, 0xd2bd7b, 0.7],
+    ["agaricia-plate", 38, -146, 5.1, 0xd1aa73, -1.1],
+    ["porites-mound", 104, -170, 5.2, 0xd5c37f, 0.4],
+    ["goniopora-column", -150, -196, 5.4, 0xcf9270, -0.3],
+    ["fungia-disc", -72, -222, 4.6, 0xdfaa77, 0.6],
+    ["pocillopora-cauliflower", 12, -244, 4.8, 0xde8f78, -0.5],
+    ["acro-compact", 82, -268, 4.9, 0xd87f73, 0.2],
+    ["pavona-lettuce", 142, -298, 5.7, 0xd6bd7a, -0.9],
+    ["agaricia-plate", -118, -332, 5.5, 0xd5ad74, 0.5],
+    ["massive-star", -32, -360, 5.7, 0xdac38a, -0.1],
+    ["porites-mound", 54, -392, 5.4, 0xd4c17e, 0.8],
+    ["goniopora-column", 132, -430, 5.3, 0xd19472, -0.4],
+  ]),
+  "coral-triangle": makeAmbientScanColonies("triangle", [
+    ["acro-table", -154, -30, 6, 0xf0aa76, -0.2],
+    ["seriatopora-birdsnest", -94, -48, 5.4, 0xe9a17c, 0.6],
+    ["pocillopora-cauliflower", -22, -60, 5.2, 0xe18b77, -0.5],
+    ["goniopora-column", 58, -74, 5.5, 0xd39272, 0.8],
+    ["heliopora-blue", 128, -96, 5.3, 0x88bac2, -0.3],
+    ["fungia-disc", -138, -128, 4.8, 0xe6aa72, 0.4],
+    ["pavona-lettuce", -68, -158, 5.9, 0xd7bb79, -0.7],
+    ["agaricia-plate", 8, -184, 5.7, 0xd6ad76, 0.1],
+    ["acro-compact", 82, -212, 5.5, 0xe28376, 1],
+    ["porites-mound", 152, -242, 5.8, 0xd7c17d, -0.5],
+    ["acropora-palmata", -162, -278, 5.8, 0xefa372, 0.35],
+    ["diploria-brain", -92, -306, 5.4, 0xd7c082, -0.85],
+    ["seriatopora-birdsnest", -18, -334, 5.6, 0xeaa17d, 0.52],
+    ["heliopora-blue", 58, -366, 5.7, 0x89bac2, -0.12],
+    ["pavona-lettuce", 136, -392, 6.1, 0xd6ba78, 0.82],
+    ["acro-table", -126, -424, 6.2, 0xefa978, -0.4],
+    ["pocillopora-cauliflower", -42, -456, 5.8, 0xe18b77, 0.64],
+    ["goniopora-column", 42, -488, 5.9, 0xd29274, -0.32],
+    ["fungia-disc", 124, -514, 5.2, 0xe7a970, 0.2],
+  ]),
+  "caribbean-reef": makeAmbientScanColonies("caribbean", [
+    ["acropora-palmata", -142, -28, 6.2, 0xf0a271, -0.5],
+    ["diploria-brain", -68, -46, 5.6, 0xd7bf82, 0.4],
+    ["agaricia-plate", 12, -64, 5.1, 0xd7ad76, -0.3],
+    ["porites-mound", 92, -92, 5.3, 0xd9c278, 0.8],
+    ["acro-compact", 154, -122, 5.4, 0xe9a47d, -0.2],
+    ["diploria-brain", -126, -156, 5.9, 0xd5bd82, -0.75],
+    ["massive-star", -48, -186, 5.8, 0xe1c58c, 0.28],
+    ["agaricia-plate", 44, -214, 5.4, 0xd2a974, -0.95],
+    ["acropora-palmata", 128, -242, 5.9, 0xeda06f, 0.58],
+    ["porites-mound", -158, -278, 5.5, 0xd7c079, -0.18],
+    ["diploria-brain", -82, -316, 5.8, 0xd6bf83, 0.74],
+    ["agaricia-plate", 8, -352, 5.6, 0xd5ad75, -0.52],
+    ["acro-compact", 88, -384, 5.6, 0xe6a17b, 0.22],
+    ["acropora-palmata", 156, -418, 6.1, 0xeea271, -0.4],
+    ["massive-star", -118, -456, 6.3, 0xdfc68d, 0.36],
+    ["diploria-brain", -22, -488, 5.9, 0xd8c187, -0.72],
+    ["porites-mound", 78, -518, 5.8, 0xd8c27b, 0.62],
+  ]),
 };
 
-const FLOOR_WIDTH = 380;
-const FLOOR_DEPTH = 620;
-const FLOOR_CENTER_Z = -138;
+type ReefBiomeConfig = {
+  seed: number;
+  terrain: "shelf" | "turbid-lagoon" | "triangle-wall" | "caribbean-spur";
+  background: number;
+  fog: number;
+  fogDensity: number;
+  floorColor: number;
+  wallColor: number;
+  waterColor: number;
+  causticColor: number;
+  causticOpacity: number;
+  waterAlpha: number;
+  waterDistortion: number;
+  waterY: number;
+  textureRepeat: [number, number];
+  exposure: number;
+  rockDensity: number;
+  spongeDensity: number;
+  grassDensity: number;
+  kelpDensity: number;
+  coralHeadDensity: number;
+  seaFanDensity: number;
+  softPolypDensity: number;
+  fishDensity: number;
+  bottomLifeDensity: number;
+  particleDensity: number;
+  lifeDensity: number;
+  grassColor: number;
+  kelpHue: number;
+  seaFanHue: number;
+  coralHue: number;
+  lifePalette: number[];
+  clusters: Array<[number, number, number, number]>;
+  zones: Array<{ minZ: number; name: string; depth: string }>;
+};
+
+const WORLD_BOUNDS = {
+  x: 218,
+  yMin: 2.8,
+  yMax: 17.8,
+  zMin: -548,
+  zMax: 72,
+};
+
+const FLOOR_WIDTH = 560;
+const FLOOR_DEPTH = 900;
+const FLOOR_CENTER_Z = -218;
+
+const DEFAULT_CLUSTERS: Array<[number, number, number, number]> = [
+  [-18, 0, -18, 14],
+  [38, 0, -36, 18],
+  [-58, 0, -52, 22],
+  [80, 0, -82, 26],
+  [-92, 0, -102, 30],
+  [-18, 0, -128, 28],
+  [58, 0, -154, 34],
+  [-118, 0, -194, 38],
+  [18, 0, -224, 36],
+  [104, 0, -254, 42],
+  [-64, 0, -296, 44],
+  [58, 0, -336, 38],
+  [-152, 0, -382, 42],
+  [148, 0, -414, 46],
+  [-32, 0, -468, 44],
+];
+
+const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
+  "great-barrier": {
+    seed: 2035,
+    terrain: "shelf",
+    background: 0x064858,
+    fog: 0x227c8c,
+    fogDensity: 0.0105,
+    floorColor: 0xaa9c78,
+    wallColor: 0x155d62,
+    waterColor: 0x0d7184,
+    causticColor: 0xaef5e7,
+    causticOpacity: 0.15,
+    waterAlpha: 0.64,
+    waterDistortion: 4.15,
+    waterY: 13.45,
+    textureRepeat: [46, 72],
+    exposure: 1.08,
+    rockDensity: 1.05,
+    spongeDensity: 0.9,
+    grassDensity: 0.82,
+    kelpDensity: 0.72,
+    coralHeadDensity: 1.05,
+    seaFanDensity: 0.9,
+    softPolypDensity: 0.92,
+    fishDensity: 1.05,
+    bottomLifeDensity: 0.95,
+    particleDensity: 0.9,
+    lifeDensity: 0.98,
+    grassColor: 0x2aa67d,
+    kelpHue: 0.31,
+    seaFanHue: 0.39,
+    coralHue: 0.055,
+    lifePalette: [0xffa889, 0xffd36e, 0x7bf5d2, 0xc98fff, 0xeaffb7],
+    clusters: DEFAULT_CLUSTERS,
+    zones: [
+      { minZ: -95, name: "Reef flat", depth: "12 m" },
+      { minZ: -220, name: "Outer shelf slope", depth: "18 m" },
+      { minZ: -365, name: "Patch reef garden", depth: "22 m" },
+      { minZ: -999, name: "Blue-water edge", depth: "26 m" },
+    ],
+  },
+  "sisters-islands": {
+    seed: 7612,
+    terrain: "turbid-lagoon",
+    background: 0x0c3d42,
+    fog: 0x427f74,
+    fogDensity: 0.017,
+    floorColor: 0x8e8e66,
+    wallColor: 0x244d45,
+    waterColor: 0x2f8178,
+    causticColor: 0xc8f0cf,
+    causticOpacity: 0.1,
+    waterAlpha: 0.58,
+    waterDistortion: 2.75,
+    waterY: 11.6,
+    textureRepeat: [54, 88],
+    exposure: 0.98,
+    rockDensity: 0.72,
+    spongeDensity: 1.45,
+    grassDensity: 1.72,
+    kelpDensity: 0.38,
+    coralHeadDensity: 0.82,
+    seaFanDensity: 0.58,
+    softPolypDensity: 1.28,
+    fishDensity: 0.78,
+    bottomLifeDensity: 1.2,
+    particleDensity: 1.5,
+    lifeDensity: 0.84,
+    grassColor: 0x3f9c63,
+    kelpHue: 0.25,
+    seaFanHue: 0.35,
+    coralHue: 0.07,
+    lifePalette: [0xffbd8b, 0xd4e48b, 0x75dcb4, 0xf0a1b9, 0xf6e0a1],
+    clusters: [
+      [-126, 0, -34, 22],
+      [-46, 0, -58, 28],
+      [52, 0, -88, 24],
+      [128, 0, -116, 30],
+      [-152, 0, -154, 35],
+      [-74, 0, -204, 42],
+      [24, 0, -236, 36],
+      [112, 0, -284, 44],
+      [-128, 0, -342, 48],
+      [-12, 0, -394, 46],
+      [122, 0, -448, 42],
+    ],
+    zones: [
+      { minZ: -85, name: "Bendera Bay reef flat", depth: "7 m" },
+      { minZ: -205, name: "Turbid coral slope", depth: "12 m" },
+      { minZ: -350, name: "Seagrass and sponge mosaic", depth: "16 m" },
+      { minZ: -999, name: "Nursery research zone", depth: "19 m" },
+    ],
+  },
+  "coral-triangle": {
+    seed: 91244,
+    terrain: "triangle-wall",
+    background: 0x045c72,
+    fog: 0x1d8d9c,
+    fogDensity: 0.0088,
+    floorColor: 0xa99874,
+    wallColor: 0x19606d,
+    waterColor: 0x0a90a5,
+    causticColor: 0xb9fff2,
+    causticOpacity: 0.18,
+    waterAlpha: 0.68,
+    waterDistortion: 4.9,
+    waterY: 14.2,
+    textureRepeat: [48, 78],
+    exposure: 1.12,
+    rockDensity: 1.26,
+    spongeDensity: 1.05,
+    grassDensity: 1.05,
+    kelpDensity: 0.82,
+    coralHeadDensity: 1.38,
+    seaFanDensity: 1.22,
+    softPolypDensity: 1.42,
+    fishDensity: 1.55,
+    bottomLifeDensity: 1.05,
+    particleDensity: 1.05,
+    lifeDensity: 1.42,
+    grassColor: 0x2fb88a,
+    kelpHue: 0.34,
+    seaFanHue: 0.46,
+    coralHue: 0.04,
+    lifePalette: [0xffa875, 0xffda6f, 0x6dffcf, 0x8bc6ff, 0xff91d4, 0xebffaf],
+    clusters: [
+      [-158, 0, -42, 34],
+      [-82, 0, -76, 38],
+      [16, 0, -108, 42],
+      [104, 0, -142, 44],
+      [176, 0, -188, 40],
+      [-146, 0, -232, 52],
+      [-48, 0, -276, 48],
+      [58, 0, -326, 54],
+      [152, 0, -376, 48],
+      [-118, 0, -430, 54],
+      [0, 0, -488, 50],
+      [128, 0, -524, 46],
+    ],
+    zones: [
+      { minZ: -100, name: "Fringing reef crest", depth: "11 m" },
+      { minZ: -245, name: "Biodiversity wall", depth: "17 m" },
+      { minZ: -405, name: "Rubble and mushroom channel", depth: "24 m" },
+      { minZ: -999, name: "Deep blue drop-off", depth: "31 m" },
+    ],
+  },
+  "caribbean-reef": {
+    seed: 44501,
+    terrain: "caribbean-spur",
+    background: 0x063d5a,
+    fog: 0x24758d,
+    fogDensity: 0.0096,
+    floorColor: 0xb0a37e,
+    wallColor: 0x1a5468,
+    waterColor: 0x0b7fa0,
+    causticColor: 0xd1fff5,
+    causticOpacity: 0.17,
+    waterAlpha: 0.66,
+    waterDistortion: 4.35,
+    waterY: 13.1,
+    textureRepeat: [42, 68],
+    exposure: 1.05,
+    rockDensity: 1.18,
+    spongeDensity: 1.34,
+    grassDensity: 0.74,
+    kelpDensity: 0.45,
+    coralHeadDensity: 0.72,
+    seaFanDensity: 1.6,
+    softPolypDensity: 0.82,
+    fishDensity: 1.28,
+    bottomLifeDensity: 0.72,
+    particleDensity: 0.78,
+    lifeDensity: 1.08,
+    grassColor: 0x349f78,
+    kelpHue: 0.28,
+    seaFanHue: 0.78,
+    coralHue: 0.065,
+    lifePalette: [0xffb074, 0xffd77f, 0x8eeedc, 0x9dc6ff, 0xe8f5be],
+    clusters: [
+      [-150, 0, -34, 28],
+      [-62, 0, -70, 22],
+      [44, 0, -104, 32],
+      [132, 0, -142, 30],
+      [-132, 0, -188, 36],
+      [-24, 0, -230, 34],
+      [96, 0, -280, 38],
+      [172, 0, -338, 36],
+      [-118, 0, -388, 38],
+      [0, 0, -442, 34],
+      [124, 0, -500, 36],
+    ],
+    zones: [
+      { minZ: -90, name: "Elkhorn reef crest", depth: "9 m" },
+      { minZ: -220, name: "Staghorn nursery lane", depth: "15 m" },
+      { minZ: -365, name: "Spur-and-groove terrace", depth: "20 m" },
+      { minZ: -999, name: "Limestone hardbottom", depth: "25 m" },
+    ],
+  },
+};
 
 function seededRandom(seed = 2035) {
   let value = seed >>> 0;
@@ -247,6 +587,7 @@ function disposeMaterial(material: Material | Material[]) {
 
 export default function ReefScene({
   active = false,
+  biome = "great-barrier",
   focusId = null,
   hotspots = DEFAULT_HOTSPOTS,
   mappedIds = [],
@@ -318,6 +659,8 @@ export default function ReefScene({
     const canvas = canvasRef.current;
     if (!host || !canvas) return;
 
+    setLoaded(false);
+    setFallback(false);
     let alive = true;
     let resizeObserver: ResizeObserver | undefined;
     let release: (() => void) | undefined;
@@ -335,29 +678,52 @@ export default function ReefScene({
         const coarse = window.matchMedia("(pointer: coarse)").matches;
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         const lowPower = coarse || (navigator.hardwareConcurrency || 8) <= 4;
-        const random = seededRandom();
+        const biomeConfig = BIOME_CONFIG[biome];
+        const random = seededRandom(biomeConfig.seed);
+        const countFor = (desktop: number, mobile: number, multiplier = 1) =>
+          Math.max(1, Math.round((lowPower ? mobile : desktop) * multiplier));
         const seabedHeight = (x: number, z: number) => {
           const softRidges =
             Math.sin(x * 0.055 + z * 0.018) * 0.52 +
             Math.cos(z * 0.043) * 0.42 +
             Math.sin((x - z) * 0.032) * 0.3;
-          const swimChannel =
-            Math.max(0, 1 - Math.abs(x + z * 0.1) / 26) * -0.85;
-          const sideRise = Math.max(0, (Math.abs(x) - 86) / 68) ** 2 * 5.2;
-          const farRise = Math.max(0, (-z - 220) / 118) * 4.9;
-          const frontShelf = Math.max(0, (z - 34) / 120) * 2.6;
+          const sideRise = Math.max(0, (Math.abs(x) - 136) / 92) ** 2 * 5.6;
+          const farRise = Math.max(0, (-z - 360) / 170) * 5.2;
+          const frontShelf = Math.max(0, (z - 42) / 130) * 2.4;
 
+          if (biomeConfig.terrain === "turbid-lagoon") {
+            const lagoonChannel = Math.max(0, 1 - Math.abs(x * 0.42 + z * 0.05) / 34) * -0.95;
+            const siltBanks = Math.sin(x * 0.026 + z * 0.014) * 0.28 + Math.cos(z * 0.023) * 0.24;
+            return siltBanks + lagoonChannel + sideRise * 0.42 + farRise * 0.54 + frontShelf * 0.7 - 0.72;
+          }
+
+          if (biomeConfig.terrain === "triangle-wall") {
+            const wallDrop = -Math.max(0, (-z - 210) / 210) * 2.4;
+            const volcanicRibs =
+              Math.max(0, Math.sin((x + 18) * 0.052)) * 1.2 +
+              Math.max(0, Math.cos((z + x * 0.36) * 0.035)) * 0.9;
+            return softRidges * 1.15 + volcanicRibs + sideRise * 0.72 + farRise * 0.36 + frontShelf - 0.82 + wallDrop;
+          }
+
+          if (biomeConfig.terrain === "caribbean-spur") {
+            const groove = Math.sin((x + z * 0.16) * 0.055);
+            const spurs = Math.max(0, groove) * 1.35 - Math.max(0, -groove) * 0.72;
+            const terrace = Math.sin(z * 0.018) * 0.35;
+            return softRidges * 0.7 + spurs + terrace + sideRise * 0.62 + farRise * 0.48 + frontShelf - 0.86;
+          }
+
+          const swimChannel = Math.max(0, 1 - Math.abs(x + z * 0.1) / 32) * -0.85;
           return softRidges + swimChannel + sideRise + farRise + frontShelf - 0.9;
         };
         const renderer = new THREE.WebGPURenderer({ canvas, alpha: false, antialias: !lowPower });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowPower ? 1.15 : 1.65));
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.08;
+        renderer.toneMappingExposure = biomeConfig.exposure;
 
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x064858);
-        scene.fog = new THREE.FogExp2(0x227c8c, 0.0105);
+        scene.background = new THREE.Color(biomeConfig.background);
+        scene.fog = new THREE.FogExp2(biomeConfig.fog, biomeConfig.fogDensity);
 
         const camera = new THREE.PerspectiveCamera(64, 1, 0.1, 520);
         camera.rotation.order = "YXZ";
@@ -372,14 +738,14 @@ export default function ReefScene({
         const bottomActors: Array<{ object: Object3D; baseScale: number; offset: number }> = [];
         const textures: Array<{ dispose: () => void }> = [];
 
-        scene.add(new THREE.HemisphereLight(0xbff7ee, 0x103a4a, 1.78));
-        const sun = new THREE.DirectionalLight(0xe8fff6, 3.45);
+        scene.add(new THREE.HemisphereLight(0xbff7ee, 0x103a4a, 1.78 * biomeConfig.exposure));
+        const sun = new THREE.DirectionalLight(0xe8fff6, 3.45 * biomeConfig.exposure);
         sun.position.set(-24, 36, 18);
         world.add(sun);
-        const blueFill = new THREE.PointLight(0x37d9e4, 40, 104, 1.55);
+        const blueFill = new THREE.PointLight(0x37d9e4, 40 * biomeConfig.exposure, 124, 1.55);
         blueFill.position.set(4, 9, -18);
         world.add(blueFill);
-        const warmFill = new THREE.PointLight(0xf2a96d, 24, 54, 1.72);
+        const warmFill = new THREE.PointLight(0xf2a96d, 24 * biomeConfig.exposure, 64, 1.72);
         warmFill.position.set(22, 5, -43);
         world.add(warmFill);
 
@@ -392,7 +758,7 @@ export default function ReefScene({
         gravel.colorSpace = THREE.SRGBColorSpace;
         for (const texture of [gravel, gravelNormal, gravelArm]) {
           texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-          texture.repeat.set(36, 58);
+          texture.repeat.set(...biomeConfig.textureRepeat);
           texture.anisotropy = lowPower ? 2 : 8;
           textures.push(texture);
         }
@@ -408,7 +774,7 @@ export default function ReefScene({
         floorGeometry.computeVertexNormals();
         const floor = new THREE.Mesh(
           floorGeometry,
-          new THREE.MeshStandardMaterial({ map: gravel, normalMap: gravelNormal, aoMap: gravelArm, roughnessMap: gravelArm, metalnessMap: gravelArm, color: 0xaa9c78, roughness: 0.93, metalness: 0.02 }),
+          new THREE.MeshStandardMaterial({ map: gravel, normalMap: gravelNormal, aoMap: gravelArm, roughnessMap: gravelArm, metalnessMap: gravelArm, color: biomeConfig.floorColor, roughness: 0.93, metalness: 0.02 }),
         );
         world.add(floor);
 
@@ -440,7 +806,7 @@ export default function ReefScene({
         textures.push(causticTexture);
         const caustics = new THREE.Mesh(
           new THREE.PlaneGeometry(FLOOR_WIDTH * 0.96, FLOOR_DEPTH * 0.94),
-          new THREE.MeshBasicMaterial({ map: causticTexture, color: 0xaef5e7, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending, depthWrite: false }),
+          new THREE.MeshBasicMaterial({ map: causticTexture, color: biomeConfig.causticColor, transparent: true, opacity: biomeConfig.causticOpacity, blending: THREE.AdditiveBlending, depthWrite: false }),
         );
         caustics.rotation.x = -Math.PI / 2;
         caustics.position.set(0, -0.38, FLOOR_CENTER_Z);
@@ -477,27 +843,27 @@ export default function ReefScene({
         const waterNormals = new THREE.CanvasTexture(normalCanvas);
         waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
         textures.push(waterNormals);
-        const water = new WaterMesh(new THREE.PlaneGeometry(560, 720), {
+        const water = new WaterMesh(new THREE.PlaneGeometry(FLOOR_WIDTH * 1.42, FLOOR_DEPTH * 1.18), {
           waterNormals,
-          alpha: 0.64,
-          waterColor: 0x0d7184,
+          alpha: biomeConfig.waterAlpha,
+          waterColor: biomeConfig.waterColor,
           sunColor: 0xe6fff8,
           sunDirection: new THREE.Vector3(0.28, 0.9, 0.22).normalize(),
-          distortionScale: 4.15,
+          distortionScale: biomeConfig.waterDistortion,
           size: 0.9,
           resolutionScale: lowPower ? 0.28 : 0.56,
         });
         water.rotation.x = -Math.PI / 2;
-        water.position.set(0, 13.45, -128);
+        water.position.set(0, biomeConfig.waterY, FLOOR_CENTER_Z + 18);
         water.material.side = THREE.DoubleSide;
         world.add(water);
 
-        const surfaceParticleCount = lowPower ? 220 : 540;
+        const surfaceParticleCount = countFor(540, 220, 0.8 + biomeConfig.particleDensity * 0.22);
         const surfaceGeometry = new THREE.BufferGeometry();
         const surfacePositions = new Float32Array(surfaceParticleCount * 3);
         for (let index = 0; index < surfaceParticleCount; index += 1) {
           surfacePositions[index * 3] = (random() - 0.5) * (FLOOR_WIDTH * 0.92);
-          surfacePositions[index * 3 + 1] = 12.4 + random() * 1.35;
+          surfacePositions[index * 3 + 1] = biomeConfig.waterY - 1.05 + random() * 1.35;
           surfacePositions[index * 3 + 2] = FLOOR_CENTER_Z + (random() - 0.5) * (FLOOR_DEPTH * 0.92);
         }
         surfaceGeometry.setAttribute("position", new THREE.BufferAttribute(surfacePositions, 3));
@@ -507,14 +873,14 @@ export default function ReefScene({
         );
         world.add(surfaceGlints);
 
-        const surfaceRippleCount = lowPower ? 80 : 190;
+        const surfaceRippleCount = countFor(190, 80, 0.82 + biomeConfig.particleDensity * 0.18);
         const surfaceRippleGeometry = new THREE.BufferGeometry();
         const surfaceRipplePositions = new Float32Array(surfaceRippleCount * 6);
         for (let index = 0; index < surfaceRippleCount; index += 1) {
           const offset = index * 6;
           const length = 5 + random() * 18;
           const x = (random() - 0.5) * FLOOR_WIDTH * 0.86;
-          const y = 12.25 + random() * 1.1;
+          const y = biomeConfig.waterY - 1.2 + random() * 1.1;
           const z = FLOOR_CENTER_Z + (random() - 0.5) * FLOOR_DEPTH * 0.9;
           surfaceRipplePositions[offset] = x;
           surfaceRipplePositions[offset + 1] = y;
@@ -530,7 +896,7 @@ export default function ReefScene({
         );
         world.add(surfaceRipples);
 
-        const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x155d62, roughness: 0.98, transparent: true, opacity: 0.38, side: THREE.DoubleSide });
+        const wallMaterial = new THREE.MeshStandardMaterial({ color: biomeConfig.wallColor, roughness: 0.98, transparent: true, opacity: 0.38, side: THREE.DoubleSide });
         const makeReefWall = (width: number, height: number, wallPosition: [number, number, number], rotationY = 0) => {
           const wallGeometry = new THREE.PlaneGeometry(width, height, lowPower ? 18 : 34, 7);
           const wallPositionAttribute = wallGeometry.attributes.position;
@@ -545,9 +911,9 @@ export default function ReefScene({
           wall.rotation.y = rotationY;
           world.add(wall);
         };
-        makeReefWall(390, 38, [0, 10, -372]);
-        makeReefWall(500, 38, [-188, 9.5, -138], Math.PI / 2);
-        makeReefWall(500, 38, [188, 9.5, -138], -Math.PI / 2);
+        makeReefWall(FLOOR_WIDTH * 1.02, 44, [0, 10, FLOOR_CENTER_Z - FLOOR_DEPTH * 0.52]);
+        makeReefWall(FLOOR_DEPTH * 1.02, 44, [-FLOOR_WIDTH * 0.5, 9.5, FLOOR_CENTER_Z], Math.PI / 2);
+        makeReefWall(FLOOR_DEPTH * 1.02, 44, [FLOOR_WIDTH * 0.5, 9.5, FLOOR_CENTER_Z], -Math.PI / 2);
 
         const randomFloorPoint = (xScale = 0.9, zScale = 0.88): [number, number] => [
           (random() - 0.5) * FLOOR_WIDTH * xScale,
@@ -574,7 +940,11 @@ export default function ReefScene({
           return bladeGeometry;
         };
 
-        const rocks = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), new THREE.MeshStandardMaterial({ color: 0x3d6b62, roughness: 0.94 }), lowPower ? 150 : 330);
+        const rocks = new THREE.InstancedMesh(
+          new THREE.IcosahedronGeometry(1, 1),
+          new THREE.MeshStandardMaterial({ color: 0x3d6b62, roughness: 0.94 }),
+          countFor(330, 150, biomeConfig.rockDensity),
+        );
         const matrix = new THREE.Matrix4();
         const quaternion = new THREE.Quaternion();
         const position = new THREE.Vector3();
@@ -595,21 +965,12 @@ export default function ReefScene({
         rocks.instanceMatrix.needsUpdate = true;
         world.add(rocks);
 
-        const sponges = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.2, 0.52, 1.9, 14, 3, false), new THREE.MeshStandardMaterial({ color: 0xc9945e, roughness: 0.75 }), lowPower ? 105 : 230);
-        const clusters: Array<[number, number, number, number]> = [
-          [-18, 0, -18, 14],
-          [38, 0, -36, 18],
-          [-58, 0, -52, 22],
-          [80, 0, -82, 26],
-          [-92, 0, -102, 30],
-          [-18, 0, -128, 28],
-          [58, 0, -154, 34],
-          [-118, 0, -194, 38],
-          [18, 0, -224, 36],
-          [104, 0, -254, 42],
-          [-64, 0, -296, 44],
-          [58, 0, -336, 38],
-        ];
+        const sponges = new THREE.InstancedMesh(
+          new THREE.CylinderGeometry(0.2, 0.52, 1.9, 14, 3, false),
+          new THREE.MeshStandardMaterial({ color: 0xc9945e, roughness: 0.75 }),
+          countFor(230, 105, biomeConfig.spongeDensity),
+        );
+        const clusters = biomeConfig.clusters;
         for (let index = 0; index < sponges.count; index += 1) {
           const cluster = clusters[index % clusters.length];
           const theta = random() * Math.PI * 2;
@@ -626,7 +987,11 @@ export default function ReefScene({
         sponges.instanceMatrix.needsUpdate = true;
         world.add(sponges);
 
-        const grass = new THREE.InstancedMesh(makeBladeGeometry(2.35, 0.105, 0.11, 5), new THREE.MeshStandardMaterial({ color: 0x2aa67d, roughness: 0.84, transparent: true, opacity: 0.66, side: THREE.DoubleSide }), lowPower ? 430 : 980);
+        const grass = new THREE.InstancedMesh(
+          makeBladeGeometry(2.35, 0.105, 0.11, 5),
+          new THREE.MeshStandardMaterial({ color: biomeConfig.grassColor, roughness: 0.84, transparent: true, opacity: 0.66, side: THREE.DoubleSide }),
+          countFor(980, 430, biomeConfig.grassDensity),
+        );
         for (let index = 0; index < grass.count; index += 1) {
           const meadow = index % 4 === 0;
           const [fieldX, fieldZ] = randomFloorPoint(meadow ? 0.82 : 0.95, meadow ? 0.78 : 0.92);
@@ -646,7 +1011,7 @@ export default function ReefScene({
         const kelp = new THREE.InstancedMesh(
           makeBladeGeometry(5.4, 0.26, 0.34, 8),
           new THREE.MeshStandardMaterial({ color: 0x5e9f6d, roughness: 0.82, transparent: true, opacity: 0.46, side: THREE.DoubleSide }),
-          lowPower ? 115 : 280,
+          countFor(280, 115, biomeConfig.kelpDensity),
         );
         for (let index = 0; index < kelp.count; index += 1) {
           const cluster = clusters[(index + 4) % clusters.length];
@@ -660,7 +1025,7 @@ export default function ReefScene({
           scale.set(0.58 + random() * 0.85, height, 1);
           matrix.compose(position, quaternion, scale);
           kelp.setMatrixAt(index, matrix);
-          reefColor.setHSL(0.31 + random() * 0.07, 0.35 + random() * 0.18, 0.32 + random() * 0.13);
+          reefColor.setHSL(biomeConfig.kelpHue + random() * 0.07, 0.35 + random() * 0.18, 0.32 + random() * 0.13);
           kelp.setColorAt(index, reefColor);
         }
         kelp.instanceMatrix.needsUpdate = true;
@@ -670,7 +1035,7 @@ export default function ReefScene({
         const coralHeads = new THREE.InstancedMesh(
           new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2),
           new THREE.MeshStandardMaterial({ color: 0xe3a96d, roughness: 0.86 }),
-          lowPower ? 115 : 260,
+          countFor(260, 115, biomeConfig.coralHeadDensity),
         );
         for (let index = 0; index < coralHeads.count; index += 1) {
           const cluster = clusters[(index + 2) % clusters.length];
@@ -684,7 +1049,7 @@ export default function ReefScene({
           scale.set(size * (0.9 + random() * 0.45), size * (0.36 + random() * 0.24), size * (0.82 + random() * 0.52));
           matrix.compose(position, quaternion, scale);
           coralHeads.setMatrixAt(index, matrix);
-          reefColor.setHSL(0.055 + random() * 0.09, 0.46 + random() * 0.2, 0.46 + random() * 0.16);
+          reefColor.setHSL(biomeConfig.coralHue + random() * 0.09, 0.46 + random() * 0.2, 0.46 + random() * 0.16);
           coralHeads.setColorAt(index, reefColor);
         }
         coralHeads.instanceMatrix.needsUpdate = true;
@@ -694,7 +1059,7 @@ export default function ReefScene({
         const seaFans = new THREE.InstancedMesh(
           new THREE.PlaneGeometry(1, 1.8, 1, 5),
           new THREE.MeshStandardMaterial({ color: 0x35c8a2, roughness: 0.8, transparent: true, opacity: 0.68, side: THREE.DoubleSide }),
-          lowPower ? 90 : 210,
+          countFor(210, 90, biomeConfig.seaFanDensity),
         );
         for (let index = 0; index < seaFans.count; index += 1) {
           const [x, z] = randomFloorPoint(0.82, 0.86);
@@ -704,7 +1069,7 @@ export default function ReefScene({
           scale.set(0.65 + random() * 0.9, height, 1);
           matrix.compose(position, quaternion, scale);
           seaFans.setMatrixAt(index, matrix);
-          reefColor.setHSL(0.39 + random() * 0.1, 0.5 + random() * 0.2, 0.42 + random() * 0.16);
+          reefColor.setHSL(biomeConfig.seaFanHue + random() * 0.1, 0.5 + random() * 0.2, 0.42 + random() * 0.16);
           seaFans.setColorAt(index, reefColor);
         }
         seaFans.instanceMatrix.needsUpdate = true;
@@ -714,7 +1079,7 @@ export default function ReefScene({
         const softPolyps = new THREE.InstancedMesh(
           new THREE.CylinderGeometry(0.06, 0.1, 0.72, 6),
           new THREE.MeshStandardMaterial({ color: 0xc97fb7, roughness: 0.8, transparent: true, opacity: 0.72 }),
-          lowPower ? 210 : 520,
+          countFor(520, 210, biomeConfig.softPolypDensity),
         );
         for (let index = 0; index < softPolyps.count; index += 1) {
           const cluster = clusters[(index + 7) % clusters.length];
@@ -735,20 +1100,25 @@ export default function ReefScene({
         if (softPolyps.instanceColor) softPolyps.instanceColor.needsUpdate = true;
         world.add(softPolyps);
 
+        const ambientScanColonies =
+          BIOME_AMBIENT_SCAN_COLONIES[biome] ?? AMBIENT_SCAN_COLONIES;
         const visibleAmbientScans = lowPower
-          ? [...AMBIENT_SCAN_COLONIES.slice(0, 10), ...AMBIENT_SCAN_COLONIES.slice(-6)]
-          : AMBIENT_SCAN_COLONIES;
+          ? [
+              ...ambientScanColonies.slice(0, Math.min(10, ambientScanColonies.length)),
+              ...ambientScanColonies.slice(-6),
+            ]
+          : ambientScanColonies;
         const particleHosts = [
           ...hotspotsRef.current,
           ...visibleAmbientScans,
         ];
-        const lifeParticleCount = lowPower ? 1150 : 2900;
+        const lifeParticleCount = countFor(2900, 1150, biomeConfig.lifeDensity);
         const lifeGeometry = new THREE.BufferGeometry();
         const lifePositions = new Float32Array(lifeParticleCount * 3);
         const lifeBase = new Float32Array(lifeParticleCount * 3);
         const lifeMeta = new Float32Array(lifeParticleCount * 4);
         const lifeColors = new Float32Array(lifeParticleCount * 3);
-        const livingPalette = [0xffa889, 0xffd36e, 0x7bf5d2, 0xc98fff, 0xeaffb7];
+        const livingPalette = biomeConfig.lifePalette;
         for (let index = 0; index < lifeParticleCount; index += 1) {
           const hotspot = particleHosts[index % particleHosts.length] || DEFAULT_HOTSPOTS[0];
           const theta = random() * Math.PI * 2;
@@ -885,10 +1255,10 @@ export default function ReefScene({
           scaleMax: number;
           speed: number;
         }> = [
-          { src: "/models/barramundi-fish.glb", count: lowPower ? 10 : 22, fit: 2.2, rotationY: Math.PI / 2, scaleMin: 0.55, scaleMax: 1.2, speed: 0.12 },
-          { src: "/models/smithsonian-diodon-hystrix.glb", count: lowPower ? 3 : 7, fit: 1.45, rotationY: Math.PI / 2, scaleMin: 0.86, scaleMax: 1.28, speed: 0.09 },
-          { src: "/models/smithsonian-lactophrys-bicaudalis.glb", count: lowPower ? 3 : 7, fit: 1.25, rotationY: Math.PI / 2, scaleMin: 0.82, scaleMax: 1.18, speed: 0.105 },
-          { src: "/models/smithsonian-linckia-laevigata.glb", count: lowPower ? 5 : 13, fit: 2, rotationY: 0, floor: true, scaleMin: 0.72, scaleMax: 1.18, speed: 0.02 },
+          { src: "/models/barramundi-fish.glb", count: countFor(22, 10, biomeConfig.fishDensity), fit: 2.2, rotationY: Math.PI / 2, scaleMin: 0.55, scaleMax: 1.2, speed: 0.12 },
+          { src: "/models/smithsonian-diodon-hystrix.glb", count: countFor(7, 3, biomeConfig.fishDensity * 0.9), fit: 1.45, rotationY: Math.PI / 2, scaleMin: 0.86, scaleMax: 1.28, speed: 0.09 },
+          { src: "/models/smithsonian-lactophrys-bicaudalis.glb", count: countFor(7, 3, biomeConfig.fishDensity), fit: 1.25, rotationY: Math.PI / 2, scaleMin: 0.82, scaleMax: 1.18, speed: 0.105 },
+          { src: "/models/smithsonian-linckia-laevigata.glb", count: countFor(13, 5, biomeConfig.bottomLifeDensity), fit: 2, rotationY: 0, floor: true, scaleMin: 0.72, scaleMax: 1.18, speed: 0.02 },
         ];
         await Promise.allSettled(
           creatureAssets.map(async (asset) => {
@@ -934,7 +1304,7 @@ export default function ReefScene({
           }),
         );
 
-        const particleCount = lowPower ? 1250 : 3200;
+        const particleCount = countFor(3200, 1250, biomeConfig.particleDensity);
         const particleGeometry = new THREE.BufferGeometry();
         const particlePositions = new Float32Array(particleCount * 3);
         for (let index = 0; index < particleCount; index += 1) {
@@ -1038,11 +1408,12 @@ export default function ReefScene({
         callbacksRef.current.onReady?.();
         setLoaded(true);
 
+        const baseFog = new THREE.Color(biomeConfig.fog);
         const phaseColors = {
-          healthy: { fog: new THREE.Color(0x218390), density: 0.013, wash: new THREE.Color(0xd69c79), blend: 0.02, life: 0.74 },
-          heat: { fog: new THREE.Color(0x3f7f86), density: 0.015, wash: new THREE.Color(0xf09b70), blend: 0.2, life: 0.54 },
-          bleaching: { fog: new THREE.Color(0x6f939b), density: 0.017, wash: new THREE.Color(0xe8ddcc), blend: 0.72, life: 0.3 },
-          recovery: { fog: new THREE.Color(0x288f83), density: 0.012, wash: new THREE.Color(0x92c487), blend: 0.09, life: 0.8 },
+          healthy: { fog: baseFog.clone(), density: biomeConfig.fogDensity, wash: new THREE.Color(0xd69c79), blend: 0.02, life: 0.74 },
+          heat: { fog: baseFog.clone().lerp(new THREE.Color(0x8e7968), 0.28), density: biomeConfig.fogDensity + 0.002, wash: new THREE.Color(0xf09b70), blend: 0.2, life: 0.54 },
+          bleaching: { fog: baseFog.clone().lerp(new THREE.Color(0xa7aaa1), 0.42), density: biomeConfig.fogDensity + 0.004, wash: new THREE.Color(0xe8ddcc), blend: 0.72, life: 0.3 },
+          recovery: { fog: baseFog.clone().lerp(new THREE.Color(0x4cae87), 0.26), density: Math.max(0.007, biomeConfig.fogDensity - 0.001), wash: new THREE.Color(0x92c487), blend: 0.09, life: 0.8 },
         };
         const targetColor = new THREE.Color();
         const spotVector = new THREE.Vector3();
@@ -1156,16 +1527,11 @@ export default function ReefScene({
           }
 
           const nextZone =
-            camera.position.z > -70
-              ? ["Current Gate", "14 m"]
-              : camera.position.z > -170
-                ? ["Coral Slope", "18 m"]
-                : camera.position.z > -255
-                  ? ["Archive Garden", "22 m"]
-                  : ["Blue Edge", "25 m"];
-          if (nextZone[0] !== nav.zone) {
-            nav.zone = nextZone[0];
-            callbacksRef.current.onZoneChange?.(nextZone[0], nextZone[1]);
+            biomeConfig.zones.find((zone) => camera.position.z > zone.minZ) ??
+            biomeConfig.zones[biomeConfig.zones.length - 1];
+          if (nextZone.name !== nav.zone) {
+            nav.zone = nextZone.name;
+            callbacksRef.current.onZoneChange?.(nextZone.name, nextZone.depth);
           }
 
           const width = host.clientWidth;
@@ -1223,7 +1589,7 @@ export default function ReefScene({
       release?.();
       resizeObserver?.disconnect();
     };
-  }, [activatedOnce]);
+  }, [activatedOnce, biome]);
 
   const useFallbackMarkers = fallback && active;
 

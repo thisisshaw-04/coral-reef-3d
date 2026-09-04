@@ -149,3 +149,11 @@ test("uses an animated Frutiger Aero timeline without a harsh selected block", a
   assert.match(css, /\.time-current nav button i\s*{[\s\S]*?radial-gradient\(circle at 34% 28%, #ffffff/);
   assert.match(css, /@keyframes timeline-orb-breathe/);
 });
+
+test("keeps intro action capsules the same width", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v18 - equal intro action capsules/);
+  assert.match(css, /\.entry-actions\s*{[\s\S]*?grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+  assert.match(css, /\.begin-button,[\s\S]*?\.expedition-entry form\s*{[\s\S]*?width: 100%/);
+});

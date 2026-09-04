@@ -298,3 +298,17 @@ test("uses DHW-informed timeline and species-specific bleaching response", async
   assert.match(scene, /profile\.recovery \* 0\.16/);
   assert.match(scene, /currentPhase\.structureLoss \* \(profile\?\.sensitivity/);
 });
+
+test("keeps the live mission masthead compact and aligned", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(page, /<span>REEF RELAY<\/span>/);
+  assert.doesNotMatch(page, /REEF RELAY<small>Living Reef Lab<\/small>/);
+  assert.match(page, /EXPEDITION 01 · \{selected \? selected\.zone : activeWorld\.expedition\}/);
+  assert.match(page, /MOVE FREELY · SELECT A RESEARCH-BASED COLONY/);
+  assert.match(css, /v28 - compact aligned mission masthead/);
+  assert.match(css, /\.mission-brand span\s*{[\s\S]*?font-weight: 360/);
+  assert.match(css, /\.sub-title\s*{[\s\S]*?top: clamp\(76px, 8vh, 98px\)/);
+  assert.match(css, /\.sub-title strong\s*{[\s\S]*?font-weight: 360/);
+});

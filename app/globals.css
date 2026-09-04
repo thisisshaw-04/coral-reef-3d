@@ -6781,3 +6781,69 @@ a:focus-visible,
     height: 60px;
   }
 }
+
+/* v28 - compact aligned mission masthead */
+.mission-brand {
+  align-items: center;
+  gap: clamp(10px, 0.9vw, 14px);
+  line-height: 1;
+}
+
+.mission-brand > svg {
+  width: clamp(26px, 2.1vw, 36px);
+  height: clamp(26px, 2.1vw, 36px);
+  translate: 0 1px;
+}
+
+.mission-brand span {
+  display: inline-flex;
+  align-items: center;
+  color: #ffffff;
+  font-family: var(--reef-ui-font);
+  font-size: clamp(26px, 2.7vw, 44px);
+  font-weight: 360;
+  letter-spacing: 0.22em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.mission-brand small,
+.sub-title small {
+  display: none !important;
+}
+
+.sub-title {
+  top: clamp(76px, 8vh, 98px);
+  gap: 8px;
+  line-height: 1.1;
+}
+
+.sub-title span {
+  color: rgb(255 255 255 / 0.72);
+  font-family: var(--reef-ui-font);
+  font-size: clamp(10px, 0.78vw, 13px);
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  line-height: 1.15;
+}
+
+.sub-title strong {
+  color: rgb(255 255 255 / 0.82);
+  font-family: var(--reef-ui-font);
+  font-size: clamp(11px, 0.92vw, 15px);
+  font-weight: 360;
+  letter-spacing: 0.2em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .mission-brand {
+    display: none;
+  }
+
+  .sub-title {
+    top: 64px;
+    width: min(560px, calc(100vw - 32px));
+  }
+}

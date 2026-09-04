@@ -256,9 +256,7 @@ export default function Home() {
         </button>
         <div className="mission-brand">
           <Waves />
-          <span>
-            REEF RELAY<small>Living Reef Lab</small>
-          </span>
+          <span>REEF RELAY</span>
         </div>
         <div className="mission-room">
           <span>
@@ -386,13 +384,14 @@ export default function Home() {
       {entered && !showBriefing && (
         <>
           <div className="sub-title">
-            <span>EXPEDITION 01</span>
-            <strong>{selected ? selected.zone : activeWorld.expedition}</strong>
-            <small>
+            <span>
+              EXPEDITION 01 · {selected ? selected.zone : activeWorld.expedition}
+            </span>
+            <strong>
               {selected
                 ? selected.species
-                : "Move freely · select a research-based colony"}
-            </small>
+                : "MOVE FREELY · SELECT A RESEARCH-BASED COLONY"}
+            </strong>
           </div>
           <div className="diver-cursors" aria-hidden="true">
             {room.explorers.slice(0, 3).map((diver, index) => (

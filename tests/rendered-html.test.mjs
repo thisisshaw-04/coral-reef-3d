@@ -100,3 +100,13 @@ test("keeps the frosted specimen panel scrollbar invisible", async () => {
   assert.match(css, /\.specimen-monitor\s*{[\s\S]*?-ms-overflow-style: none/);
   assert.match(css, /\.specimen-monitor::-webkit-scrollbar\s*{[\s\S]*?display: none/);
 });
+
+test("rounds the crew-code join control as a single capsule", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v14 - polished crew-code capsule/);
+  assert.match(css, /\.expedition-entry form\s*{[\s\S]*?gap: 8px/);
+  assert.match(css, /\.expedition-entry form\s*{[\s\S]*?padding: 8px/);
+  assert.match(css, /\.expedition-entry form button\s*{[\s\S]*?border-radius: 999px/);
+  assert.match(css, /\.expedition-entry form button\s*{[\s\S]*?min-height: 56px/);
+});

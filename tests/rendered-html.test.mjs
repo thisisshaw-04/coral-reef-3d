@@ -79,3 +79,16 @@ test("styles the time current as a smooth y2k glass timeline", async () => {
   assert.match(css, /timeline-dot-pulse/);
   assert.match(css, /\.time-current nav::after[\s\S]*?width: var\(--timeline-fill\)/);
 });
+
+test("uses a white frosted glass HUD instead of blue panels", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v13 - white frosted glass HUD/);
+  assert.match(css, /--frost-fill: rgb\(255 255 255 \/ 0\.15\)/);
+  assert.match(css, /--frost-warm: rgb\(255 255 255 \/ 0\.94\)/);
+  assert.match(css, /--hud: #ffffff/);
+  assert.match(css, /\.world-drawer,[\s\S]*?\.expedition-entry\s*{/);
+  assert.match(css, /backdrop-filter: blur\(34px\) saturate\(1\.12\) brightness\(1\.03\)/);
+  assert.match(css, /border: 0;[\s\S]*?linear-gradient\(135deg, rgb\(255 255 255 \/ 0\.19\)/);
+  assert.match(css, /\.guide-toggle,[\s\S]*?\.stress-trigger\s*{[\s\S]*?color: #ffffff !important/);
+});

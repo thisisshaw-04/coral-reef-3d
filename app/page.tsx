@@ -277,24 +277,26 @@ export default function Home() {
             Explore, annotate and restore a shared reef, then move through time
             to see what survives.
           </p>
-          <button type="button" className="begin-button" onClick={() => begin()}>
-            BEGIN EXPEDITION <Waves />
-          </button>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              begin(joinCode);
-            }}
-          >
-            <input
-              value={joinCode}
-              onChange={(event) => setJoinCode(event.target.value)}
-              placeholder="JOIN CREW CODE"
-              aria-label="Crew code"
-              maxLength={6}
-            />
-            <button>JOIN</button>
-          </form>
+          <div className="entry-actions">
+            <button type="button" className="begin-button" onClick={() => begin()}>
+              BEGIN EXPEDITION <Waves />
+            </button>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                begin(joinCode);
+              }}
+            >
+              <input
+                value={joinCode}
+                onChange={(event) => setJoinCode(event.target.value)}
+                placeholder="JOIN CREW CODE"
+                aria-label="Crew code"
+                maxLength={6}
+              />
+              <button>JOIN</button>
+            </form>
+          </div>
           <small>REAL 3D SCANS · LIVE COLLABORATION · AI FIELD GUIDE</small>
         </section>
       )}

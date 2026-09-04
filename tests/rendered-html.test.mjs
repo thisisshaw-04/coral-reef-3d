@@ -34,3 +34,13 @@ test("uses a broader scan-based coral survey without cone light meshes", async (
   assert.match(scene, /AMBIENT_SCAN_COLONIES/);
   assert.doesNotMatch(scene, /ConeGeometry\(5 \+ random\(\) \* 9, 62/);
 });
+
+test("uses the clean Google Sans entry action system", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(page, /className="entry-actions"/);
+  assert.match(css, /--reef-ui-font: "Google Sans"/);
+  assert.match(css, /\.entry-actions\s*{[^}]*grid-template-columns:/s);
+  assert.match(css, /\.expedition-entry h1[\s\S]*?font-weight: 500/);
+});

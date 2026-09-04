@@ -211,3 +211,13 @@ test("anchors scan colonies to the seabed instead of fixed floating heights", as
   assert.match(scene, /const lowFlatDisplayBase =/);
   assert.doesNotMatch(scene, /pedestal\.position\.set\(\.\.\.hotspot\.position\)/);
 });
+
+test("uses a lighter field objective type hierarchy", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v24 - clean field objective type hierarchy/);
+  assert.match(css, /\.field-lesson strong\s*{[\s\S]*?font-weight: 360/);
+  assert.match(css, /\.field-lesson strong\s*{[\s\S]*?letter-spacing: 0/);
+  assert.match(css, /\.field-lesson p\s*{[\s\S]*?font-weight: 300/);
+  assert.match(css, /\.field-lesson > small\s*{[\s\S]*?font-size: clamp\(12px, 1vw, 15px\)/);
+});

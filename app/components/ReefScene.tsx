@@ -5,11 +5,16 @@ import { ArrowUp, Check } from "lucide-react";
 import type { Color, Material, Mesh, Object3D } from "three";
 
 export type ReefPhase = "healthy" | "heat" | "bleaching" | "recovery";
+export type ScanAssetKey = "acro-table" | "acro-compact" | "massive-star";
 
 export type ReefSceneHotspot = {
   id: string;
   label: string;
   position: [number, number, number];
+  scan?: ScanAssetKey;
+  size?: number;
+  tint?: number;
+  yaw?: number;
 };
 
 type ReefSceneProps = {
@@ -34,7 +39,7 @@ const DEFAULT_HOTSPOTS: ReefSceneHotspot[] = [
   { id: "massive-star", label: "Colony C", position: [24, 2.7, -47] },
 ];
 
-const SCANS: Record<string, { desktop: string; mobile: string; size: number; tint: number }> = {
+const SCANS: Record<ScanAssetKey, { desktop: string; mobile: string; size: number; tint: number }> = {
   "acro-table": {
     desktop: "/models/acropora-hyacinthus.glb",
     mobile: "/models/acropora-hyacinthus-mobile.glb",
@@ -59,7 +64,35 @@ const FALLBACK_POSITIONS: Record<string, { left: string; top: string }> = {
   "acro-table": { left: "35%", top: "59%" },
   "acro-compact": { left: "59%", top: "55%" },
   "massive-star": { left: "76%", top: "51%" },
+  "acro-table-backreef": { left: "27%", top: "53%" },
+  "acro-table-rim": { left: "46%", top: "48%" },
+  "acro-table-current": { left: "69%", top: "61%" },
+  "acro-compact-bommie": { left: "22%", top: "67%" },
+  "acro-compact-surge": { left: "42%", top: "66%" },
+  "acro-compact-lagoon": { left: "83%", top: "57%" },
+  "massive-star-dome": { left: "57%", top: "44%" },
+  "massive-star-ledge": { left: "73%", top: "47%" },
+  "massive-star-archive": { left: "64%", top: "70%" },
 };
+
+const AMBIENT_SCAN_COLONIES: ReefSceneHotspot[] = [
+  { id: "nursery-scan-01", label: "Nursery scan", scan: "acro-table", position: [-42, 2.2, -18], size: 4.8, tint: 0xf0a879, yaw: -0.55 },
+  { id: "nursery-scan-02", label: "Nursery scan", scan: "acro-compact", position: [-25, 2.1, -34], size: 4.2, tint: 0xdf8872, yaw: 0.72 },
+  { id: "nursery-scan-03", label: "Nursery scan", scan: "massive-star", position: [33, 2.4, -23], size: 4.9, tint: 0xdcbf86, yaw: -0.18 },
+  { id: "nursery-scan-04", label: "Nursery scan", scan: "acro-table", position: [48, 2.5, -39], size: 5.4, tint: 0xf5b383, yaw: 0.48 },
+  { id: "nursery-scan-05", label: "Nursery scan", scan: "acro-compact", position: [-57, 2.4, -58], size: 4.9, tint: 0xe2776d, yaw: -0.35 },
+  { id: "nursery-scan-06", label: "Nursery scan", scan: "massive-star", position: [-5, 2.3, -63], size: 4.5, tint: 0xe3c987, yaw: 0.8 },
+  { id: "nursery-scan-07", label: "Nursery scan", scan: "acro-table", position: [65, 2.8, -70], size: 6.1, tint: 0xec9f73, yaw: -0.92 },
+  { id: "nursery-scan-08", label: "Nursery scan", scan: "acro-compact", position: [18, 2.4, -82], size: 4.7, tint: 0xe88f7b, yaw: 0.16 },
+  { id: "nursery-scan-09", label: "Nursery scan", scan: "massive-star", position: [-72, 2.8, -91], size: 5.6, tint: 0xd3be8c, yaw: -1.1 },
+  { id: "nursery-scan-10", label: "Nursery scan", scan: "acro-table", position: [-22, 2.9, -104], size: 6.4, tint: 0xf1a46f, yaw: 0.42 },
+  { id: "nursery-scan-11", label: "Nursery scan", scan: "acro-compact", position: [44, 2.8, -112], size: 5.1, tint: 0xdb7c72, yaw: -0.2 },
+  { id: "nursery-scan-12", label: "Nursery scan", scan: "massive-star", position: [82, 3, -126], size: 5.8, tint: 0xe1cb92, yaw: 0.34 },
+  { id: "nursery-scan-13", label: "Nursery scan", scan: "acro-table", position: [-61, 3.2, -135], size: 6.8, tint: 0xf3b07d, yaw: -0.68 },
+  { id: "nursery-scan-14", label: "Nursery scan", scan: "acro-compact", position: [-8, 3.1, -147], size: 5.5, tint: 0xe48975, yaw: 1.02 },
+  { id: "nursery-scan-15", label: "Nursery scan", scan: "massive-star", position: [38, 3.3, -158], size: 6.2, tint: 0xd9c38b, yaw: -0.48 },
+  { id: "nursery-scan-16", label: "Nursery scan", scan: "acro-table", position: [75, 3.4, -170], size: 6.5, tint: 0xefa978, yaw: 0.95 },
+];
 
 const WORLD_BOUNDS = {
   x: 96,
@@ -220,6 +253,7 @@ export default function ReefScene({
         scene.add(world);
         const livingMaterials: Array<{ material: Material & { color?: Color; emissive?: Color }; base: Color; hotspotId: string }> = [];
         const coralTargets: Object3D[] = [];
+        const animatedCorals: Object3D[] = [];
         const fishActors: Array<{ object: Object3D; offset: number; lane: number; depth: number }> = [];
         const textures: Array<{ dispose: () => void }> = [];
 
@@ -332,15 +366,6 @@ export default function ReefScene({
         water.position.set(0, 13.2, -72);
         water.material.side = THREE.DoubleSide;
         world.add(water);
-
-        const rayMaterial = new THREE.MeshBasicMaterial({ color: 0xaef5e8, transparent: true, opacity: lowPower ? 0.027 : 0.044, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
-        for (let index = 0; index < (lowPower ? 7 : 15); index += 1) {
-          const ray = new THREE.Mesh(new THREE.ConeGeometry(5 + random() * 9, 62, 24, 1, true), rayMaterial);
-          ray.position.set(-82 + index * 13 + random() * 9, 27, 10 - random() * 178);
-          ray.rotation.z = (random() - 0.5) * 0.14;
-          ray.rotation.x = Math.PI;
-          world.add(ray);
-        }
 
         const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x155d62, roughness: 0.98, transparent: true, opacity: 0.38, side: THREE.DoubleSide });
         const makeReefWall = (width: number, height: number, wallPosition: [number, number, number], rotationY = 0) => {
@@ -511,21 +536,37 @@ export default function ReefScene({
         dracoLoader.preload();
         const gltfLoader = new GLTFLoader();
         gltfLoader.setDRACOLoader(dracoLoader);
+        const scanTemplatePromises = new Map<ScanAssetKey, Promise<Object3D>>();
 
-        const loadCoral = async (hotspot: ReefSceneHotspot) => {
-          const asset = SCANS[hotspot.id];
-          if (!asset) return;
-          const gltf = await gltfLoader.loadAsync(lowPower ? asset.mobile : asset.desktop);
+        const getScanTemplate = (scanKey: ScanAssetKey) => {
+          const existing = scanTemplatePromises.get(scanKey);
+          if (existing) return existing;
+
+          const asset = SCANS[scanKey];
+          const promise = gltfLoader.loadAsync(lowPower ? asset.mobile : asset.desktop).then((gltf) => {
+            const template = gltf.scene;
+            const bounds = new THREE.Box3().setFromObject(template);
+            const templateSize = bounds.getSize(new THREE.Vector3());
+            const center = bounds.getCenter(new THREE.Vector3());
+            const fit = 1 / Math.max(templateSize.x, templateSize.y, templateSize.z, 0.001);
+            template.scale.setScalar(fit);
+            template.position.copy(center.multiplyScalar(-fit));
+            return template;
+          });
+          scanTemplatePromises.set(scanKey, promise);
+          return promise;
+        };
+
+        const placeScanColony = async (hotspot: ReefSceneHotspot, interactive: boolean) => {
+          const scanKey = hotspot.scan ?? (hotspot.id in SCANS ? hotspot.id as ScanAssetKey : "acro-table");
+          const asset = SCANS[scanKey];
+          const template = await getScanTemplate(scanKey);
           if (!alive) return;
-          const model = gltf.scene;
-          const bounds = new THREE.Box3().setFromObject(model);
-          const size = bounds.getSize(new THREE.Vector3());
-          const center = bounds.getCenter(new THREE.Vector3());
-          const fit = asset.size / Math.max(size.x, size.y, size.z, 0.001);
-          model.scale.setScalar(fit);
-          model.position.copy(center.multiplyScalar(-fit));
+          const model = template.clone(true);
+          const tint = hotspot.tint ?? asset.tint;
           model.traverse((object) => {
             object.userData.hotspotId = hotspot.id;
+            object.userData.scanKey = scanKey;
             if (!isMesh(object)) return;
             object.receiveShadow = true;
             const source = Array.isArray(object.material) ? object.material : [object.material];
@@ -534,7 +575,7 @@ export default function ReefScene({
             for (const material of cloned) {
               const living = material as Material & { color?: Color; emissive?: Color; roughness?: number; metalness?: number };
               if (!living.color) continue;
-              living.color.setHex(asset.tint);
+              living.color.setHex(tint);
               if (living.emissive) living.emissive.setHex(0x231008);
               if (typeof living.roughness === "number") living.roughness = Math.max(0.5, living.roughness);
               if (typeof living.metalness === "number") living.metalness = 0;
@@ -544,13 +585,22 @@ export default function ReefScene({
           const pedestal = new THREE.Group();
           pedestal.name = hotspot.id;
           pedestal.userData.hotspotId = hotspot.id;
+          pedestal.userData.baseScale = hotspot.size ?? asset.size;
+          pedestal.userData.animOffset = random() * Math.PI * 2;
           pedestal.position.set(...hotspot.position);
-          pedestal.rotation.y = hotspot.id === "massive-star" ? -0.7 : 0.35;
+          pedestal.rotation.y = hotspot.yaw ?? (scanKey === "massive-star" ? -0.7 : 0.35);
+          pedestal.scale.setScalar(pedestal.userData.baseScale as number);
           pedestal.add(model);
-          coralTargets.push(pedestal);
+          animatedCorals.push(pedestal);
+          if (interactive) coralTargets.push(pedestal);
           world.add(pedestal);
         };
-        await Promise.allSettled(hotspotsRef.current.map(loadCoral));
+        await Promise.allSettled(hotspotsRef.current.map((hotspot) => placeScanColony(hotspot, true)));
+        await Promise.allSettled(
+          AMBIENT_SCAN_COLONIES.slice(0, lowPower ? 8 : AMBIENT_SCAN_COLONIES.length).map((hotspot) =>
+            placeScanColony(hotspot, false),
+          ),
+        );
 
         try {
           const fishGltf = await gltfLoader.loadAsync("/models/barramundi-fish.glb");
@@ -710,9 +760,11 @@ export default function ReefScene({
           particles.position.x = Math.sin(elapsed * 0.04) * 6;
           grass.rotation.z = reduced ? 0 : Math.sin(elapsed * 0.42) * 0.014;
           seaFans.rotation.z = reduced ? 0 : Math.sin(elapsed * 0.28) * 0.012;
-          coralTargets.forEach((target, index) => {
-            const pulse = reduced ? 1 : 1 + Math.sin(elapsed * 0.8 + index * 1.7) * 0.008;
-            target.scale.setScalar(pulse);
+          animatedCorals.forEach((target, index) => {
+            const baseScale = typeof target.userData.baseScale === "number" ? target.userData.baseScale : 1;
+            const animOffset = typeof target.userData.animOffset === "number" ? target.userData.animOffset : index * 1.7;
+            const pulse = reduced ? 1 : 1 + Math.sin(elapsed * 0.8 + animOffset) * 0.008;
+            target.scale.setScalar(baseScale * pulse);
           });
           if (!reduced) {
             for (let index = 0; index < lifeParticleCount; index += 1) {

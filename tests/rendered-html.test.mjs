@@ -21,3 +21,16 @@ test("keeps live voice gated behind explicit server configuration", async () => 
   assert.match(route, /gpt-realtime-2\.1/);
   assert.match(route, /REALTIME_NOT_CONFIGURED/);
 });
+
+test("uses a broader scan-based coral survey without cone light meshes", async () => {
+  const data = await readFile(new URL("../app/reef-data.ts", import.meta.url), "utf8");
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+  const colonyCount = data.match(/label: "Colony /g)?.length ?? 0;
+
+  assert.ok(colonyCount >= 12);
+  assert.match(data, /scan: "acro-table"/);
+  assert.match(data, /scan: "acro-compact"/);
+  assert.match(data, /scan: "massive-star"/);
+  assert.match(scene, /AMBIENT_SCAN_COLONIES/);
+  assert.doesNotMatch(scene, /ConeGeometry\(5 \+ random\(\) \* 9, 62/);
+});

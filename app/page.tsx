@@ -38,7 +38,7 @@ const briefingSteps = [
     label: "MISSION BRIEFING 01",
     title: "You are entering a simulated reef nursery.",
     body: "Reef Relay uses real digitized coral scans inside a model reef. The readings are educational, not live field data.",
-    points: ["Find glowing colonies", "Look at shape first", "Treat every ID as evidence-based"],
+    points: ["Find scanned colonies", "Look at shape first", "Treat every ID as evidence-based"],
   },
   {
     label: "MISSION BRIEFING 02",
@@ -95,14 +95,14 @@ export default function Home() {
     setShowBriefing(true);
     setBriefingStep(0);
     guide.announce(
-      "Welcome aboard. Start with the mission briefing, then choose a glowing colony.",
+      "Welcome aboard. Start with the mission briefing, then choose any scanned colony.",
     );
   };
 
   const finishBriefing = () => {
     setShowBriefing(false);
     guide.announce(
-      "Mission started. Scan one colony, mark its health, then compare the reef through time.",
+      "Mission started. Scan several colonies, mark their health, then compare the reef through time.",
     );
   };
 
@@ -355,7 +355,7 @@ export default function Home() {
             <small>
               {selected
                 ? selected.species
-                : "Move freely · select a glowing colony"}
+                : "Move freely · select a scanned colony"}
             </small>
           </div>
           <div className="diver-cursors" aria-hidden="true">
@@ -379,10 +379,10 @@ export default function Home() {
           {!selected && (
             <aside className="field-lesson">
               <span>FIELD OBJECTIVE</span>
-              <strong>Map three living colonies</strong>
+              <strong>Survey {colonies.length} scanned colonies</strong>
               <p>
-                Start with a glowing marker. Scan shape, mark health, then use
-                the time current to ask what changed.
+                Start with any marker. Compare plates, branches, and boulder
+                forms, then use the time current to ask what changed.
               </p>
               <ol>
                 <li>Observe form before naming species.</li>

@@ -70,7 +70,11 @@ test("uses distinct procedural seabed textures and faster movement", async () =>
   assert.match(scene, /"silt-lagoon":/);
   assert.match(scene, /"coral-wall":/);
   assert.match(scene, /"spur-groove":/);
+  assert.match(scene, /textureLoader\.loadAsync\("\/textures\/coral-gravel-diffuse\.jpg"\)/);
+  assert.match(scene, /const floorTexture = biomeConfig\.floorTexture === "shelf-rubble" \? gravel : makeFloorTexture\(\)/);
   assert.match(scene, /new THREE\.CanvasTexture\(canvas\)/);
+  assert.match(scene, /texture\.wrapS = texture\.wrapT = THREE\.ClampToEdgeWrapping/);
+  assert.match(scene, /texture\.repeat\.set\(1, 1\)/);
   assert.match(scene, /map: floorTexture/);
   assert.match(scene, /-event\.deltaY \* 0\.0027/);
   assert.match(scene, /nav\.keys\.has\("shift"\) \? 12\.4 : 6\.8/);

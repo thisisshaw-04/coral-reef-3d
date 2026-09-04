@@ -722,7 +722,7 @@ export default function ReefScene({
         };
         const makeFloorTexture = () => {
           const canvas = document.createElement("canvas");
-          canvas.width = canvas.height = 1024;
+          canvas.width = canvas.height = 2048;
           const context = canvas.getContext("2d");
           if (!context) return undefined;
 
@@ -749,18 +749,28 @@ export default function ReefScene({
             },
           }[biomeConfig.floorTexture];
 
-          const background = context.createLinearGradient(0, 0, 1024, 1024);
+          const background = context.createLinearGradient(0, 0, 2048, 2048);
           background.addColorStop(0, palette.base[0]);
           background.addColorStop(0.54, palette.base[1]);
           background.addColorStop(1, palette.base[2]);
           context.fillStyle = background;
-          context.fillRect(0, 0, 1024, 1024);
+          context.fillRect(0, 0, 2048, 2048);
+
+          context.globalCompositeOperation = "overlay";
+          const broadWash = context.createRadialGradient(720, 640, 120, 1180, 1120, 1740);
+          broadWash.addColorStop(0, "rgba(255, 255, 255, 0.18)");
+          broadWash.addColorStop(0.42, "rgba(97, 132, 108, 0.12)");
+          broadWash.addColorStop(1, "rgba(15, 44, 45, 0.2)");
+          context.fillStyle = broadWash;
+          context.fillRect(0, 0, 2048, 2048);
+
           context.globalCompositeOperation = "multiply";
-          for (let index = 0; index < 90; index += 1) {
-            const x = random() * 1024;
-            const y = random() * 1024;
-            const length = 110 + random() * 260;
-            const width = 8 + random() * 28;
+          const landformCount = lowPower ? 34 : 58;
+          for (let index = 0; index < landformCount; index += 1) {
+            const x = random() * 2048;
+            const y = random() * 2048;
+            const length = 220 + random() * 620;
+            const width = 26 + random() * 96;
             context.save();
             context.translate(x, y);
             context.rotate((biomeConfig.floorTexture === "spur-groove" ? -0.34 : 0.42) + (random() - 0.5) * 0.65);
@@ -771,45 +781,47 @@ export default function ReefScene({
             context.restore();
           }
           context.globalCompositeOperation = "screen";
-          const fleckCount = lowPower ? 520 : 980;
+          const fleckCount = lowPower ? 760 : 1500;
           for (let index = 0; index < fleckCount; index += 1) {
             const radius = 0.8 + random() * (biomeConfig.floorTexture === "coral-wall" ? 4.8 : 3.4);
             context.fillStyle = palette.fleck[Math.floor(random() * palette.fleck.length)];
-            context.globalAlpha = 0.08 + random() * 0.28;
+            context.globalAlpha = 0.05 + random() * 0.2;
             context.beginPath();
-            context.ellipse(random() * 1024, random() * 1024, radius * (0.8 + random() * 1.8), radius, random() * Math.PI, 0, Math.PI * 2);
+            context.ellipse(random() * 2048, random() * 2048, radius * (0.8 + random() * 1.8), radius, random() * Math.PI, 0, Math.PI * 2);
             context.fill();
           }
           context.globalAlpha = 1;
           context.globalCompositeOperation = "overlay";
           if (biomeConfig.floorTexture === "silt-lagoon") {
-            for (let index = 0; index < 36; index += 1) {
-              context.fillStyle = `rgba(91, 151, 88, ${0.08 + random() * 0.1})`;
+            for (let index = 0; index < 28; index += 1) {
+              context.fillStyle = `rgba(91, 151, 88, ${0.045 + random() * 0.075})`;
               context.beginPath();
-              context.ellipse(random() * 1024, random() * 1024, 28 + random() * 86, 8 + random() * 26, random() * Math.PI, 0, Math.PI * 2);
+              context.ellipse(random() * 2048, random() * 2048, 70 + random() * 260, 18 + random() * 70, random() * Math.PI, 0, Math.PI * 2);
               context.fill();
             }
           } else if (biomeConfig.floorTexture === "spur-groove") {
-            for (let index = 0; index < 12; index += 1) {
-              const y = random() * 1024;
-              const gradient = context.createLinearGradient(0, y - 46, 1024, y + 46);
+            for (let index = 0; index < 8; index += 1) {
+              const y = 160 + index * 244 + (random() - 0.5) * 120;
+              const gradient = context.createLinearGradient(0, y - 92, 2048, y + 92);
               gradient.addColorStop(0, "rgba(255, 245, 196, 0)");
-              gradient.addColorStop(0.5, "rgba(255, 245, 196, 0.18)");
+              gradient.addColorStop(0.5, "rgba(255, 245, 196, 0.11)");
               gradient.addColorStop(1, "rgba(255, 245, 196, 0)");
               context.fillStyle = gradient;
-              context.fillRect(0, y - 46, 1024, 92);
+              context.fillRect(0, y - 92, 2048, 184);
             }
           } else if (biomeConfig.floorTexture === "coral-wall") {
-            for (let index = 0; index < 26; index += 1) {
-              context.fillStyle = `rgba(90, 209, 188, ${0.045 + random() * 0.08})`;
-              context.fillRect(random() * 1024, random() * 1024, 20 + random() * 120, 3 + random() * 12);
+            for (let index = 0; index < 22; index += 1) {
+              context.fillStyle = `rgba(90, 209, 188, ${0.035 + random() * 0.06})`;
+              context.beginPath();
+              context.ellipse(random() * 2048, random() * 2048, 80 + random() * 260, 10 + random() * 34, random() * Math.PI, 0, Math.PI * 2);
+              context.fill();
             }
           }
 
           const texture = new THREE.CanvasTexture(canvas);
           texture.colorSpace = THREE.SRGBColorSpace;
-          texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-          texture.repeat.set(...biomeConfig.textureRepeat);
+          texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
+          texture.repeat.set(1, 1);
           texture.anisotropy = lowPower ? 2 : 8;
           return texture;
         };
@@ -848,15 +860,22 @@ export default function ReefScene({
         world.add(warmFill);
 
         const textureLoader = new THREE.TextureLoader();
-        const [gravelNormal, gravelArm] = await Promise.all([
+        const [gravel, gravelNormal, gravelArm] = await Promise.all([
+          textureLoader.loadAsync("/textures/coral-gravel-diffuse.jpg"),
           textureLoader.loadAsync("/textures/coral-gravel-normal.jpg"),
           textureLoader.loadAsync("/textures/coral-gravel-arm.jpg"),
         ]);
-        const floorTexture = makeFloorTexture();
-        if (floorTexture) textures.push(floorTexture);
+        gravel.colorSpace = THREE.SRGBColorSpace;
+        gravel.wrapS = gravel.wrapT = THREE.RepeatWrapping;
+        gravel.repeat.set(36, 58);
+        gravel.anisotropy = lowPower ? 2 : 8;
+        textures.push(gravel);
+        const floorTexture = biomeConfig.floorTexture === "shelf-rubble" ? gravel : makeFloorTexture();
+        if (floorTexture && floorTexture !== gravel) textures.push(floorTexture);
+        const detailRepeat: [number, number] = biomeConfig.floorTexture === "shelf-rubble" ? [36, 58] : [18, 28];
         for (const texture of [gravelNormal, gravelArm]) {
           texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-          texture.repeat.set(...biomeConfig.textureRepeat);
+          texture.repeat.set(...detailRepeat);
           texture.anisotropy = lowPower ? 2 : 8;
           textures.push(texture);
         }

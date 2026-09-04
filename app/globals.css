@@ -6681,3 +6681,103 @@ a:focus-visible,
     height: 64px;
   }
 }
+
+/* v27 - disciplined HUD spacing and softer corners */
+.world-button,
+.mission-room button,
+.mission-room > strong,
+.stress-trigger,
+.timeline-reopen,
+.time-current > button,
+.begin-button,
+.expedition-entry form,
+.expedition-entry form button {
+  border-radius: 22px;
+}
+
+.world-drawer,
+.field-lesson,
+.stress-menu,
+.specimen-monitor,
+.mission-briefing,
+.expedition-entry,
+.ai-guide {
+  border-radius: 28px;
+}
+
+.world-drawer > button,
+.stress-menu > button,
+.specimen-monitor dl div,
+.briefing-points strong,
+.evidence-card,
+.signal-chart,
+.timeline-metrics span,
+.entry-actions > span {
+  border-radius: 16px;
+}
+
+.tool-console {
+  width: min(760px, calc(100vw - 48px));
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(6px, 0.7vw, 10px);
+  padding: 6px;
+  border-radius: 20px;
+}
+
+.tool-console button {
+  min-width: 0;
+  height: 48px;
+  padding: 6px 12px 5px;
+  border-radius: 14px;
+  gap: 3px;
+}
+
+.tool-console button.is-active {
+  border-radius: 15px;
+}
+
+.tool-console svg {
+  width: 17px;
+}
+
+.stress-trigger {
+  min-height: 44px;
+  padding-inline: 20px;
+}
+
+.time-current {
+  height: 58px;
+  padding-block: 5px;
+  border-radius: 20px;
+}
+
+.time-current > button {
+  min-height: 38px;
+  padding-inline: 13px;
+}
+
+.time-current nav {
+  height: 46px;
+}
+
+.time-current nav button {
+  height: 46px;
+}
+
+.timeline-metrics span {
+  min-height: 24px;
+  padding-inline: 8px;
+  border-radius: 12px;
+}
+
+@media (max-width: 900px) {
+  .tool-console {
+    width: calc(100vw - 28px);
+    gap: 5px;
+  }
+
+  .time-current {
+    height: 60px;
+  }
+}

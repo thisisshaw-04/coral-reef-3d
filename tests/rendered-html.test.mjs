@@ -248,3 +248,16 @@ test("uses a sleek rail-only timeline selection", async () => {
   assert.match(css, /\.time-current nav button i\s*{[\s\S]*?transform: translateY\(4px\)/);
   assert.match(css, /\.timeline-metrics,[\s\S]*?\.timeline-metrics span,[\s\S]*?\.timeline-metrics b\s*{[\s\S]*?font-family: var\(--reef-ui-font\)/);
 });
+
+test("uses disciplined HUD spacing with softer corners", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v27 - disciplined HUD spacing and softer corners/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?width: min\(760px, calc\(100vw - 48px\)\)/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?grid-template-columns: repeat\(5, minmax\(0, 1fr\)\)/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?border-radius: 20px/);
+  assert.match(css, /\.tool-console button\s*{[\s\S]*?height: 48px/);
+  assert.match(css, /\.tool-console button\s*{[\s\S]*?border-radius: 14px/);
+  assert.match(css, /\.time-current\s*{[\s\S]*?height: 58px/);
+  assert.match(css, /\.timeline-metrics span\s*{[\s\S]*?border-radius: 12px/);
+});

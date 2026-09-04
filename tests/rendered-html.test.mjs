@@ -261,3 +261,12 @@ test("uses disciplined HUD spacing with softer corners", async () => {
   assert.match(css, /\.time-current\s*{[\s\S]*?height: 58px/);
   assert.match(css, /\.timeline-metrics span\s*{[\s\S]*?border-radius: 12px/);
 });
+
+test("keeps water ambience free of straight line overlays", async () => {
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
+  assert.match(scene, /const surfaceGlints = new THREE\.Points/);
+  assert.doesNotMatch(scene, /surfaceRipples/);
+  assert.doesNotMatch(scene, /new THREE\.LineSegments/);
+  assert.doesNotMatch(scene, /new THREE\.LineBasicMaterial/);
+});

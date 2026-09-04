@@ -990,29 +990,6 @@ export default function ReefScene({
         );
         world.add(surfaceGlints);
 
-        const surfaceRippleCount = countFor(190, 80, 0.82 + biomeConfig.particleDensity * 0.18);
-        const surfaceRippleGeometry = new THREE.BufferGeometry();
-        const surfaceRipplePositions = new Float32Array(surfaceRippleCount * 6);
-        for (let index = 0; index < surfaceRippleCount; index += 1) {
-          const offset = index * 6;
-          const length = 5 + random() * 18;
-          const x = (random() - 0.5) * FLOOR_WIDTH * 0.86;
-          const y = biomeConfig.waterY - 1.2 + random() * 1.1;
-          const z = FLOOR_CENTER_Z + (random() - 0.5) * FLOOR_DEPTH * 0.9;
-          surfaceRipplePositions[offset] = x;
-          surfaceRipplePositions[offset + 1] = y;
-          surfaceRipplePositions[offset + 2] = z;
-          surfaceRipplePositions[offset + 3] = x + length;
-          surfaceRipplePositions[offset + 4] = y + (random() - 0.5) * 0.12;
-          surfaceRipplePositions[offset + 5] = z + (random() - 0.5) * 1.8;
-        }
-        surfaceRippleGeometry.setAttribute("position", new THREE.BufferAttribute(surfaceRipplePositions, 3));
-        const surfaceRipples = new THREE.LineSegments(
-          surfaceRippleGeometry,
-          new THREE.LineBasicMaterial({ color: 0xd9fff6, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false }),
-        );
-        world.add(surfaceRipples);
-
         const wallMaterial = new THREE.MeshStandardMaterial({ color: biomeConfig.wallColor, roughness: 0.98, transparent: true, opacity: 0.38, side: THREE.DoubleSide });
         const makeReefWall = (width: number, height: number, wallPosition: [number, number, number], rotationY = 0) => {
           const wallGeometry = new THREE.PlaneGeometry(width, height, lowPower ? 18 : 34, 7);
@@ -1600,8 +1577,6 @@ export default function ReefScene({
           waterNormals.offset.y = (elapsed * 0.017) % 1;
           surfaceGlints.position.x = reduced ? 0 : Math.sin(elapsed * 0.06) * 5.4;
           surfaceGlints.position.z = reduced ? 0 : Math.cos(elapsed * 0.045) * 4.6;
-          surfaceRipples.position.x = reduced ? 0 : Math.sin(elapsed * 0.04) * 3.8;
-          surfaceRipples.position.z = reduced ? 0 : Math.cos(elapsed * 0.035) * 3.2;
           particles.position.x = Math.sin(elapsed * 0.04) * 6;
           grass.rotation.z = reduced ? 0 : Math.sin(elapsed * 0.42) * 0.014;
           kelp.rotation.z = reduced ? 0 : Math.sin(elapsed * 0.32) * 0.022;

@@ -157,3 +157,12 @@ test("keeps intro action capsules the same width", async () => {
   assert.match(css, /\.entry-actions\s*{[\s\S]*?grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
   assert.match(css, /\.begin-button,[\s\S]*?\.expedition-entry form\s*{[\s\S]*?width: 100%/);
 });
+
+test("keeps the intro panel compact on desktop", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v19 - compact intro panel/);
+  assert.match(css, /\.expedition-entry\s*{[\s\S]*?width: min\(1180px, calc\(100vw - 140px\)\)/);
+  assert.match(css, /\.expedition-entry h1\s*{[\s\S]*?font-size: clamp\(58px, 6\.2vw, 116px\)/);
+  assert.match(css, /@media \(min-width: 1600px\)[\s\S]*?width: min\(1120px, calc\(100vw - 220px\)\)/);
+});

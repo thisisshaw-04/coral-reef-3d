@@ -5923,6 +5923,16 @@ a:focus-visible,
   color: #ffffff;
 }
 
+.specimen-monitor {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-right: 18px;
+}
+
+.specimen-monitor::-webkit-scrollbar {
+  display: none;
+}
+
 .signal-button {
   border: 0;
   background:

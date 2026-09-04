@@ -92,3 +92,11 @@ test("uses a white frosted glass HUD instead of blue panels", async () => {
   assert.match(css, /border: 0;[\s\S]*?linear-gradient\(135deg, rgb\(255 255 255 \/ 0\.19\)/);
   assert.match(css, /\.guide-toggle,[\s\S]*?\.stress-trigger\s*{[\s\S]*?color: #ffffff !important/);
 });
+
+test("keeps the frosted specimen panel scrollbar invisible", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /\.specimen-monitor\s*{[\s\S]*?scrollbar-width: none/);
+  assert.match(css, /\.specimen-monitor\s*{[\s\S]*?-ms-overflow-style: none/);
+  assert.match(css, /\.specimen-monitor::-webkit-scrollbar\s*{[\s\S]*?display: none/);
+});

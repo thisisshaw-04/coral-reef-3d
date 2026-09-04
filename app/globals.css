@@ -2118,3 +2118,813 @@ button:disabled {
   .reef-timeline__controls { min-height: 78px; padding-inline: 8px; gap: 5px; }
   .reef-timeline__play { min-width: 44px; width: 44px; padding: 0; }
 }
+
+/* v6 - cinematic game settings skin */
+.expedition-v5 {
+  --hud: #f2f0e8;
+  --panel: rgb(10 11 12 / 0.64);
+  --hud-line: rgb(242 240 232 / 0.48);
+  --hud-dim: rgb(242 240 232 / 0.66);
+  --hud-faint: rgb(242 240 232 / 0.22);
+  --menu-black: rgb(8 8 9 / 0.78);
+  font-family: "Avenir Next", Avenir, "Trebuchet MS", ui-sans-serif, system-ui, sans-serif;
+  color: #f7f3ea;
+}
+
+.expedition-v5[data-phase="heat"],
+.expedition-v5[data-phase="bleaching"],
+.expedition-v5[data-phase="recovery"] {
+  --hud: #f2f0e8;
+}
+
+.expedition-v5::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.74), rgb(0 0 0 / 0.24) 34%, rgb(0 0 0 / 0.42) 74%, rgb(0 0 0 / 0.82)),
+    linear-gradient(180deg, rgb(0 0 0 / 0.46), transparent 38%, rgb(0 0 0 / 0.68)),
+    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.025) 0 1px, transparent 1px 128px);
+}
+
+.expedition-v5::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 180px rgb(0 0 0 / 0.82),
+    inset 0 -120px 180px rgb(0 0 0 / 0.72);
+}
+
+.expedition-v5 .reef-scene__fallback {
+  filter: grayscale(0.3) sepia(0.16) brightness(0.56) contrast(1.18);
+}
+
+.expedition-v5 .reef-scene__canvas {
+  filter: grayscale(0.2) sepia(0.12) brightness(0.62) contrast(1.16);
+}
+
+.submarine-frame {
+  z-index: 5;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.submarine-frame::before,
+.submarine-frame::after {
+  content: "";
+  position: absolute;
+  top: 14%;
+  bottom: 15%;
+  width: 1px;
+  background: linear-gradient(transparent, rgb(255 255 255 / 0.2), transparent);
+}
+
+.submarine-frame::before {
+  left: 31.5%;
+}
+
+.submarine-frame::after {
+  right: 13.5%;
+}
+
+.mission-bar {
+  z-index: 18;
+  top: 54px;
+  left: 74px;
+  right: 74px;
+  min-height: 58px;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+}
+
+.mission-brand {
+  align-items: center;
+  gap: 0;
+  color: #fffaf0;
+  text-align: center;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(25px, 2.4vw, 36px);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  line-height: 0.78;
+  text-shadow: 0 2px 12px rgb(0 0 0 / 0.9);
+}
+
+.mission-brand > svg {
+  display: none;
+}
+
+.mission-brand span {
+  display: inline-grid;
+  justify-items: center;
+}
+
+.mission-brand small {
+  margin-top: 6px;
+  color: #f5f0e7;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  line-height: 1;
+}
+
+.mission-brand span::after {
+  content: "";
+  width: 146px;
+  height: 1px;
+  margin-top: 5px;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.58), transparent);
+}
+
+.world-button,
+.mission-room button,
+.stress-trigger,
+.timeline-reopen,
+.time-current > button,
+.signal-button,
+.note-form button {
+  border-radius: 0;
+  border-color: var(--hud-line);
+  background: var(--menu-black);
+  color: #f6f1e8;
+  box-shadow:
+    inset 0 0 0 1px rgb(0 0 0 / 0.35),
+    0 0 24px rgb(0 0 0 / 0.38);
+  backdrop-filter: blur(10px);
+}
+
+.world-button {
+  max-width: 310px;
+  min-height: 48px;
+  padding: 0 18px;
+  justify-self: start;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.world-button > svg:first-child {
+  width: 18px;
+  color: #f4efe5;
+}
+
+.world-button > svg:last-child {
+  width: 18px;
+  margin-left: auto;
+  border: 1px solid var(--hud-line);
+}
+
+.world-button small,
+.mission-room,
+.sub-title span,
+.specimen-monitor > span,
+.stress-menu header span,
+.world-drawer > span,
+.ai-guide small {
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.world-button small {
+  color: var(--hud-dim);
+  font-size: 12px;
+}
+
+.world-button strong {
+  color: #fff;
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.mission-room {
+  gap: 12px;
+  color: var(--hud-dim);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+}
+
+.mission-room button {
+  min-height: 43px;
+  padding: 0 15px;
+}
+
+.mission-room > strong {
+  color: #fff8e8;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.expedition-entry,
+.specimen-monitor,
+.world-drawer,
+.stress-menu,
+.time-current,
+.tool-console,
+.ai-guide {
+  background:
+    linear-gradient(90deg, rgb(255 255 255 / 0.035), transparent 18% 82%, rgb(255 255 255 / 0.025)),
+    var(--panel);
+  border: 1px solid var(--hud-faint);
+  border-radius: 0;
+  box-shadow:
+    0 30px 90px rgb(0 0 0 / 0.62),
+    inset 0 0 0 1px rgb(255 255 255 / 0.035);
+  backdrop-filter: blur(12px);
+}
+
+.expedition-entry {
+  width: min(560px, calc(100vw - 52px));
+  padding: 34px 42px 36px;
+  top: 53%;
+  text-align: left;
+}
+
+.entry-status {
+  justify-content: flex-start;
+  color: var(--hud-dim);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.expedition-entry h1 {
+  margin: 16px 0 14px;
+  color: #fffaf2;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(35px, 4.3vw, 58px);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.03;
+  text-shadow: 0 4px 24px rgb(0 0 0 / 0.9);
+}
+
+.expedition-entry h1 em {
+  color: #fffaf2;
+}
+
+.expedition-entry p {
+  margin-inline: 0;
+  color: rgb(245 240 231 / 0.78);
+  font-size: 17px;
+}
+
+.begin-button {
+  min-height: 54px;
+  border: 1px solid rgb(255 255 255 / 0.78);
+  background: rgb(20 20 21 / 0.74);
+  color: #fff;
+  justify-content: space-between;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.28),
+    0 0 18px rgb(255 255 255 / 0.24),
+    inset 0 0 22px rgb(255 255 255 / 0.08);
+}
+
+.begin-button:hover,
+.world-button:hover,
+.mission-room button:hover,
+.tool-console button:hover,
+.tool-console button.is-active,
+.stress-menu > button:hover,
+.world-drawer > button:hover,
+.world-drawer > button.is-active,
+.time-current nav button.is-active,
+.signal-button:hover {
+  color: #fff;
+  background: rgb(27 27 28 / 0.86);
+  border-color: rgb(255 255 255 / 0.82);
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.44),
+    0 0 18px rgb(255 255 255 / 0.26),
+    inset 0 0 24px rgb(255 255 255 / 0.08);
+}
+
+.expedition-entry form {
+  width: 100%;
+  border-color: var(--hud-faint);
+}
+
+.expedition-entry input,
+.expedition-entry form button,
+.note-form input {
+  background: rgb(8 8 9 / 0.58);
+  color: #fffaf2;
+  border-color: var(--hud-faint);
+  font-family: "Avenir Next", Avenir, ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.expedition-entry > small {
+  color: rgb(245 240 231 / 0.5);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+.tool-console {
+  z-index: 16;
+  left: 74px;
+  top: 248px;
+  bottom: auto;
+  width: min(302px, 30vw);
+  translate: 0;
+  display: grid;
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.tool-console button {
+  width: 100%;
+  height: 63px;
+  min-width: 0;
+  padding: 0 28px;
+  border: 1px solid rgb(255 255 255 / 0.2);
+  border-bottom: 0;
+  background: rgb(12 12 13 / 0.54);
+  color: rgb(255 250 242 / 0.78);
+  display: flex;
+  justify-content: flex-start;
+  gap: 16px;
+  font-family: "Avenir Next", Avenir, ui-sans-serif, system-ui, sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.tool-console button:last-child {
+  border-bottom: 1px solid rgb(255 255 255 / 0.2);
+}
+
+.tool-console button.is-active {
+  position: relative;
+  border-color: rgb(255 255 255 / 0.78);
+}
+
+.tool-console button.is-active::before,
+.tool-console button.is-active::after {
+  content: "";
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  height: 2px;
+  background: rgb(255 255 255 / 0.86);
+  box-shadow: 0 0 10px rgb(255 255 255 / 0.8);
+}
+
+.tool-console button.is-active::before {
+  top: -1px;
+}
+
+.tool-console button.is-active::after {
+  bottom: -1px;
+}
+
+.tool-console svg {
+  width: 19px;
+  color: currentColor;
+}
+
+.guide-toggle {
+  color: rgb(255 250 242 / 0.78) !important;
+}
+
+.specimen-monitor {
+  z-index: 16;
+  right: 13.5vw;
+  top: 145px;
+  width: min(520px, 44vw);
+  max-height: min(520px, calc(100vh - 210px));
+  padding: 22px 42px 26px 20px;
+  border-color: transparent;
+  background: rgb(7 7 8 / 0.68);
+}
+
+.specimen-monitor::after,
+.stress-menu::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  bottom: 16px;
+  width: 5px;
+  background: rgb(255 255 255 / 0.92);
+  box-shadow: 0 0 14px rgb(255 255 255 / 0.26);
+}
+
+.specimen-monitor > span,
+.stress-menu header span,
+.world-drawer > span {
+  color: #fff8ee;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.specimen-id {
+  align-items: stretch;
+  margin: 12px 0 8px;
+  padding: 11px 12px;
+  border: 1px solid var(--hud-line);
+  background: rgb(15 15 16 / 0.48);
+}
+
+.specimen-id img {
+  width: 78px;
+  height: 58px;
+  filter: grayscale(0.14) sepia(0.12) brightness(0.78);
+  border-color: var(--hud-line);
+}
+
+.specimen-id strong,
+.stress-menu > button strong {
+  color: #fffaf2;
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.specimen-id small,
+.world-drawer small,
+.stress-menu small {
+  color: rgb(245 240 231 / 0.62);
+}
+
+.specimen-monitor dl div {
+  min-height: 56px;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid var(--hud-line);
+  border-bottom: 0;
+  background: rgb(15 15 16 / 0.42);
+  font-size: 17px;
+}
+
+.specimen-monitor dl div:last-child {
+  border-bottom: 1px solid var(--hud-line);
+}
+
+.specimen-monitor dt {
+  color: #f7f2e8;
+}
+
+.specimen-monitor dd {
+  color: #fff;
+  font-family: "Avenir Next", Avenir, ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.signal-button,
+.note-form button {
+  height: 48px;
+  font-size: 16px;
+  justify-content: flex-start;
+  padding: 0 12px;
+}
+
+.signal-chart {
+  border: 1px solid var(--hud-line);
+  border-top: 0;
+  margin-top: 0;
+  padding: 10px 12px;
+  background: rgb(15 15 16 / 0.44);
+}
+
+.signal-chart p,
+.effect-note {
+  color: rgb(245 240 231 / 0.68);
+  font-size: 12px;
+}
+
+.note-form input {
+  height: 46px;
+  font-size: 15px;
+}
+
+.effect-note {
+  border-left-color: #fff;
+  background: rgb(255 255 255 / 0.06);
+}
+
+.world-drawer {
+  z-index: 24;
+  left: 74px;
+  top: 126px;
+  width: min(340px, calc(100vw - 56px));
+  padding: 18px 0 0;
+}
+
+.world-drawer > span {
+  margin: 0 20px 14px;
+}
+
+.world-drawer > button,
+.stress-menu > button {
+  min-height: 52px;
+  padding: 0 18px;
+  border-top: 1px solid var(--hud-line);
+  color: rgb(255 250 242 / 0.78);
+  font-size: 16px;
+}
+
+.sub-title {
+  z-index: 10;
+  top: 123px;
+  color: #fffaf2;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.sub-title span {
+  color: rgb(255 250 242 / 0.64);
+  font-size: 13px;
+}
+
+.sub-title strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+
+.sub-title small {
+  color: rgb(245 240 231 / 0.58);
+}
+
+.stress-trigger {
+  right: 13.5vw;
+  bottom: 126px;
+  min-height: 48px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.stress-menu {
+  right: 13.5vw;
+  bottom: 186px;
+  width: min(520px, 44vw);
+  padding: 20px 42px 18px 0;
+}
+
+.stress-menu header {
+  padding-left: 20px;
+}
+
+.stress-menu header button {
+  margin-right: 8px;
+  color: #fff;
+}
+
+.stress-menu > p {
+  color: rgb(245 240 231 / 0.48);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12px;
+}
+
+.time-current {
+  z-index: 18;
+  left: 74px;
+  right: 74px;
+  bottom: 34px;
+  height: 62px;
+  grid-template-columns: 150px 158px 1fr 210px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.time-current > button,
+.timeline-reopen {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.timeline-readout {
+  border-left-color: rgb(255 255 255 / 0.28);
+}
+
+.timeline-readout span {
+  color: #fff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.timeline-readout strong,
+.timeline-metrics {
+  color: rgb(245 240 231 / 0.62);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.time-current nav button {
+  color: rgb(245 240 231 / 0.48);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12px;
+}
+
+.time-current nav button::before {
+  background: rgb(255 255 255 / 0.2);
+}
+
+.time-current nav button i {
+  border-color: rgb(255 255 255 / 0.5);
+  background: rgb(5 5 6 / 0.85);
+}
+
+.time-current nav button.is-past::before,
+.time-current nav button.is-active::before,
+.time-current nav button.is-past i,
+.time-current nav button.is-active i {
+  background: #fff;
+  border-color: #fff;
+}
+
+.time-current nav button.is-active i {
+  box-shadow: 0 0 15px rgb(255 255 255 / 0.9);
+}
+
+.timeline-metrics b {
+  color: #fff;
+}
+
+.ai-guide {
+  left: calc(74px + min(302px, 30vw) + 24px);
+  bottom: 126px;
+  width: min(390px, 32vw);
+  border-left: 1px solid rgb(255 255 255 / 0.72);
+  color: rgb(245 240 231 / 0.8);
+}
+
+.ai-guide > svg,
+.ai-guide small {
+  color: #fff;
+}
+
+.reef-scene__marker {
+  filter: drop-shadow(0 8px 16px rgb(0 0 0 / 0.9));
+}
+
+.reef-scene__reticle {
+  border-color: rgb(255 255 255 / 0.9);
+  background: rgb(0 0 0 / 0.2);
+  box-shadow:
+    0 0 0 7px rgb(255 255 255 / 0.07),
+    0 0 26px rgb(255 255 255 / 0.42);
+}
+
+.reef-scene__reticle i,
+.reef-scene__marker.is-mapped .reef-scene__reticle i {
+  background: #fff;
+  box-shadow: 0 0 14px #fff;
+}
+
+.reef-scene__marker-label {
+  border-color: rgb(255 255 255 / 0.42);
+  border-radius: 0;
+  background: rgb(8 8 9 / 0.74);
+  color: #fffaf2;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.diver-cursors span {
+  background: rgb(8 8 9 / 0.74);
+  border: 1px solid rgb(255 255 255 / 0.26);
+  color: #fff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  .mission-bar {
+    left: 18px;
+    right: 18px;
+    top: 20px;
+    grid-template-columns: 1fr auto;
+  }
+
+  .mission-brand {
+    display: none;
+  }
+
+  .tool-console {
+    left: 18px;
+    top: auto;
+    bottom: 104px;
+    right: 18px;
+    width: auto;
+    display: flex;
+  }
+
+  .tool-console button {
+    height: 56px;
+    padding: 0 10px;
+    justify-content: center;
+    gap: 7px;
+    font-size: 13px;
+  }
+
+  .specimen-monitor,
+  .stress-menu {
+    left: 18px;
+    right: 18px;
+    width: auto;
+  }
+
+  .specimen-monitor {
+    bottom: 174px;
+    top: auto;
+    max-height: 48vh;
+  }
+
+  .specimen-id {
+    margin-block: 8px;
+    padding: 8px 10px;
+  }
+
+  .specimen-id img {
+    width: 66px;
+    height: 50px;
+  }
+
+  .specimen-monitor dl div {
+    min-height: 48px;
+  }
+
+  .stress-trigger {
+    right: 18px;
+    bottom: 174px;
+  }
+
+  .stress-menu {
+    bottom: 230px;
+  }
+
+  .time-current {
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+    grid-template-columns: 1fr;
+  }
+
+  .ai-guide {
+    left: 18px;
+    bottom: 174px;
+    width: min(420px, calc(100vw - 150px));
+  }
+}
+
+@media (max-width: 620px) {
+  .expedition-entry {
+    width: calc(100vw - 28px);
+    padding: 26px 20px 28px;
+  }
+
+  .expedition-entry h1 {
+    font-size: 36px;
+  }
+
+  .world-button {
+    max-width: 190px;
+  }
+
+  .mission-room button {
+    min-width: 88px;
+  }
+
+  .tool-console button {
+    font-size: 0;
+  }
+
+  .tool-console svg {
+    width: 21px;
+  }
+
+  .specimen-monitor {
+    padding: 18px 34px 20px 14px;
+  }
+
+  .specimen-monitor dl div,
+  .specimen-id strong {
+    font-size: 14px;
+  }
+}

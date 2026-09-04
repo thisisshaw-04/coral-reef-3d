@@ -1337,7 +1337,12 @@ export default function ReefScene({
               display.color.getHSL(hsl);
               return !display.map && hsl.l < 0.18;
             });
-            if (darkDisplayMaterial && meshSize.y < 0.09 && meshSize.x > 0.56 && meshSize.z > 0.56 && meshCenter.y < -0.24) {
+            const lowFlatDisplayBase =
+              meshSize.y < 0.18 &&
+              meshSize.x > meshSize.y * 4.5 &&
+              meshSize.z > meshSize.y * 4.5 &&
+              meshCenter.y < -0.16;
+            if (darkDisplayMaterial && lowFlatDisplayBase) {
               object.visible = false;
               return;
             }
@@ -1354,12 +1359,19 @@ export default function ReefScene({
               livingMaterials.push({ material: living, base: living.color.clone(), hotspotId: hotspot.id });
             }
           });
+          const groundedBounds = new THREE.Box3().setFromObject(model);
+          const visibleBottom = Number.isFinite(groundedBounds.min.y) ? groundedBounds.min.y : -0.5;
+          model.position.y -= visibleBottom;
           const pedestal = new THREE.Group();
           pedestal.name = hotspot.id;
           pedestal.userData.hotspotId = hotspot.id;
           pedestal.userData.baseScale = hotspot.size ?? asset.size;
           pedestal.userData.animOffset = random() * Math.PI * 2;
-          pedestal.position.set(...hotspot.position);
+          pedestal.position.set(
+            hotspot.position[0],
+            seabedHeight(hotspot.position[0], hotspot.position[2]) + 0.02,
+            hotspot.position[2],
+          );
           pedestal.rotation.y = hotspot.yaw ?? (scanKey === "massive-star" ? -0.7 : 0.35);
           pedestal.scale.setScalar(pedestal.userData.baseScale as number);
           pedestal.add(model);

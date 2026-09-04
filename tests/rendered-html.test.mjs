@@ -201,3 +201,13 @@ test("replaces fake reef-floor blobs with modeled rubble and benthic life", asyn
   assert.doesNotMatch(scene, /const coralHeads = new THREE\.InstancedMesh/);
   assert.doesNotMatch(scene, /new THREE\.SphereGeometry\(1, 16, 8, 0, Math\.PI \* 2, 0, Math\.PI \/ 2\)/);
 });
+
+test("anchors scan colonies to the seabed instead of fixed floating heights", async () => {
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
+  assert.match(scene, /const groundedBounds = new THREE\.Box3\(\)\.setFromObject\(model\)/);
+  assert.match(scene, /model\.position\.y -= visibleBottom/);
+  assert.match(scene, /pedestal\.position\.set\(\s*hotspot\.position\[0\],\s*seabedHeight\(hotspot\.position\[0\], hotspot\.position\[2\]\) \+ 0\.02,\s*hotspot\.position\[2\],\s*\)/);
+  assert.match(scene, /const lowFlatDisplayBase =/);
+  assert.doesNotMatch(scene, /pedestal\.position\.set\(\.\.\.hotspot\.position\)/);
+});

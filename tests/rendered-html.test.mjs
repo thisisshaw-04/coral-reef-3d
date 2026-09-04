@@ -55,7 +55,26 @@ test("loads research-based biome terrains from the global navigator", async () =
   assert.match(page, /activeWorld\.objectiveSteps\.map/);
   assert.match(scene, /BIOME_CONFIG/);
   assert.match(scene, /terrain: "caribbean-spur"/);
+  assert.match(scene, /floorTexture: "shelf-rubble"/);
+  assert.match(scene, /floorTexture: "silt-lagoon"/);
+  assert.match(scene, /floorTexture: "coral-wall"/);
+  assert.match(scene, /floorTexture: "spur-groove"/);
+  assert.match(scene, /const makeFloorTexture = \(\) =>/);
   assert.match(scene, /BIOME_AMBIENT_SCAN_COLONIES/);
+});
+
+test("uses distinct procedural seabed textures and faster movement", async () => {
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
+  assert.match(scene, /"shelf-rubble":/);
+  assert.match(scene, /"silt-lagoon":/);
+  assert.match(scene, /"coral-wall":/);
+  assert.match(scene, /"spur-groove":/);
+  assert.match(scene, /new THREE\.CanvasTexture\(canvas\)/);
+  assert.match(scene, /map: floorTexture/);
+  assert.match(scene, /-event\.deltaY \* 0\.0027/);
+  assert.match(scene, /nav\.keys\.has\("shift"\) \? 12\.4 : 6\.8/);
+  assert.match(scene, /vertical \* 3\.6/);
 });
 
 test("uses the clean Google Sans entry action system", async () => {

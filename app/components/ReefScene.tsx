@@ -296,6 +296,7 @@ const BIOME_AMBIENT_SCAN_COLONIES: Record<ReefBiomeId, ReefSceneHotspot[]> = {
 type ReefBiomeConfig = {
   seed: number;
   terrain: "shelf" | "turbid-lagoon" | "triangle-wall" | "caribbean-spur";
+  floorTexture: "shelf-rubble" | "silt-lagoon" | "coral-wall" | "spur-groove";
   background: number;
   fog: number;
   fogDensity: number;
@@ -363,6 +364,7 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
   "great-barrier": {
     seed: 2035,
     terrain: "shelf",
+    floorTexture: "shelf-rubble",
     background: 0x064858,
     fog: 0x227c8c,
     fogDensity: 0.0105,
@@ -403,6 +405,7 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
   "sisters-islands": {
     seed: 7612,
     terrain: "turbid-lagoon",
+    floorTexture: "silt-lagoon",
     background: 0x0c3d42,
     fog: 0x427f74,
     fogDensity: 0.017,
@@ -455,6 +458,7 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
   "coral-triangle": {
     seed: 91244,
     terrain: "triangle-wall",
+    floorTexture: "coral-wall",
     background: 0x045c72,
     fog: 0x1d8d9c,
     fogDensity: 0.0088,
@@ -508,6 +512,7 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
   "caribbean-reef": {
     seed: 44501,
     terrain: "caribbean-spur",
+    floorTexture: "spur-groove",
     background: 0x063d5a,
     fog: 0x24758d,
     fogDensity: 0.0096,
@@ -715,6 +720,99 @@ export default function ReefScene({
           const swimChannel = Math.max(0, 1 - Math.abs(x + z * 0.1) / 32) * -0.85;
           return softRidges + swimChannel + sideRise + farRise + frontShelf - 0.9;
         };
+        const makeFloorTexture = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = canvas.height = 1024;
+          const context = canvas.getContext("2d");
+          if (!context) return undefined;
+
+          const palette = {
+            "shelf-rubble": {
+              base: ["#8f896d", "#b9ad83", "#6f715b"],
+              fleck: ["#d6c997", "#efe0aa", "#7b7358"],
+              streak: "rgba(102, 134, 116, 0.18)",
+            },
+            "silt-lagoon": {
+              base: ["#777d5e", "#a39c70", "#526f5e"],
+              fleck: ["#c7bf8b", "#6fa47a", "#ded3a3"],
+              streak: "rgba(76, 133, 96, 0.28)",
+            },
+            "coral-wall": {
+              base: ["#756f60", "#9c8464", "#4d6b66"],
+              fleck: ["#d6a87b", "#edcf92", "#6de0c4", "#b586c8"],
+              streak: "rgba(44, 126, 136, 0.22)",
+            },
+            "spur-groove": {
+              base: ["#a99a75", "#d2be8b", "#6d7b67"],
+              fleck: ["#f0d9a4", "#b98563", "#79d0bd"],
+              streak: "rgba(233, 221, 172, 0.2)",
+            },
+          }[biomeConfig.floorTexture];
+
+          const background = context.createLinearGradient(0, 0, 1024, 1024);
+          background.addColorStop(0, palette.base[0]);
+          background.addColorStop(0.54, palette.base[1]);
+          background.addColorStop(1, palette.base[2]);
+          context.fillStyle = background;
+          context.fillRect(0, 0, 1024, 1024);
+          context.globalCompositeOperation = "multiply";
+          for (let index = 0; index < 90; index += 1) {
+            const x = random() * 1024;
+            const y = random() * 1024;
+            const length = 110 + random() * 260;
+            const width = 8 + random() * 28;
+            context.save();
+            context.translate(x, y);
+            context.rotate((biomeConfig.floorTexture === "spur-groove" ? -0.34 : 0.42) + (random() - 0.5) * 0.65);
+            context.fillStyle = palette.streak;
+            context.beginPath();
+            context.ellipse(0, 0, length, width, 0, 0, Math.PI * 2);
+            context.fill();
+            context.restore();
+          }
+          context.globalCompositeOperation = "screen";
+          const fleckCount = lowPower ? 520 : 980;
+          for (let index = 0; index < fleckCount; index += 1) {
+            const radius = 0.8 + random() * (biomeConfig.floorTexture === "coral-wall" ? 4.8 : 3.4);
+            context.fillStyle = palette.fleck[Math.floor(random() * palette.fleck.length)];
+            context.globalAlpha = 0.08 + random() * 0.28;
+            context.beginPath();
+            context.ellipse(random() * 1024, random() * 1024, radius * (0.8 + random() * 1.8), radius, random() * Math.PI, 0, Math.PI * 2);
+            context.fill();
+          }
+          context.globalAlpha = 1;
+          context.globalCompositeOperation = "overlay";
+          if (biomeConfig.floorTexture === "silt-lagoon") {
+            for (let index = 0; index < 36; index += 1) {
+              context.fillStyle = `rgba(91, 151, 88, ${0.08 + random() * 0.1})`;
+              context.beginPath();
+              context.ellipse(random() * 1024, random() * 1024, 28 + random() * 86, 8 + random() * 26, random() * Math.PI, 0, Math.PI * 2);
+              context.fill();
+            }
+          } else if (biomeConfig.floorTexture === "spur-groove") {
+            for (let index = 0; index < 12; index += 1) {
+              const y = random() * 1024;
+              const gradient = context.createLinearGradient(0, y - 46, 1024, y + 46);
+              gradient.addColorStop(0, "rgba(255, 245, 196, 0)");
+              gradient.addColorStop(0.5, "rgba(255, 245, 196, 0.18)");
+              gradient.addColorStop(1, "rgba(255, 245, 196, 0)");
+              context.fillStyle = gradient;
+              context.fillRect(0, y - 46, 1024, 92);
+            }
+          } else if (biomeConfig.floorTexture === "coral-wall") {
+            for (let index = 0; index < 26; index += 1) {
+              context.fillStyle = `rgba(90, 209, 188, ${0.045 + random() * 0.08})`;
+              context.fillRect(random() * 1024, random() * 1024, 20 + random() * 120, 3 + random() * 12);
+            }
+          }
+
+          const texture = new THREE.CanvasTexture(canvas);
+          texture.colorSpace = THREE.SRGBColorSpace;
+          texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+          texture.repeat.set(...biomeConfig.textureRepeat);
+          texture.anisotropy = lowPower ? 2 : 8;
+          return texture;
+        };
         const renderer = new THREE.WebGPURenderer({ canvas, alpha: false, antialias: !lowPower });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowPower ? 1.15 : 1.65));
         renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -750,13 +848,13 @@ export default function ReefScene({
         world.add(warmFill);
 
         const textureLoader = new THREE.TextureLoader();
-        const [gravel, gravelNormal, gravelArm] = await Promise.all([
-          textureLoader.loadAsync("/textures/coral-gravel-diffuse.jpg"),
+        const [gravelNormal, gravelArm] = await Promise.all([
           textureLoader.loadAsync("/textures/coral-gravel-normal.jpg"),
           textureLoader.loadAsync("/textures/coral-gravel-arm.jpg"),
         ]);
-        gravel.colorSpace = THREE.SRGBColorSpace;
-        for (const texture of [gravel, gravelNormal, gravelArm]) {
+        const floorTexture = makeFloorTexture();
+        if (floorTexture) textures.push(floorTexture);
+        for (const texture of [gravelNormal, gravelArm]) {
           texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
           texture.repeat.set(...biomeConfig.textureRepeat);
           texture.anisotropy = lowPower ? 2 : 8;
@@ -774,7 +872,7 @@ export default function ReefScene({
         floorGeometry.computeVertexNormals();
         const floor = new THREE.Mesh(
           floorGeometry,
-          new THREE.MeshStandardMaterial({ map: gravel, normalMap: gravelNormal, aoMap: gravelArm, roughnessMap: gravelArm, metalnessMap: gravelArm, color: biomeConfig.floorColor, roughness: 0.93, metalness: 0.02 }),
+          new THREE.MeshStandardMaterial({ map: floorTexture, normalMap: gravelNormal, aoMap: gravelArm, roughnessMap: gravelArm, metalnessMap: gravelArm, color: biomeConfig.floorColor, roughness: 0.9, metalness: 0.015 }),
         );
         world.add(floor);
 
@@ -1384,7 +1482,7 @@ export default function ReefScene({
         const wheel = (event: WheelEvent) => {
           if (!activeRef.current || focusRef.current) return;
           event.preventDefault();
-          nav.velocity.addScaledVector(direction.set(-Math.sin(nav.yaw), 0, -Math.cos(nav.yaw)), -event.deltaY * 0.0018);
+          nav.velocity.addScaledVector(direction.set(-Math.sin(nav.yaw), 0, -Math.cos(nav.yaw)), -event.deltaY * 0.0027);
         };
 
         host.addEventListener("pointerdown", pointerDown);
@@ -1513,11 +1611,11 @@ export default function ReefScene({
             const vertical = (nav.keys.has("e") ? 1 : 0) - (nav.keys.has("q") ? 1 : 0);
             direction.set(-Math.sin(nav.yaw), 0, -Math.cos(nav.yaw));
             right.set(Math.cos(nav.yaw), 0, -Math.sin(nav.yaw));
-            const boost = nav.keys.has("shift") ? 8.2 : 4.4;
-            desired.set(0, vertical * 2.4, 0);
+            const boost = nav.keys.has("shift") ? 12.4 : 6.8;
+            desired.set(0, vertical * 3.6, 0);
             desired.addScaledVector(direction, ((wantsForward ? 1 : 0) - (wantsBack ? 1 : 0)) * boost);
-            desired.addScaledVector(right, ((wantsRight ? 1 : 0) - (wantsLeft ? 1 : 0)) * boost * 0.78);
-            nav.velocity.lerp(desired, 1 - Math.exp(-delta * 5));
+            desired.addScaledVector(right, ((wantsRight ? 1 : 0) - (wantsLeft ? 1 : 0)) * boost * 0.82);
+            nav.velocity.lerp(desired, 1 - Math.exp(-delta * 6.4));
             if (!activeRef.current) nav.velocity.multiplyScalar(Math.exp(-delta * 8));
             camera.position.addScaledVector(nav.velocity, delta);
             camera.position.x = THREE.MathUtils.clamp(camera.position.x, -WORLD_BOUNDS.x, WORLD_BOUNDS.x);

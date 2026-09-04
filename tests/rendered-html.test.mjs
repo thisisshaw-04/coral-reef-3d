@@ -166,3 +166,16 @@ test("keeps the intro panel compact on desktop", async () => {
   assert.match(css, /\.expedition-entry h1\s*{[\s\S]*?font-size: clamp\(58px, 6\.2vw, 116px\)/);
   assert.match(css, /@media \(min-width: 1600px\)[\s\S]*?width: min\(1120px, calc\(100vw - 220px\)\)/);
 });
+
+test("uses icon lenses for briefing points instead of numeric dots", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(page, /const briefingPointIcons =/);
+  assert.match(page, /ScanSearch/);
+  assert.match(page, /Shapes/);
+  assert.match(page, /BadgeCheck/);
+  assert.match(page, /<PointIcon \/>/);
+  assert.match(css, /v20 - briefing point icons/);
+  assert.match(css, /\.briefing-points i svg\s*{[\s\S]*?stroke-width: 1\.85/);
+});

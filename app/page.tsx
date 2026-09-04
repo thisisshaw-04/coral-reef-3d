@@ -3,6 +3,7 @@
 import { useMemo, useState, type CSSProperties } from "react";
 import {
   AudioLines,
+  BadgeCheck,
   Check,
   ChevronDown,
   CircleDot,
@@ -11,7 +12,9 @@ import {
   Map,
   MessageCircle,
   MousePointer2,
+  ScanSearch,
   ScanLine,
+  Shapes,
   Share2,
   Sparkles,
   Sprout,
@@ -54,6 +57,12 @@ const briefingSteps = [
     body: "Use the time current and stress test to compare living cover, heat stress, and pH. Restoration helps locally, but it does not replace clean water and climate action.",
     points: ["Compare 1998 to 2035", "Watch bleaching risk", "Restore with caution"],
   },
+];
+
+const briefingPointIcons = [
+  [ScanSearch, Shapes, BadgeCheck],
+  [ScanLine, Map, MessageCircle],
+  [Clock3, ThermometerSun, Sprout],
 ];
 
 export default function Home() {
@@ -326,12 +335,18 @@ export default function Home() {
           <h2>{briefingSteps[briefingStep].title}</h2>
           <p>{briefingSteps[briefingStep].body}</p>
           <div className="briefing-points">
-            {briefingSteps[briefingStep].points.map((point, index) => (
-              <strong key={point}>
-                <i>{index + 1}</i>
-                {point}
-              </strong>
-            ))}
+            {briefingSteps[briefingStep].points.map((point, index) => {
+              const PointIcon = briefingPointIcons[briefingStep][index];
+
+              return (
+                <strong key={point}>
+                  <i aria-hidden="true">
+                    <PointIcon />
+                  </i>
+                  {point}
+                </strong>
+              );
+            })}
           </div>
           <footer>
             <button

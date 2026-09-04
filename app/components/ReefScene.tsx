@@ -1037,6 +1037,34 @@ export default function ReefScene({
           bladeGeometry.computeVertexNormals();
           return bladeGeometry;
         };
+        const makeRubbleGeometry = () => {
+          const rubbleGeometry = new THREE.DodecahedronGeometry(1, 1);
+          const rubblePosition = rubbleGeometry.attributes.position;
+          for (let index = 0; index < rubblePosition.count; index += 1) {
+            const x = rubblePosition.getX(index);
+            const y = rubblePosition.getY(index);
+            const z = rubblePosition.getZ(index);
+            const warp =
+              0.74 +
+              Math.sin(index * 2.41) * 0.14 +
+              Math.cos(x * 3.2 + z * 1.7) * 0.12;
+            rubblePosition.setXYZ(index, x * warp, y * (0.34 + warp * 0.18), z * (0.68 + warp * 0.22));
+          }
+          rubbleGeometry.computeVertexNormals();
+          return rubbleGeometry;
+        };
+        const makeTubeSpongeGeometry = () => {
+          const profile = [
+            new THREE.Vector2(0.28, -0.92),
+            new THREE.Vector2(0.42, -0.7),
+            new THREE.Vector2(0.34, -0.18),
+            new THREE.Vector2(0.46, 0.42),
+            new THREE.Vector2(0.36, 0.9),
+          ];
+          const spongeGeometry = new THREE.LatheGeometry(profile, 18);
+          spongeGeometry.computeVertexNormals();
+          return spongeGeometry;
+        };
 
         const rocks = new THREE.InstancedMesh(
           new THREE.IcosahedronGeometry(1, 1),
@@ -1063,26 +1091,30 @@ export default function ReefScene({
         rocks.instanceMatrix.needsUpdate = true;
         world.add(rocks);
 
+        const reefColor = new THREE.Color();
         const sponges = new THREE.InstancedMesh(
-          new THREE.CylinderGeometry(0.2, 0.52, 1.9, 14, 3, false),
-          new THREE.MeshStandardMaterial({ color: 0xc9945e, roughness: 0.75 }),
-          countFor(230, 105, biomeConfig.spongeDensity),
+          makeTubeSpongeGeometry(),
+          new THREE.MeshStandardMaterial({ color: 0xa97958, roughness: 0.92 }),
+          countFor(185, 82, biomeConfig.spongeDensity),
         );
         const clusters = biomeConfig.clusters;
         for (let index = 0; index < sponges.count; index += 1) {
           const cluster = clusters[index % clusters.length];
           const theta = random() * Math.PI * 2;
-          const radius = 3.5 + random() * cluster[3];
-          const height = 0.7 + random() * 2.1;
+          const radius = 4.5 + random() * cluster[3];
+          const height = 0.55 + random() * 1.35;
           const x = cluster[0] + Math.cos(theta) * radius;
           const z = cluster[2] + Math.sin(theta) * radius;
-          position.set(x, seabedHeight(x, z) + height * 0.48, z);
+          position.set(x, seabedHeight(x, z) + height * 0.86, z);
           quaternion.setFromEuler(new THREE.Euler((random() - 0.5) * 0.18, random() * Math.PI, (random() - 0.5) * 0.2));
-          scale.set(0.5 + random() * 0.9, height, 0.5 + random() * 0.9);
+          scale.set(0.34 + random() * 0.55, height, 0.34 + random() * 0.55);
           matrix.compose(position, quaternion, scale);
           sponges.setMatrixAt(index, matrix);
+          reefColor.setHSL(0.08 + random() * 0.04, 0.26 + random() * 0.18, 0.38 + random() * 0.16);
+          sponges.setColorAt(index, reefColor);
         }
         sponges.instanceMatrix.needsUpdate = true;
+        if (sponges.instanceColor) sponges.instanceColor.needsUpdate = true;
         world.add(sponges);
 
         const grass = new THREE.InstancedMesh(
@@ -1105,7 +1137,6 @@ export default function ReefScene({
         grass.instanceMatrix.needsUpdate = true;
         world.add(grass);
 
-        const reefColor = new THREE.Color();
         const kelp = new THREE.InstancedMesh(
           makeBladeGeometry(5.4, 0.26, 0.34, 8),
           new THREE.MeshStandardMaterial({ color: 0x5e9f6d, roughness: 0.82, transparent: true, opacity: 0.46, side: THREE.DoubleSide }),
@@ -1130,29 +1161,29 @@ export default function ReefScene({
         if (kelp.instanceColor) kelp.instanceColor.needsUpdate = true;
         world.add(kelp);
 
-        const coralHeads = new THREE.InstancedMesh(
-          new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2),
-          new THREE.MeshStandardMaterial({ color: 0xe3a96d, roughness: 0.86 }),
-          countFor(260, 115, biomeConfig.coralHeadDensity),
+        const reefRubble = new THREE.InstancedMesh(
+          makeRubbleGeometry(),
+          new THREE.MeshStandardMaterial({ color: 0x7b7864, roughness: 0.96, metalness: 0.01 }),
+          countFor(420, 175, biomeConfig.rockDensity + biomeConfig.coralHeadDensity * 0.48),
         );
-        for (let index = 0; index < coralHeads.count; index += 1) {
+        for (let index = 0; index < reefRubble.count; index += 1) {
           const cluster = clusters[(index + 2) % clusters.length];
           const theta = random() * Math.PI * 2;
-          const radius = 5 + random() * (cluster[3] + 9);
+          const radius = 6 + random() * (cluster[3] + 16);
           const x = cluster[0] + Math.cos(theta) * radius + (random() - 0.5) * 10;
           const z = cluster[2] + Math.sin(theta) * radius - random() * 8;
-          const size = 0.55 + random() * 1.85;
-          position.set(x, seabedHeight(x, z) + 0.05, z);
-          quaternion.setFromEuler(new THREE.Euler(0, random() * Math.PI, 0));
-          scale.set(size * (0.9 + random() * 0.45), size * (0.36 + random() * 0.24), size * (0.82 + random() * 0.52));
+          const size = 0.45 + random() * 2.4;
+          position.set(x, seabedHeight(x, z) + size * 0.15, z);
+          quaternion.setFromEuler(new THREE.Euler((random() - 0.5) * 0.38, random() * Math.PI, (random() - 0.5) * 0.38));
+          scale.set(size * (0.78 + random() * 0.65), size * (0.36 + random() * 0.32), size * (0.72 + random() * 0.7));
           matrix.compose(position, quaternion, scale);
-          coralHeads.setMatrixAt(index, matrix);
-          reefColor.setHSL(biomeConfig.coralHue + random() * 0.09, 0.46 + random() * 0.2, 0.46 + random() * 0.16);
-          coralHeads.setColorAt(index, reefColor);
+          reefRubble.setMatrixAt(index, matrix);
+          reefColor.setHSL(0.1 + random() * 0.12, 0.12 + random() * 0.18, 0.32 + random() * 0.2);
+          reefRubble.setColorAt(index, reefColor);
         }
-        coralHeads.instanceMatrix.needsUpdate = true;
-        if (coralHeads.instanceColor) coralHeads.instanceColor.needsUpdate = true;
-        world.add(coralHeads);
+        reefRubble.instanceMatrix.needsUpdate = true;
+        if (reefRubble.instanceColor) reefRubble.instanceColor.needsUpdate = true;
+        world.add(reefRubble);
 
         const seaFans = new THREE.InstancedMesh(
           new THREE.PlaneGeometry(1, 1.8, 1, 5),
@@ -1175,9 +1206,9 @@ export default function ReefScene({
         world.add(seaFans);
 
         const softPolyps = new THREE.InstancedMesh(
-          new THREE.CylinderGeometry(0.06, 0.1, 0.72, 6),
-          new THREE.MeshStandardMaterial({ color: 0xc97fb7, roughness: 0.8, transparent: true, opacity: 0.72 }),
-          countFor(520, 210, biomeConfig.softPolypDensity),
+          makeBladeGeometry(1.55, 0.045, 0.16, 5),
+          new THREE.MeshStandardMaterial({ color: 0x9b7194, roughness: 0.86, transparent: true, opacity: 0.58, side: THREE.DoubleSide }),
+          countFor(680, 270, biomeConfig.softPolypDensity),
         );
         for (let index = 0; index < softPolyps.count; index += 1) {
           const cluster = clusters[(index + 7) % clusters.length];
@@ -1185,10 +1216,10 @@ export default function ReefScene({
           const radius = random() * cluster[3] * 0.9;
           const x = cluster[0] + Math.cos(theta) * radius;
           const z = cluster[2] + Math.sin(theta) * radius;
-          const height = 0.45 + random() * 0.9;
-          position.set(x, seabedHeight(x, z) + height * 0.42, z);
+          const height = 0.5 + random() * 1.25;
+          position.set(x, seabedHeight(x, z) + height * 0.74, z);
           quaternion.setFromEuler(new THREE.Euler((random() - 0.5) * 0.32, random() * Math.PI, (random() - 0.5) * 0.32));
-          scale.set(0.7 + random() * 0.65, height, 0.7 + random() * 0.65);
+          scale.set(0.78 + random() * 0.7, height, 0.78 + random() * 0.7);
           matrix.compose(position, quaternion, scale);
           softPolyps.setMatrixAt(index, matrix);
           reefColor.setHSL(0.82 + random() * 0.08, 0.28 + random() * 0.26, 0.5 + random() * 0.14);

@@ -190,3 +190,14 @@ test("separates the bottom tool dock from the timeline", async () => {
   assert.match(css, /\.time-current\s*{[\s\S]*?bottom: 18px/);
   assert.match(css, /\.stress-trigger\s*{[\s\S]*?bottom: clamp\(132px, 15\.7vh, 168px\)/);
 });
+
+test("replaces fake reef-floor blobs with modeled rubble and benthic life", async () => {
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
+  assert.match(scene, /const makeRubbleGeometry = \(\) =>/);
+  assert.match(scene, /const makeTubeSpongeGeometry = \(\) =>/);
+  assert.match(scene, /const reefRubble = new THREE\.InstancedMesh/);
+  assert.match(scene, /smithsonian-linckia-laevigata\.glb/);
+  assert.doesNotMatch(scene, /const coralHeads = new THREE\.InstancedMesh/);
+  assert.doesNotMatch(scene, /new THREE\.SphereGeometry\(1, 16, 8, 0, Math\.PI \* 2, 0, Math\.PI \/ 2\)/);
+});

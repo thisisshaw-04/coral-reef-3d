@@ -78,6 +78,12 @@ export default function Home() {
     useRoomSync({ entered, restoredIds: restored });
 
   const activeMoment = moments[momentIndex];
+  const timelineProgress = (momentIndex / Math.max(1, moments.length - 1)) * 100;
+  const timelineStyle = {
+    "--timeline-progress": `${timelineProgress}%`,
+    "--timeline-fill": `${timelineProgress * 0.88}%`,
+    "--timeline-active-x": `${6 + timelineProgress * 0.88}%`,
+  } as CSSProperties;
   const graph = useMemo(
     () => moments.map((moment) => ({ year: moment.year, health: moment.health })),
     [],
@@ -472,7 +478,7 @@ export default function Home() {
           )}
 
           {showTimeline ? (
-            <footer className="time-current">
+            <footer className="time-current" data-phase={activeMoment.phase} style={timelineStyle}>
               <button type="button" onClick={() => setShowTimeline(false)}>
                 <Clock3 /> TIME CURRENT
               </button>

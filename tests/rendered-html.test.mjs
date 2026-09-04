@@ -51,3 +51,15 @@ test("uses the clean Google Sans entry action system", async () => {
   assert.match(css, /\.entry-actions\s*{[^}]*grid-template-columns:/s);
   assert.match(css, /\.expedition-entry h1[\s\S]*?font-weight: 500/);
 });
+
+test("styles the time current as a smooth y2k glass timeline", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(page, /--timeline-fill/);
+  assert.match(page, /data-phase=\{activeMoment\.phase\}/);
+  assert.match(css, /v11 - smooth Y2K glass time-current/);
+  assert.match(css, /timeline-sheen/);
+  assert.match(css, /timeline-dot-pulse/);
+  assert.match(css, /\.time-current nav::after[\s\S]*?width: var\(--timeline-fill\)/);
+});

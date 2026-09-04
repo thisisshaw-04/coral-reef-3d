@@ -258,7 +258,7 @@ const makeAmbientScanColonies = (
 ): ReefSceneHotspot[] =>
   seeds.map(([scan, x, z, size, tint, yaw], index) => ({
     id: `${prefix}-scan-${String(index + 1).padStart(2, "0")}`,
-    label: "Survey scan",
+    label: `Colony ${prefix.slice(0, 1).toUpperCase()}${String(index + 1).padStart(2, "0")}`,
     scan,
     position: [x, 2.35 + (index % 7) * 0.16, z],
     size,
@@ -266,7 +266,7 @@ const makeAmbientScanColonies = (
     yaw: yaw ?? index * 0.37,
   }));
 
-const BIOME_AMBIENT_SCAN_COLONIES: Record<ReefBiomeId, ReefSceneHotspot[]> = {
+export const BIOME_AMBIENT_SCAN_COLONIES: Record<ReefBiomeId, ReefSceneHotspot[]> = {
   "great-barrier": makeAmbientScanColonies("gbr", [
     ["acro-table", -82, -24, 5.6, 0xefa777, -0.55],
     ["acro-compact", -48, -42, 4.8, 0xe18376, 0.72],
@@ -1304,8 +1304,12 @@ export default function ReefScene({
         if (softPolyps.instanceColor) softPolyps.instanceColor.needsUpdate = true;
         world.add(softPolyps);
 
-        const ambientScanColonies =
-          BIOME_AMBIENT_SCAN_COLONIES[biome] ?? AMBIENT_SCAN_COLONIES;
+        const interactiveHotspotIds = new Set(
+          hotspotsRef.current.map((hotspot) => hotspot.id),
+        );
+        const ambientScanColonies = (
+          BIOME_AMBIENT_SCAN_COLONIES[biome] ?? AMBIENT_SCAN_COLONIES
+        ).filter((hotspot) => !interactiveHotspotIds.has(hotspot.id));
         const visibleAmbientScans = lowPower
           ? [
               ...ambientScanColonies.slice(0, Math.min(10, ambientScanColonies.length)),

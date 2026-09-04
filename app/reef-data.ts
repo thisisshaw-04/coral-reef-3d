@@ -5,7 +5,7 @@ import type {
   ScanAssetKey,
 } from "./components/ReefScene";
 
-export type Tool = "scan" | "mark" | "note" | "restore";
+export type Tool = "scan" | "mark" | "note" | "restore" | "library";
 export type Stressor = "heat" | "co2" | "plastic" | "runoff";
 export type Explorer = {
   id: string;
@@ -70,7 +70,7 @@ type ColonyConfig = Pick<
 > &
   Partial<Pick<Colony, "common" | "species" | "lesson" | "tint">>;
 
-const coralProfiles = {
+export const coralProfiles = {
   "acro-table": {
     scan: "acro-table",
     species: "Acropora hyacinthus",
@@ -236,6 +236,32 @@ const makeColony = (scan: ScanAssetKey, config: ColonyConfig): Colony => {
     ...config,
     scan,
     tint: config.tint ?? profile.tint,
+  };
+};
+
+export const createLibraryColonyFromHotspot = (
+  hotspot: ReefSceneHotspot,
+  world: Pick<ReefWorld, "name" | "expedition" | "researchBasis">,
+): Colony => {
+  const scan =
+    hotspot.scan ??
+    (hotspot.id in coralProfiles ? (hotspot.id as ScanAssetKey) : "acro-table");
+  const profile = coralProfiles[scan];
+
+  return {
+    ...profile,
+    id: hotspot.id,
+    label: hotspot.label,
+    position: hotspot.position,
+    scan,
+    size: hotspot.size,
+    tint: hotspot.tint ?? profile.tint,
+    yaw: hotspot.yaw,
+    zone: `${world.expedition} library transect`,
+    lesson: {
+      ...profile.lesson,
+      scientistCheck: `${profile.lesson.scientistCheck} Logged in the ${world.name} notebook from the research basis: ${world.researchBasis}`,
+    },
   };
 };
 

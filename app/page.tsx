@@ -4,6 +4,7 @@ import { useMemo, useState, type CSSProperties } from "react";
 import {
   AudioLines,
   BadgeCheck,
+  BookOpen,
   Check,
   ChevronDown,
   CircleDot,
@@ -22,12 +23,17 @@ import {
   Waves,
   X,
 } from "lucide-react";
-import ReefScene, { type ReefPhase } from "./components/ReefScene";
+import ReefScene, {
+  BIOME_AMBIENT_SCAN_COLONIES,
+  type ReefPhase,
+} from "./components/ReefScene";
+import { CoralLibrary } from "./components/CoralLibrary";
 import { SpecimenMonitor } from "./components/SpecimenMonitor";
 import { useReefGuide } from "./hooks/useReefGuide";
 import { useRoomSync } from "./hooks/useRoomSync";
 import {
   defaultWorldId,
+  createLibraryColonyFromHotspot,
   getWorldById,
   moments,
   reefWorlds,
@@ -82,6 +88,7 @@ export default function Home() {
   const [joinCode, setJoinCode] = useState("");
   const [note, setNote] = useState("");
   const [restored, setRestored] = useState<string[]>([]);
+  const [discoveredIds, setDiscoveredIds] = useState<string[]>([]);
   const [sceneReady, setSceneReady] = useState(false);
   const [engine, setEngine] = useState("Reef engine");
   const [copied, setCopied] = useState(false);
@@ -90,7 +97,21 @@ export default function Home() {
 
   const activeMoment = moments[momentIndex];
   const activeWorld = useMemo(() => getWorldById(worldId), [worldId]);
-  const activeColonies = activeWorld.colonies;
+  const activeColonies = useMemo(() => {
+    const colonies = new globalThis.Map(
+      activeWorld.colonies.map((colony) => [colony.id, colony]),
+    );
+    for (const hotspot of BIOME_AMBIENT_SCAN_COLONIES[activeWorld.id] ?? []) {
+      if (!colonies.has(hotspot.id)) {
+        colonies.set(hotspot.id, createLibraryColonyFromHotspot(hotspot, activeWorld));
+      }
+    }
+    return Array.from(colonies.values());
+  }, [activeWorld]);
+  const sceneMappedIds = useMemo(
+    () => Array.from(new Set([...mappedIds, ...discoveredIds, ...restored])),
+    [mappedIds, discoveredIds, restored],
+  );
   const timelineProgress = (momentIndex / Math.max(1, moments.length - 1)) * 100;
   const timelineStyle = {
     "--timeline-progress": `${timelineProgress}%`,
@@ -130,6 +151,9 @@ export default function Home() {
     setSelected(colony);
     setTool("scan");
     if (!colony) return;
+    setDiscoveredIds((items) =>
+      items.includes(colony.id) ? items : [...items, colony.id],
+    );
 
     guide.announce(
       `Scanning ${colony.common}. Form is evidence: inspect the colony before you name its condition.`,
@@ -175,6 +199,7 @@ export default function Home() {
     setSelected(null);
     setRestored([]);
     setSceneReady(false);
+    setTool("scan");
     setShowWorlds(false);
     guide.announce(
       `${nextWorld.name} terrain loaded. ${nextWorld.objectiveTitle}.`,
@@ -230,7 +255,7 @@ export default function Home() {
         biome={activeWorld.id}
         focusId={selected?.id || null}
         hotspots={activeColonies}
-        mappedIds={mappedIds}
+        mappedIds={sceneMappedIds}
         fallbackSrc="/reef-cockpit.webp"
         phase={phase}
         stressor={stressor}
@@ -442,6 +467,18 @@ export default function Home() {
             />
           )}
 
+          {tool === "library" && (
+            <CoralLibrary
+              colonies={activeColonies}
+              discoveredIds={discoveredIds}
+              mappedIds={mappedIds}
+              restoredIds={restored}
+              selectedId={selected?.id}
+              onClose={() => setTool("scan")}
+              onSelect={inspect}
+            />
+          )}
+
           {guide.caption && guide.status !== "off" && (
             <div className="ai-guide">
               <Sparkles />
@@ -459,6 +496,7 @@ export default function Home() {
                 ["mark", Map, "Mark"],
                 ["note", MessageCircle, "Note"],
                 ["restore", Sprout, "Restore"],
+                ["library", BookOpen, "Library"],
               ] as const
             ).map(([id, Icon, label]) => (
               <button

@@ -254,7 +254,7 @@ test("uses disciplined HUD spacing with softer corners", async () => {
 
   assert.match(css, /v27 - disciplined HUD spacing and softer corners/);
   assert.match(css, /\.tool-console\s*{[\s\S]*?width: min\(760px, calc\(100vw - 48px\)\)/);
-  assert.match(css, /\.tool-console\s*{[\s\S]*?grid-template-columns: repeat\(5, minmax\(0, 1fr\)\)/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?grid-template-columns: repeat\(6, minmax\(0, 1fr\)\)/);
   assert.match(css, /\.tool-console\s*{[\s\S]*?border-radius: 20px/);
   assert.match(css, /\.tool-console button\s*{[\s\S]*?height: 48px/);
   assert.match(css, /\.tool-console button\s*{[\s\S]*?border-radius: 14px/);
@@ -311,4 +311,30 @@ test("keeps the live mission masthead compact and aligned", async () => {
   assert.match(css, /\.mission-brand span\s*{[\s\S]*?font-weight: 360/);
   assert.match(css, /\.sub-title\s*{[\s\S]*?top: clamp\(76px, 8vh, 98px\)/);
   assert.match(css, /\.sub-title strong\s*{[\s\S]*?font-weight: 360/);
+});
+
+test("turns every scanned coral into a clickable evolving library entry", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const data = await readFile(new URL("../app/reef-data.ts", import.meta.url), "utf8");
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+  const library = await readFile(new URL("../app/components/CoralLibrary.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(data, /export type Tool = "scan" \| "mark" \| "note" \| "restore" \| "library"/);
+  assert.match(data, /export const createLibraryColonyFromHotspot/);
+  assert.match(scene, /export const BIOME_AMBIENT_SCAN_COLONIES/);
+  assert.match(scene, /interactiveHotspotIds/);
+  assert.match(scene, /\.filter\(\(hotspot\) => !interactiveHotspotIds\.has\(hotspot\.id\)\)/);
+  assert.match(page, /BIOME_AMBIENT_SCAN_COLONIES/);
+  assert.match(page, /new globalThis\.Map/);
+  assert.match(page, /createLibraryColonyFromHotspot\(hotspot, activeWorld\)/);
+  assert.match(page, /hotspots=\{activeColonies\}/);
+  assert.match(page, /sceneMappedIds/);
+  assert.match(page, /\["library", BookOpen, "Library"\]/);
+  assert.match(page, /<CoralLibrary/);
+  assert.match(library, /Coral Library/);
+  assert.match(library, /Unscanned/);
+  assert.match(library, /Discovered/);
+  assert.match(css, /v29 - evolving coral library/);
+  assert.match(css, /\.coral-library\s*{/);
 });

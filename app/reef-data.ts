@@ -26,6 +26,11 @@ export type Colony = ReefSceneHotspot & {
   common: string;
   image: string;
   zone: string;
+  lesson: {
+    form: string;
+    habitat: string;
+    scientistCheck: string;
+  };
 };
 export type ReefMoment = {
   year: string;
@@ -46,6 +51,11 @@ export const colonies: Colony[] = [
     image: "/specimens/acropora-hyacinthus.jpg",
     position: [-8, 2.6, -11],
     zone: "Current Gate",
+    lesson: {
+      form: "Broad table plates spread sideways to catch light in clear, moving water.",
+      habitat: "The flat canopy makes shaded shelter for small fish while its rim faces the current.",
+      scientistCheck: "A real ID would compare corallite detail, colony location, and close-up skeletal structure.",
+    },
   },
   {
     id: "acro-compact",
@@ -55,6 +65,11 @@ export const colonies: Colony[] = [
     image: "/specimens/acropora-humilis.jpg",
     position: [8, 2.2, -27],
     zone: "Turbid Shelf",
+    lesson: {
+      form: "Short, thick branches resist surge better than delicate plates.",
+      habitat: "The compact shape traps pockets of calm water where tiny animals can hide.",
+      scientistCheck: "A field biologist would check branch tips, corallite spacing, and local reef records.",
+    },
   },
   {
     id: "massive-star",
@@ -64,6 +79,11 @@ export const colonies: Colony[] = [
     image: "/specimens/plesiastraea-armata.jpg",
     position: [24, 2.7, -47],
     zone: "Archive Garden",
+    lesson: {
+      form: "Massive rounded colonies grow slowly, building heavy skeleton over many years.",
+      habitat: "The boulder shape is a long-lived reef foundation and can survive rougher seasons.",
+      scientistCheck: "A confident ID would need close inspection of the star-like corallite pattern.",
+    },
   },
 ];
 

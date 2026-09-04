@@ -66,6 +66,12 @@ export function SpecimenMonitor({
           </dd>
         </div>
       </dl>
+      <section className="evidence-card" aria-label="Observation evidence">
+        <span>OBSERVE BEFORE NAMING</span>
+        <p>{selected.lesson.form}</p>
+        <p>{selected.lesson.habitat}</p>
+        <p>{selected.lesson.scientistCheck}</p>
+      </section>
       <button className="signal-button" type="button" onClick={onToggleSignals}>
         <Activity /> {showSignals ? "Hide signals" : "Open signals"}
       </button>

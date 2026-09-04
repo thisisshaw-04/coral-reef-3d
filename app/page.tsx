@@ -33,6 +33,27 @@ import {
   type Tool,
 } from "./reef-data";
 
+const briefingSteps = [
+  {
+    label: "MISSION BRIEFING 01",
+    title: "You are entering a simulated reef nursery.",
+    body: "Reef Relay uses real digitized coral scans inside a model reef. The readings are educational, not live field data.",
+    points: ["Find glowing colonies", "Look at shape first", "Treat every ID as evidence-based"],
+  },
+  {
+    label: "MISSION BRIEFING 02",
+    title: "Your job is to read the reef like a field scientist.",
+    body: "Coral form tells a story: plates catch light, branches create shelter, and massive corals store years of growth.",
+    points: ["Scan a colony", "Mark its health", "Save one observation"],
+  },
+  {
+    label: "MISSION BRIEFING 03",
+    title: "Then test how stress changes the same place.",
+    body: "Use the time current and stress test to compare living cover, heat stress, and pH. Restoration helps locally, but it does not replace clean water and climate action.",
+    points: ["Compare 1998 to 2035", "Watch bleaching risk", "Restore with caution"],
+  },
+];
+
 export default function Home() {
   const [entered, setEntered] = useState(false);
   const [selected, setSelected] = useState<Colony | null>(null);
@@ -41,6 +62,8 @@ export default function Home() {
   const [momentIndex, setMomentIndex] = useState(3);
   const [stressor, setStressor] = useState<Stressor | null>(null);
   const [showTimeline, setShowTimeline] = useState(true);
+  const [showBriefing, setShowBriefing] = useState(false);
+  const [briefingStep, setBriefingStep] = useState(0);
   const [showStress, setShowStress] = useState(false);
   const [showWorlds, setShowWorlds] = useState(false);
   const [showSignals, setShowSignals] = useState(false);
@@ -69,8 +92,17 @@ export default function Home() {
   const begin = (code?: string) => {
     chooseRoomCode(code);
     setEntered(true);
+    setShowBriefing(true);
+    setBriefingStep(0);
     guide.announce(
-      "Welcome aboard. Move freely, then choose a glowing colony. We will read the reef together.",
+      "Welcome aboard. Start with the mission briefing, then choose a glowing colony.",
+    );
+  };
+
+  const finishBriefing = () => {
+    setShowBriefing(false);
+    guide.announce(
+      "Mission started. Scan one colony, mark its health, then compare the reef through time.",
     );
   };
 
@@ -154,7 +186,10 @@ export default function Home() {
   };
 
   return (
-    <main className={`expedition-v5${entered ? " is-live" : ""}`} data-phase={phase}>
+    <main
+      className={`expedition-v5${entered ? " is-live" : ""}${showBriefing ? " is-briefing" : ""}`}
+      data-phase={phase}
+    >
       <ReefScene
         active={entered}
         focusId={selected?.id || null}
@@ -264,7 +299,55 @@ export default function Home() {
         </section>
       )}
 
-      {entered && (
+      {entered && showBriefing && (
+        <section className="mission-briefing" aria-live="polite">
+          <span>{briefingSteps[briefingStep].label}</span>
+          <h2>{briefingSteps[briefingStep].title}</h2>
+          <p>{briefingSteps[briefingStep].body}</p>
+          <div className="briefing-points">
+            {briefingSteps[briefingStep].points.map((point, index) => (
+              <strong key={point}>
+                <i>{index + 1}</i>
+                {point}
+              </strong>
+            ))}
+          </div>
+          <footer>
+            <button
+              type="button"
+              onClick={() => setBriefingStep((step) => Math.max(0, step - 1))}
+              disabled={briefingStep === 0}
+            >
+              Back
+            </button>
+            <nav aria-label="Briefing progress">
+              {briefingSteps.map((step, index) => (
+                <button
+                  type="button"
+                  key={step.label}
+                  className={index === briefingStep ? "is-active" : ""}
+                  onClick={() => setBriefingStep(index)}
+                  aria-label={`Open ${step.label}`}
+                />
+              ))}
+            </nav>
+            {briefingStep === briefingSteps.length - 1 ? (
+              <button type="button" onClick={finishBriefing}>
+                Start dive
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setBriefingStep((step) => step + 1)}
+              >
+                Next
+              </button>
+            )}
+          </footer>
+        </section>
+      )}
+
+      {entered && !showBriefing && (
         <>
           <div className="sub-title">
             <span>EXPEDITION 01</span>
@@ -292,6 +375,22 @@ export default function Home() {
               </span>
             ))}
           </div>
+
+          {!selected && (
+            <aside className="field-lesson">
+              <span>FIELD OBJECTIVE</span>
+              <strong>Map three living colonies</strong>
+              <p>
+                Start with a glowing marker. Scan shape, mark health, then use
+                the time current to ask what changed.
+              </p>
+              <ol>
+                <li>Observe form before naming species.</li>
+                <li>Compare living cover, DHW, and pH.</li>
+                <li>Use restore as a local recovery preview.</li>
+              </ol>
+            </aside>
+          )}
 
           {selected && (
             <SpecimenMonitor

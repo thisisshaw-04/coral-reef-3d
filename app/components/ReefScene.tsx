@@ -61,6 +61,18 @@ const FALLBACK_POSITIONS: Record<string, { left: string; top: string }> = {
   "massive-star": { left: "76%", top: "51%" },
 };
 
+const WORLD_BOUNDS = {
+  x: 96,
+  yMin: 2.8,
+  yMax: 13.5,
+  zMin: -178,
+  zMax: 28,
+};
+
+const FLOOR_WIDTH = 260;
+const FLOOR_DEPTH = 380;
+const FLOOR_CENTER_Z = -78;
+
 function seededRandom(seed = 2035) {
   let value = seed >>> 0;
   return () => {
@@ -178,6 +190,18 @@ export default function ReefScene({
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         const lowPower = coarse || (navigator.hardwareConcurrency || 8) <= 4;
         const random = seededRandom();
+        const seabedHeight = (x: number, z: number) => {
+          const softRidges =
+            Math.sin(x * 0.055 + z * 0.018) * 0.52 +
+            Math.cos(z * 0.043) * 0.42 +
+            Math.sin((x - z) * 0.032) * 0.3;
+          const swimChannel =
+            Math.max(0, 1 - Math.abs(x + z * 0.1) / 26) * -0.85;
+          const sideRise = Math.max(0, (Math.abs(x) - 48) / 46) ** 2 * 4.9;
+          const farRise = Math.max(0, (-z - 112) / 66) * 4.1;
+
+          return softRidges + swimChannel + sideRise + farRise - 0.9;
+        };
         const renderer = new THREE.WebGPURenderer({ canvas, alpha: false, antialias: !lowPower });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowPower ? 1.15 : 1.65));
         renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -185,10 +209,10 @@ export default function ReefScene({
         renderer.toneMappingExposure = 1.12;
 
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x031a24);
-        scene.fog = new THREE.FogExp2(0x063845, 0.021);
+        scene.background = new THREE.Color(0x021219);
+        scene.fog = new THREE.FogExp2(0x063845, 0.017);
 
-        const camera = new THREE.PerspectiveCamera(62, 1, 0.1, 180);
+        const camera = new THREE.PerspectiveCamera(64, 1, 0.1, 320);
         camera.rotation.order = "YXZ";
         camera.position.set(0, 5.2, 17);
 
@@ -219,20 +243,18 @@ export default function ReefScene({
         gravel.colorSpace = THREE.SRGBColorSpace;
         for (const texture of [gravel, gravelNormal, gravelArm]) {
           texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-          texture.repeat.set(10, 14);
+          texture.repeat.set(26, 38);
           texture.anisotropy = lowPower ? 2 : 8;
           textures.push(texture);
         }
 
-        const floorGeometry = new THREE.PlaneGeometry(115, 150, lowPower ? 28 : 52, lowPower ? 36 : 70);
+        const floorGeometry = new THREE.PlaneGeometry(FLOOR_WIDTH, FLOOR_DEPTH, lowPower ? 58 : 104, lowPower ? 76 : 148);
         floorGeometry.rotateX(-Math.PI / 2);
         const floorPosition = floorGeometry.attributes.position;
         for (let index = 0; index < floorPosition.count; index += 1) {
           const x = floorPosition.getX(index);
-          const z = floorPosition.getZ(index) - 34;
-          const ridge = Math.sin(x * 0.16) * 0.22 + Math.cos(z * 0.11) * 0.26;
-          const channel = Math.max(0, 1 - Math.abs(x + z * 0.11) / 16) * -0.5;
-          floorPosition.setXYZ(index, x, ridge + channel - 0.65, z);
+          const z = floorPosition.getZ(index) + FLOOR_CENTER_Z;
+          floorPosition.setXYZ(index, x, seabedHeight(x, z), z);
         }
         floorGeometry.computeVertexNormals();
         const floor = new THREE.Mesh(
@@ -265,14 +287,14 @@ export default function ReefScene({
         }
         const causticTexture = new THREE.CanvasTexture(causticCanvas);
         causticTexture.wrapS = causticTexture.wrapT = THREE.RepeatWrapping;
-        causticTexture.repeat.set(4, 6);
+        causticTexture.repeat.set(9, 14);
         textures.push(causticTexture);
         const caustics = new THREE.Mesh(
-          new THREE.PlaneGeometry(112, 148),
+          new THREE.PlaneGeometry(FLOOR_WIDTH * 0.96, FLOOR_DEPTH * 0.94),
           new THREE.MeshBasicMaterial({ map: causticTexture, color: 0x8fe9dd, transparent: true, opacity: 0.13, blending: THREE.AdditiveBlending, depthWrite: false }),
         );
         caustics.rotation.x = -Math.PI / 2;
-        caustics.position.set(0, -0.42, -34);
+        caustics.position.set(0, -0.38, FLOOR_CENTER_Z);
         world.add(caustics);
 
         const normalCanvas = document.createElement("canvas");
@@ -296,7 +318,7 @@ export default function ReefScene({
         const waterNormals = new THREE.CanvasTexture(normalCanvas);
         waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
         textures.push(waterNormals);
-        const water = new WaterMesh(new THREE.PlaneGeometry(190, 190), {
+        const water = new WaterMesh(new THREE.PlaneGeometry(380, 430), {
           waterNormals,
           alpha: 0.68,
           waterColor: 0x0d5667,
@@ -307,29 +329,51 @@ export default function ReefScene({
           resolutionScale: lowPower ? 0.22 : 0.42,
         });
         water.rotation.x = -Math.PI / 2;
-        water.position.set(0, 13.2, -30);
+        water.position.set(0, 13.2, -72);
         water.material.side = THREE.DoubleSide;
         world.add(water);
 
         const rayMaterial = new THREE.MeshBasicMaterial({ color: 0x8de5dc, transparent: true, opacity: lowPower ? 0.035 : 0.055, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
-        for (let index = 0; index < (lowPower ? 5 : 9); index += 1) {
-          const ray = new THREE.Mesh(new THREE.ConeGeometry(4 + random() * 5, 45, 24, 1, true), rayMaterial);
-          ray.position.set(-36 + index * 10 + random() * 6, 23, -20 - random() * 62);
+        for (let index = 0; index < (lowPower ? 7 : 15); index += 1) {
+          const ray = new THREE.Mesh(new THREE.ConeGeometry(5 + random() * 9, 62, 24, 1, true), rayMaterial);
+          ray.position.set(-82 + index * 13 + random() * 9, 27, 10 - random() * 178);
           ray.rotation.z = (random() - 0.5) * 0.14;
           ray.rotation.x = Math.PI;
           world.add(ray);
         }
 
-        const rocks = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), new THREE.MeshStandardMaterial({ color: 0x2e3e3a, roughness: 0.93 }), lowPower ? 44 : 76);
+        const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x0d3034, roughness: 0.98, transparent: true, opacity: 0.72, side: THREE.DoubleSide });
+        const makeReefWall = (width: number, height: number, wallPosition: [number, number, number], rotationY = 0) => {
+          const wallGeometry = new THREE.PlaneGeometry(width, height, lowPower ? 18 : 34, 7);
+          const wallPositionAttribute = wallGeometry.attributes.position;
+          for (let index = 0; index < wallPositionAttribute.count; index += 1) {
+            const x = wallPositionAttribute.getX(index);
+            const y = wallPositionAttribute.getY(index);
+            wallPositionAttribute.setZ(index, Math.sin(x * 0.045 + y * 0.18) * 2.4 + Math.cos(x * 0.022) * 1.7);
+          }
+          wallGeometry.computeVertexNormals();
+          const wall = new THREE.Mesh(wallGeometry, wallMaterial);
+          wall.position.set(...wallPosition);
+          wall.rotation.y = rotationY;
+          world.add(wall);
+        };
+        makeReefWall(260, 34, [0, 9.5, -205]);
+        makeReefWall(250, 34, [-128, 9, -78], Math.PI / 2);
+        makeReefWall(250, 34, [128, 9, -78], -Math.PI / 2);
+
+        const rocks = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), new THREE.MeshStandardMaterial({ color: 0x223b36, roughness: 0.93 }), lowPower ? 116 : 220);
         const matrix = new THREE.Matrix4();
         const quaternion = new THREE.Quaternion();
         const position = new THREE.Vector3();
         const scale = new THREE.Vector3();
         for (let index = 0; index < rocks.count; index += 1) {
-          const x = (random() - 0.5) * 88;
-          const z = 13 - random() * 115;
-          const size = 0.45 + random() * 2.4;
-          position.set(x, -0.35 + size * 0.28, z);
+          const shelf = index % 5 === 0;
+          const x = shelf
+            ? (random() < 0.5 ? -1 : 1) * (58 + random() * 52)
+            : (random() - 0.5) * 190;
+          const z = 30 - random() * 215;
+          const size = shelf ? 2.4 + random() * 7.8 : 0.45 + random() * 3.1;
+          position.set(x, seabedHeight(x, z) + size * 0.28, z);
           quaternion.setFromEuler(new THREE.Euler(random(), random() * Math.PI, random()));
           scale.set(size * (0.7 + random() * 0.55), size * (0.42 + random() * 0.38), size);
           matrix.compose(position, quaternion, scale);
@@ -338,14 +382,16 @@ export default function ReefScene({
         rocks.instanceMatrix.needsUpdate = true;
         world.add(rocks);
 
-        const sponges = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.34, 0.52, 2.1, 14, 3, true), new THREE.MeshStandardMaterial({ color: 0x9d5f43, roughness: 0.68 }), lowPower ? 28 : 52);
-        const clusters: Array<[number, number, number, number]> = [[-8, 0, -11, 8], [8, 0, -27, 8], [24, 0, -47, 10], [-24, 0, -40, 9], [30, 0, -72, 8]];
+        const sponges = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.2, 0.52, 1.9, 14, 3, false), new THREE.MeshStandardMaterial({ color: 0x7f6b46, roughness: 0.72 }), lowPower ? 70 : 130);
+        const clusters: Array<[number, number, number, number]> = [[-8, 0, -11, 12], [8, 0, -27, 12], [24, 0, -47, 14], [-38, 0, -64, 20], [42, 0, -86, 24], [-12, 0, -126, 28], [58, 0, -150, 22]];
         for (let index = 0; index < sponges.count; index += 1) {
           const cluster = clusters[index % clusters.length];
           const theta = random() * Math.PI * 2;
           const radius = 3.5 + random() * cluster[3];
           const height = 0.7 + random() * 2.1;
-          position.set(cluster[0] + Math.cos(theta) * radius, height * 0.48, cluster[2] + Math.sin(theta) * radius);
+          const x = cluster[0] + Math.cos(theta) * radius;
+          const z = cluster[2] + Math.sin(theta) * radius;
+          position.set(x, seabedHeight(x, z) + height * 0.48, z);
           quaternion.setFromEuler(new THREE.Euler((random() - 0.5) * 0.18, random() * Math.PI, (random() - 0.5) * 0.2));
           scale.set(0.5 + random() * 0.9, height, 0.5 + random() * 0.9);
           matrix.compose(position, quaternion, scale);
@@ -354,12 +400,12 @@ export default function ReefScene({
         sponges.instanceMatrix.needsUpdate = true;
         world.add(sponges);
 
-        const grass = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.22, 2.1, 1, 4), new THREE.MeshStandardMaterial({ color: 0x496f5e, roughness: 0.84, side: THREE.DoubleSide }), lowPower ? 90 : 190);
+        const grass = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.22, 2.1, 1, 4), new THREE.MeshStandardMaterial({ color: 0x245d50, roughness: 0.84, side: THREE.DoubleSide }), lowPower ? 240 : 540);
         for (let index = 0; index < grass.count; index += 1) {
-          const x = (random() - 0.5) * 90;
-          const z = 10 - random() * 112;
+          const x = (random() - 0.5) * 205;
+          const z = 28 - random() * 216;
           const height = 0.45 + random() * 1.25;
-          position.set(x, height, z);
+          position.set(x, seabedHeight(x, z) + height * 0.5, z);
           quaternion.setFromEuler(new THREE.Euler(0, random() * Math.PI, (random() - 0.5) * 0.2));
           scale.set(1, height, 1);
           matrix.compose(position, quaternion, scale);
@@ -367,6 +413,45 @@ export default function ReefScene({
         }
         grass.instanceMatrix.needsUpdate = true;
         world.add(grass);
+
+        const coralHeads = new THREE.InstancedMesh(
+          new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2),
+          new THREE.MeshStandardMaterial({ color: 0x6f5f45, roughness: 0.88 }),
+          lowPower ? 72 : 148,
+        );
+        for (let index = 0; index < coralHeads.count; index += 1) {
+          const cluster = clusters[(index + 2) % clusters.length];
+          const theta = random() * Math.PI * 2;
+          const radius = 5 + random() * (cluster[3] + 9);
+          const x = cluster[0] + Math.cos(theta) * radius + (random() - 0.5) * 10;
+          const z = cluster[2] + Math.sin(theta) * radius - random() * 8;
+          const size = 0.55 + random() * 1.85;
+          position.set(x, seabedHeight(x, z) + 0.05, z);
+          quaternion.setFromEuler(new THREE.Euler(0, random() * Math.PI, 0));
+          scale.set(size * (0.9 + random() * 0.45), size * (0.36 + random() * 0.24), size * (0.82 + random() * 0.52));
+          matrix.compose(position, quaternion, scale);
+          coralHeads.setMatrixAt(index, matrix);
+        }
+        coralHeads.instanceMatrix.needsUpdate = true;
+        world.add(coralHeads);
+
+        const seaFans = new THREE.InstancedMesh(
+          new THREE.PlaneGeometry(1, 1.8, 1, 5),
+          new THREE.MeshStandardMaterial({ color: 0x1f8b7f, roughness: 0.8, transparent: true, opacity: 0.58, side: THREE.DoubleSide }),
+          lowPower ? 48 : 105,
+        );
+        for (let index = 0; index < seaFans.count; index += 1) {
+          const x = (random() - 0.5) * 188;
+          const z = 22 - random() * 225;
+          const height = 0.9 + random() * 2.4;
+          position.set(x, seabedHeight(x, z) + height * 0.48, z);
+          quaternion.setFromEuler(new THREE.Euler((random() - 0.5) * 0.18, random() * Math.PI, (random() - 0.5) * 0.28));
+          scale.set(0.65 + random() * 0.9, height, 1);
+          matrix.compose(position, quaternion, scale);
+          seaFans.setMatrixAt(index, matrix);
+        }
+        seaFans.instanceMatrix.needsUpdate = true;
+        world.add(seaFans);
 
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath("/draco/");
@@ -423,14 +508,14 @@ export default function ReefScene({
             const fishScale = 2.2 / Math.max(fishSize.x, fishSize.y, fishSize.z, 0.001);
             fishGltf.scene.position.copy(fishCenter.multiplyScalar(-fishScale));
             fishGltf.scene.scale.setScalar(fishScale);
-            const count = lowPower ? 7 : 13;
+            const count = lowPower ? 11 : 22;
             for (let index = 0; index < count; index += 1) {
               const pivot = new THREE.Group();
               const fish = fishGltf.scene.clone(true);
               fish.scale.multiplyScalar(0.55 + random() * 0.65);
               fish.rotation.y = Math.PI / 2;
               pivot.add(fish);
-              fishActors.push({ object: pivot, offset: random() * Math.PI * 2, lane: (random() - 0.5) * 28, depth: 4 - random() * 84 });
+              fishActors.push({ object: pivot, offset: random() * Math.PI * 2, lane: (random() - 0.5) * 86, depth: 22 - random() * 178 });
               world.add(pivot);
             }
           }
@@ -438,13 +523,13 @@ export default function ReefScene({
           // Decorative fish are not required for the science interaction.
         }
 
-        const particleCount = lowPower ? 520 : 1250;
+        const particleCount = lowPower ? 900 : 2200;
         const particleGeometry = new THREE.BufferGeometry();
         const particlePositions = new Float32Array(particleCount * 3);
         for (let index = 0; index < particleCount; index += 1) {
-          particlePositions[index * 3] = (random() - 0.5) * 105;
-          particlePositions[index * 3 + 1] = random() * 13;
-          particlePositions[index * 3 + 2] = 20 - random() * 135;
+          particlePositions[index * 3] = (random() - 0.5) * 230;
+          particlePositions[index * 3 + 1] = random() * 17;
+          particlePositions[index * 3 + 2] = 36 - random() * 245;
         }
         particleGeometry.setAttribute("position", new THREE.BufferAttribute(particlePositions, 3));
         const particles = new THREE.Points(particleGeometry, new THREE.PointsMaterial({ color: 0xc4f3e9, size: lowPower ? 0.035 : 0.045, transparent: true, opacity: 0.38, depthWrite: false }));
@@ -568,7 +653,7 @@ export default function ReefScene({
 
           causticTexture.offset.x = (elapsed * 0.012) % 1;
           causticTexture.offset.y = (elapsed * -0.008) % 1;
-          particles.position.x = (elapsed * 0.085) % 5;
+          particles.position.x = Math.sin(elapsed * 0.04) * 6;
           grass.rotation.z = reduced ? 0 : Math.sin(elapsed * 0.42) * 0.014;
           fishActors.forEach((actor, index) => {
             const t = elapsed * (0.12 + (index % 4) * 0.013) + actor.offset;
@@ -606,13 +691,13 @@ export default function ReefScene({
             nav.velocity.lerp(desired, 1 - Math.exp(-delta * 5));
             if (!activeRef.current) nav.velocity.multiplyScalar(Math.exp(-delta * 8));
             camera.position.addScaledVector(nav.velocity, delta);
-            camera.position.x = THREE.MathUtils.clamp(camera.position.x, -36, 36);
-            camera.position.y = THREE.MathUtils.clamp(camera.position.y, 2.8, 10.5);
-            camera.position.z = THREE.MathUtils.clamp(camera.position.z, -72, 18);
+            camera.position.x = THREE.MathUtils.clamp(camera.position.x, -WORLD_BOUNDS.x, WORLD_BOUNDS.x);
+            camera.position.y = THREE.MathUtils.clamp(camera.position.y, WORLD_BOUNDS.yMin, WORLD_BOUNDS.yMax);
+            camera.position.z = THREE.MathUtils.clamp(camera.position.z, WORLD_BOUNDS.zMin, WORLD_BOUNDS.zMax);
             camera.rotation.set(nav.pitch + (reduced ? 0 : Math.sin(elapsed * 0.56) * 0.004), nav.yaw, 0);
           }
 
-          const nextZone = camera.position.z > -19 ? ["Current Gate", "14 m"] : camera.position.z > -39 ? ["Turbid Shelf", "17 m"] : ["Archive Garden", "20 m"];
+          const nextZone = camera.position.z > -30 ? ["Current Gate", "14 m"] : camera.position.z > -92 ? ["Turbid Shelf", "18 m"] : ["Archive Garden", "22 m"];
           if (nextZone[0] !== nav.zone) {
             nav.zone = nextZone[0];
             callbacksRef.current.onZoneChange?.(nextZone[0], nextZone[1]);
@@ -626,11 +711,11 @@ export default function ReefScene({
             spotVector.set(...hotspot.position);
             projected.copy(spotVector).project(camera);
             const distance = camera.position.distanceTo(spotVector);
-            const visible = activeRef.current && projected.z > -1 && projected.z < 1 && Math.abs(projected.x) < 1.05 && Math.abs(projected.y) < 1.04 && distance < 38;
+            const visible = activeRef.current && projected.z > -1 && projected.z < 1 && Math.abs(projected.x) < 1.05 && Math.abs(projected.y) < 1.04 && distance < 68;
             marker.style.opacity = visible ? "1" : "0";
             marker.style.pointerEvents = visible ? "auto" : "none";
             marker.style.transform = `translate3d(${(projected.x * 0.5 + 0.5) * width}px,${(-projected.y * 0.5 + 0.5) * height}px,0) translate(-50%,-50%)`;
-            marker.dataset.near = distance < 18 || focusRef.current === hotspot.id ? "true" : "false";
+            marker.dataset.near = distance < 24 || focusRef.current === hotspot.id ? "true" : "false";
           }
           renderer.render(scene, camera);
         });

@@ -2928,3 +2928,275 @@ button:disabled {
     font-size: 14px;
   }
 }
+
+.mission-briefing {
+  position: absolute;
+  z-index: 26;
+  left: 50%;
+  top: 50%;
+  width: min(680px, calc(100vw - 64px));
+  translate: -50% -50%;
+  padding: 28px 34px 26px;
+  border: 1px solid rgb(255 255 255 / 0.52);
+  background:
+    linear-gradient(90deg, rgb(8 8 9 / 0.88), rgb(8 8 9 / 0.7)),
+    rgb(3 4 5 / 0.82);
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.08) inset,
+    0 18px 55px rgb(0 0 0 / 0.55);
+  color: #fffaf2;
+  backdrop-filter: blur(12px);
+}
+
+.mission-briefing::before,
+.mission-briefing::after {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  height: 1px;
+  content: "";
+  background: rgb(255 255 255 / 0.52);
+}
+
+.mission-briefing::before {
+  top: 52px;
+}
+
+.mission-briefing::after {
+  bottom: 86px;
+}
+
+.mission-briefing > span,
+.field-lesson > span,
+.evidence-card > span {
+  display: block;
+  color: rgb(255 250 242 / 0.62);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.mission-briefing h2 {
+  margin: 18px 0 10px;
+  color: #fffaf2;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.mission-briefing p {
+  max-width: 58ch;
+  margin: 0;
+  color: rgb(255 250 242 / 0.72);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.briefing-points {
+  display: grid;
+  gap: 8px;
+  margin: 22px 0 24px;
+}
+
+.briefing-points strong {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  align-items: center;
+  min-height: 48px;
+  border: 1px solid rgb(255 255 255 / 0.28);
+  background: rgb(255 255 255 / 0.045);
+  color: #fffaf2;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.briefing-points i {
+  display: grid;
+  width: 34px;
+  height: 100%;
+  place-items: center;
+  border-right: 1px solid rgb(255 255 255 / 0.24);
+  color: rgb(255 250 242 / 0.54);
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: normal;
+}
+
+.mission-briefing footer {
+  display: grid;
+  grid-template-columns: 118px 1fr 132px;
+  align-items: center;
+  gap: 14px;
+  padding-top: 8px;
+}
+
+.mission-briefing footer > button {
+  height: 46px;
+  border: 1px solid rgb(255 255 255 / 0.34);
+  border-radius: 0;
+  background: rgb(255 255 255 / 0.055);
+  color: #fffaf2;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+}
+
+.mission-briefing footer > button:last-child {
+  border-color: rgb(255 250 242 / 0.78);
+  box-shadow: 0 0 18px rgb(255 255 255 / 0.14);
+}
+
+.mission-briefing footer > button:disabled {
+  opacity: 0.3;
+}
+
+.mission-briefing nav {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.mission-briefing nav button {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 0.48);
+  border-radius: 999px;
+  background: rgb(6 7 8 / 0.8);
+}
+
+.mission-briefing nav button.is-active {
+  background: #fffaf2;
+  box-shadow: 0 0 16px rgb(255 250 242 / 0.78);
+}
+
+.field-lesson {
+  position: absolute;
+  z-index: 16;
+  left: 74px;
+  bottom: 126px;
+  width: min(344px, 28vw);
+  padding: 18px 22px;
+  border-left: 1px solid rgb(255 255 255 / 0.72);
+  background: linear-gradient(90deg, rgb(8 8 9 / 0.72), rgb(8 8 9 / 0.18));
+  color: #fffaf2;
+  text-shadow: 0 2px 12px rgb(0 0 0 / 0.72);
+}
+
+.field-lesson strong {
+  display: block;
+  margin-top: 8px;
+  color: #fffaf2;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.field-lesson p,
+.field-lesson li {
+  color: rgb(255 250 242 / 0.68);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.field-lesson p {
+  margin: 8px 0 12px;
+}
+
+.field-lesson ol {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.evidence-card {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 12px;
+  padding: 12px 14px;
+  border: 1px solid rgb(255 255 255 / 0.24);
+  background: rgb(255 255 255 / 0.045);
+}
+
+.evidence-card p {
+  margin: 0;
+  color: rgb(255 250 242 / 0.68);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.evidence-card p::before {
+  color: rgb(255 250 242 / 0.9);
+  content: "- ";
+}
+
+@media (max-width: 900px) {
+  .mission-briefing {
+    width: calc(100vw - 36px);
+    padding: 24px 22px 22px;
+  }
+
+  .mission-briefing h2 {
+    font-size: 32px;
+  }
+
+  .mission-briefing footer {
+    grid-template-columns: 96px 1fr 112px;
+  }
+
+  .field-lesson {
+    left: 18px;
+    right: 18px;
+    bottom: 174px;
+    width: auto;
+    padding: 14px 18px;
+  }
+
+  .field-lesson strong {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 620px) {
+  .mission-briefing {
+    top: 52%;
+    padding: 22px 16px 18px;
+  }
+
+  .mission-briefing::before {
+    top: 46px;
+  }
+
+  .mission-briefing::after {
+    bottom: 74px;
+  }
+
+  .mission-briefing p {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .briefing-points strong {
+    grid-template-columns: 30px 1fr;
+    min-height: 44px;
+    font-size: 13px;
+  }
+
+  .briefing-points i {
+    width: 30px;
+  }
+
+  .mission-briefing footer {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .mission-briefing nav {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+}

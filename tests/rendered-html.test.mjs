@@ -179,3 +179,14 @@ test("uses icon lenses for briefing points instead of numeric dots", async () =>
   assert.match(css, /v20 - briefing point icons/);
   assert.match(css, /\.briefing-points i svg\s*{[\s\S]*?stroke-width: 1\.85/);
 });
+
+test("separates the bottom tool dock from the timeline", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v21 - separated sleek bottom HUD/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?bottom: clamp\(128px, 15\.5vh, 164px\)/);
+  assert.match(css, /\.tool-console button\s*{[\s\S]*?height: 58px/);
+  assert.match(css, /\.time-current\s*{[\s\S]*?height: 72px/);
+  assert.match(css, /\.time-current\s*{[\s\S]*?bottom: 18px/);
+  assert.match(css, /\.stress-trigger\s*{[\s\S]*?bottom: clamp\(132px, 15\.7vh, 168px\)/);
+});

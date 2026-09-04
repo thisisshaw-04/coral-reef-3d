@@ -6,6 +6,8 @@ test("builds the Reef Relay production worker and client", async () => {
   await access(new URL("../dist/server/index.js", import.meta.url));
   await access(new URL("../dist/client/reef-entry-v4.webp", import.meta.url));
   await access(new URL("../dist/client/models/acropora-hyacinthus.glb", import.meta.url));
+  await access(new URL("../dist/client/models/smithsonian-acropora-palmata.glb", import.meta.url));
+  await access(new URL("../dist/client/models/smithsonian-linckia-laevigata.glb", import.meta.url));
 });
 
 test("publishes truthful product metadata and preview contract", async () => {
@@ -31,7 +33,12 @@ test("uses a broader scan-based coral survey without cone light meshes", async (
   assert.match(data, /scan: "acro-table"/);
   assert.match(data, /scan: "acro-compact"/);
   assert.match(data, /scan: "massive-star"/);
+  assert.match(data, /scan: "acropora-palmata"/);
+  assert.match(data, /scan: "pavona-lettuce"/);
   assert.match(scene, /AMBIENT_SCAN_COLONIES/);
+  assert.match(scene, /smithsonian-diodon-hystrix\.glb/);
+  assert.match(scene, /const FLOOR_WIDTH = 380/);
+  assert.match(scene, /new THREE\.PlaneGeometry\(560, 720\)/);
   assert.doesNotMatch(scene, /ConeGeometry\(5 \+ random\(\) \* 9, 62/);
 });
 

@@ -58,24 +58,41 @@ const DEFAULT_HOTSPOTS: ReefSceneHotspot[] = [
   { id: "massive-star", label: "Colony C", position: [24, 2.7, -47] },
 ];
 
-const SCANS: Record<ScanAssetKey, { desktop: string; mobile: string; size: number; tint: number; preserveColor?: boolean }> = {
+const SCANS: Record<
+  ScanAssetKey,
+  {
+    desktop: string;
+    mobile: string;
+    size: number;
+    tint: number;
+    preserveColor?: boolean;
+    sensitivity: number;
+    recovery: number;
+  }
+> = {
   "acro-table": {
     desktop: "/models/acropora-hyacinthus.glb",
     mobile: "/models/acropora-hyacinthus-mobile.glb",
     size: 7.4,
     tint: 0xffb58f,
+    sensitivity: 0.96,
+    recovery: 0.7,
   },
   "acro-compact": {
     desktop: "/models/acropora-humilis.glb",
     mobile: "/models/acropora-humilis-mobile.glb",
     size: 6.2,
     tint: 0xe9867a,
+    sensitivity: 0.9,
+    recovery: 0.64,
   },
   "massive-star": {
     desktop: "/models/plesiastraea-armata.glb",
     mobile: "/models/plesiastraea-armata-mobile.glb",
     size: 6.8,
     tint: 0xe8c889,
+    sensitivity: 0.42,
+    recovery: 0.38,
   },
   "acropora-palmata": {
     desktop: "/models/smithsonian-acropora-palmata.glb",
@@ -83,6 +100,8 @@ const SCANS: Record<ScanAssetKey, { desktop: string; mobile: string; size: numbe
     size: 7.4,
     tint: 0xf0a271,
     preserveColor: true,
+    sensitivity: 0.95,
+    recovery: 0.46,
   },
   "diploria-brain": {
     desktop: "/models/smithsonian-diploria-labyrinthiformis.glb",
@@ -90,6 +109,8 @@ const SCANS: Record<ScanAssetKey, { desktop: string; mobile: string; size: numbe
     size: 6.9,
     tint: 0xd7bf82,
     preserveColor: true,
+    sensitivity: 0.35,
+    recovery: 0.34,
   },
   "porites-mound": {
     desktop: "/models/smithsonian-porites-andrewsi.glb",
@@ -97,6 +118,8 @@ const SCANS: Record<ScanAssetKey, { desktop: string; mobile: string; size: numbe
     size: 6.1,
     tint: 0xd9c278,
     preserveColor: true,
+    sensitivity: 0.4,
+    recovery: 0.4,
   },
   "goniopora-column": {
     desktop: "/models/smithsonian-goniopora-columna.glb",
@@ -104,6 +127,8 @@ const SCANS: Record<ScanAssetKey, { desktop: string; mobile: string; size: numbe
     size: 6.3,
     tint: 0xd29274,
     preserveColor: true,
+    sensitivity: 0.62,
+    recovery: 0.48,
   },
   "fungia-disc": {
     desktop: "/models/smithsonian-fungia-discus.glb",
@@ -111,6 +136,8 @@ const SCANS: Record<ScanAssetKey, { desktop: string; mobile: string; size: numbe
     size: 5.5,
     tint: 0xe9aa72,
     preserveColor: true,
+    sensitivity: 0.56,
+    recovery: 0.54,
   },
   "pocillopora-cauliflower": {
     desktop: "/models/smithsonian-pocillopora-nobilis.glb",
@@ -118,6 +145,8 @@ const SCANS: Record<ScanAssetKey, { desktop: string; mobile: string; size: numbe
     size: 5.9,
     tint: 0xe08978,
     preserveColor: true,
+    sensitivity: 0.88,
+    recovery: 0.6,
   },
   "seriatopora-birdsnest": {
     desktop: "/models/smithsonian-seriatopora-hystrix.glb",
@@ -125,6 +154,8 @@ const SCANS: Record<ScanAssetKey, { desktop: string; mobile: string; size: numbe
     size: 5.8,
     tint: 0xeaa17d,
     preserveColor: true,
+    sensitivity: 0.92,
+    recovery: 0.58,
   },
   "heliopora-blue": {
     desktop: "/models/smithsonian-heliopora-coerulea.glb",
@@ -132,6 +163,8 @@ const SCANS: Record<ScanAssetKey, { desktop: string; mobile: string; size: numbe
     size: 5.8,
     tint: 0x89bac2,
     preserveColor: true,
+    sensitivity: 0.5,
+    recovery: 0.5,
   },
   "agaricia-plate": {
     desktop: "/models/smithsonian-agaricia-lamarcki.glb",
@@ -139,6 +172,8 @@ const SCANS: Record<ScanAssetKey, { desktop: string; mobile: string; size: numbe
     size: 6.2,
     tint: 0xd7ad76,
     preserveColor: true,
+    sensitivity: 0.68,
+    recovery: 0.42,
   },
   "pavona-lettuce": {
     desktop: "/models/smithsonian-pavona-chiriquiensis.glb",
@@ -146,6 +181,8 @@ const SCANS: Record<ScanAssetKey, { desktop: string; mobile: string; size: numbe
     size: 6.4,
     tint: 0xd6ba78,
     preserveColor: true,
+    sensitivity: 0.62,
+    recovery: 0.5,
   },
 };
 
@@ -230,16 +267,53 @@ const makeAmbientScanColonies = (
   }));
 
 const BIOME_AMBIENT_SCAN_COLONIES: Record<ReefBiomeId, ReefSceneHotspot[]> = {
-  "great-barrier": AMBIENT_SCAN_COLONIES,
+  "great-barrier": makeAmbientScanColonies("gbr", [
+    ["acro-table", -82, -24, 5.6, 0xefa777, -0.55],
+    ["acro-compact", -48, -42, 4.8, 0xe18376, 0.72],
+    ["porites-mound", 36, -27, 4.8, 0xdcc17c, -0.18],
+    ["pocillopora-cauliflower", 72, -45, 4.6, 0xe18b77, 0.48],
+    ["goniopora-column", -94, -66, 4.8, 0xd89270, -0.35],
+    ["fungia-disc", -20, -64, 4.1, 0xe6a66f, 0.8],
+    ["acro-table", 88, -82, 5.8, 0xec9f73, -0.92],
+    ["heliopora-blue", 18, -94, 4.9, 0x89b8c0, 0.16],
+    ["massive-star", -112, -108, 5.7, 0xddc58b, -1.1],
+    ["seriatopora-birdsnest", -44, -116, 5.5, 0xe9a17c, 0.42],
+    ["acro-compact", 48, -124, 4.9, 0xdb7c72, -0.2],
+    ["porites-mound", 104, -144, 5.4, 0xd8bc78, 0.34],
+    ["massive-star", -76, -152, 5.9, 0xddc58b, -0.68],
+    ["acro-table", -10, -164, 5.8, 0xf0a06f, 1.02],
+    ["goniopora-column", 62, -176, 5.4, 0xd39472, -0.48],
+    ["porites-mound", 116, -194, 5.6, 0xd5bf79, 0.95],
+    ["goniopora-column", -122, -202, 5.5, 0xd09070, 0.28],
+    ["fungia-disc", -58, -218, 4.7, 0xe4a970, -0.72],
+    ["pocillopora-cauliflower", 18, -230, 5.1, 0xe3907b, 0.52],
+    ["seriatopora-birdsnest", 82, -244, 5.2, 0xe7a07a, -0.18],
+    ["heliopora-blue", -96, -258, 5.1, 0x89bac2, 0.68],
+    ["pavona-lettuce", -22, -274, 5.4, 0xd8bb78, -1.2],
+    ["porites-mound", 54, -286, 5.7, 0xd6ba78, 0.2],
+    ["acro-table", 126, -306, 6.1, 0xefa978, 0.95],
+    ["acro-compact", -132, -314, 5.2, 0xe48778, -0.35],
+    ["massive-star", -68, -330, 5.8, 0xd5bf87, 0.8],
+    ["porites-mound", 8, -342, 5.9, 0xd9c278, -0.45],
+    ["pocillopora-cauliflower", 96, -356, 5.7, 0xe18b77, 1.15],
+    ["fungia-disc", -118, -18, 4.2, 0xe5aa72, -0.18],
+    ["goniopora-column", -66, -18, 4.7, 0xd39472, 0.94],
+    ["heliopora-blue", 88, -18, 4.8, 0x88bac2, -0.52],
+    ["seriatopora-birdsnest", 116, -62, 5.1, 0xe8a07a, 0.42],
+    ["massive-star", -118, -72, 5.2, 0xd8c48a, -0.74],
+    ["seriatopora-birdsnest", 2, -42, 4.8, 0xe8a07a, 0.3],
+    ["porites-mound", 104, -94, 5.1, 0xd7c086, 1.05],
+    ["porites-mound", -34, -96, 5.2, 0xdac27a, -0.38],
+  ]),
   "sisters-islands": makeAmbientScanColonies("sisters", [
     ["pavona-lettuce", -132, -26, 5.2, 0xd7bc78, 0.2],
-    ["agaricia-plate", -78, -42, 4.9, 0xd8b172, -0.6],
+    ["massive-star", -78, -42, 5.1, 0xd8c58a, -0.6],
     ["porites-mound", 18, -38, 4.8, 0xd5bd76, 0.3],
     ["goniopora-column", 74, -58, 4.7, 0xd09572, 0.9],
     ["fungia-disc", 128, -82, 4.2, 0xe3a772, -0.2],
     ["massive-star", -118, -118, 5.3, 0xdcc58a, -0.8],
     ["pavona-lettuce", -42, -128, 5.8, 0xd2bd7b, 0.7],
-    ["agaricia-plate", 38, -146, 5.1, 0xd1aa73, -1.1],
+    ["heliopora-blue", 38, -146, 5.1, 0x8ababd, -1.1],
     ["porites-mound", 104, -170, 5.2, 0xd5c37f, 0.4],
     ["goniopora-column", -150, -196, 5.4, 0xcf9270, -0.3],
     ["fungia-disc", -72, -222, 4.6, 0xdfaa77, 0.6],
@@ -259,11 +333,11 @@ const BIOME_AMBIENT_SCAN_COLONIES: Record<ReefBiomeId, ReefSceneHotspot[]> = {
     ["heliopora-blue", 128, -96, 5.3, 0x88bac2, -0.3],
     ["fungia-disc", -138, -128, 4.8, 0xe6aa72, 0.4],
     ["pavona-lettuce", -68, -158, 5.9, 0xd7bb79, -0.7],
-    ["agaricia-plate", 8, -184, 5.7, 0xd6ad76, 0.1],
+    ["porites-mound", 8, -184, 5.7, 0xd6bf78, 0.1],
     ["acro-compact", 82, -212, 5.5, 0xe28376, 1],
     ["porites-mound", 152, -242, 5.8, 0xd7c17d, -0.5],
-    ["acropora-palmata", -162, -278, 5.8, 0xefa372, 0.35],
-    ["diploria-brain", -92, -306, 5.4, 0xd7c082, -0.85],
+    ["acro-table", -162, -278, 5.8, 0xefa372, 0.35],
+    ["massive-star", -92, -306, 5.4, 0xd7c082, -0.85],
     ["seriatopora-birdsnest", -18, -334, 5.6, 0xeaa17d, 0.52],
     ["heliopora-blue", 58, -366, 5.7, 0x89bac2, -0.12],
     ["pavona-lettuce", 136, -392, 6.1, 0xd6ba78, 0.82],
@@ -841,7 +915,12 @@ export default function ReefScene({
 
         const world = new THREE.Group();
         scene.add(world);
-        const livingMaterials: Array<{ material: Material & { color?: Color; emissive?: Color }; base: Color; hotspotId: string }> = [];
+        const livingMaterials: Array<{
+          material: Material & { color?: Color; emissive?: Color };
+          base: Color;
+          hotspotId: string;
+          scanKey: ScanAssetKey;
+        }> = [];
         const coralTargets: Object3D[] = [];
         const animatedCorals: Object3D[] = [];
         const fishActors: Array<{ object: Object3D; offset: number; lane: number; depth: number; radius: number; height: number; speed: number; wobble: number }> = [];
@@ -1352,7 +1431,7 @@ export default function ReefScene({
               if (living.emissive) living.emissive.setHex(0x231008);
               if (typeof living.roughness === "number") living.roughness = Math.max(0.5, living.roughness);
               if (typeof living.metalness === "number") living.metalness = 0;
-              livingMaterials.push({ material: living, base: living.color.clone(), hotspotId: hotspot.id });
+              livingMaterials.push({ material: living, base: living.color.clone(), hotspotId: hotspot.id, scanKey });
             }
           });
           const groundedBounds = new THREE.Box3().setFromObject(model);
@@ -1361,6 +1440,7 @@ export default function ReefScene({
           const pedestal = new THREE.Group();
           pedestal.name = hotspot.id;
           pedestal.userData.hotspotId = hotspot.id;
+          pedestal.userData.scanKey = scanKey;
           pedestal.userData.baseScale = hotspot.size ?? asset.size;
           pedestal.userData.animOffset = random() * Math.PI * 2;
           pedestal.position.set(
@@ -1382,7 +1462,7 @@ export default function ReefScene({
           ),
         );
 
-        const creatureAssets: Array<{
+        const creatureAssetsByBiome: Record<ReefBiomeId, Array<{
           src: string;
           count: number;
           fit: number;
@@ -1391,12 +1471,27 @@ export default function ReefScene({
           scaleMin: number;
           scaleMax: number;
           speed: number;
-        }> = [
-          { src: "/models/barramundi-fish.glb", count: countFor(22, 10, biomeConfig.fishDensity), fit: 2.2, rotationY: Math.PI / 2, scaleMin: 0.55, scaleMax: 1.2, speed: 0.12 },
-          { src: "/models/smithsonian-diodon-hystrix.glb", count: countFor(7, 3, biomeConfig.fishDensity * 0.9), fit: 1.45, rotationY: Math.PI / 2, scaleMin: 0.86, scaleMax: 1.28, speed: 0.09 },
-          { src: "/models/smithsonian-lactophrys-bicaudalis.glb", count: countFor(7, 3, biomeConfig.fishDensity), fit: 1.25, rotationY: Math.PI / 2, scaleMin: 0.82, scaleMax: 1.18, speed: 0.105 },
-          { src: "/models/smithsonian-linckia-laevigata.glb", count: countFor(13, 5, biomeConfig.bottomLifeDensity), fit: 2, rotationY: 0, floor: true, scaleMin: 0.72, scaleMax: 1.18, speed: 0.02 },
-        ];
+        }>> = {
+          "great-barrier": [
+            { src: "/models/barramundi-fish.glb", count: countFor(18, 8, biomeConfig.fishDensity), fit: 2.2, rotationY: Math.PI / 2, scaleMin: 0.55, scaleMax: 1.18, speed: 0.13 },
+            { src: "/models/smithsonian-diodon-hystrix.glb", count: countFor(5, 2, biomeConfig.fishDensity * 0.75), fit: 1.45, rotationY: Math.PI / 2, scaleMin: 0.86, scaleMax: 1.24, speed: 0.095 },
+            { src: "/models/smithsonian-linckia-laevigata.glb", count: countFor(10, 4, biomeConfig.bottomLifeDensity), fit: 2, rotationY: 0, floor: true, scaleMin: 0.72, scaleMax: 1.12, speed: 0.02 },
+          ],
+          "sisters-islands": [
+            { src: "/models/barramundi-fish.glb", count: countFor(12, 5, biomeConfig.fishDensity), fit: 2.05, rotationY: Math.PI / 2, scaleMin: 0.48, scaleMax: 0.95, speed: 0.11 },
+            { src: "/models/smithsonian-linckia-laevigata.glb", count: countFor(9, 4, biomeConfig.bottomLifeDensity), fit: 2, rotationY: 0, floor: true, scaleMin: 0.66, scaleMax: 1.05, speed: 0.018 },
+          ],
+          "coral-triangle": [
+            { src: "/models/barramundi-fish.glb", count: countFor(28, 12, biomeConfig.fishDensity), fit: 2.16, rotationY: Math.PI / 2, scaleMin: 0.5, scaleMax: 1.16, speed: 0.14 },
+            { src: "/models/smithsonian-diodon-hystrix.glb", count: countFor(8, 3, biomeConfig.fishDensity * 0.82), fit: 1.45, rotationY: Math.PI / 2, scaleMin: 0.84, scaleMax: 1.3, speed: 0.09 },
+            { src: "/models/smithsonian-linckia-laevigata.glb", count: countFor(16, 7, biomeConfig.bottomLifeDensity), fit: 2, rotationY: 0, floor: true, scaleMin: 0.72, scaleMax: 1.2, speed: 0.022 },
+          ],
+          "caribbean-reef": [
+            { src: "/models/smithsonian-diodon-hystrix.glb", count: countFor(8, 3, biomeConfig.fishDensity * 0.88), fit: 1.45, rotationY: Math.PI / 2, scaleMin: 0.86, scaleMax: 1.28, speed: 0.09 },
+            { src: "/models/smithsonian-lactophrys-bicaudalis.glb", count: countFor(15, 6, biomeConfig.fishDensity), fit: 1.25, rotationY: Math.PI / 2, scaleMin: 0.82, scaleMax: 1.18, speed: 0.105 },
+          ],
+        };
+        const creatureAssets = creatureAssetsByBiome[biome];
         await Promise.allSettled(
           creatureAssets.map(async (asset) => {
             const gltf = await gltfLoader.loadAsync(asset.src);
@@ -1547,10 +1642,10 @@ export default function ReefScene({
 
         const baseFog = new THREE.Color(biomeConfig.fog);
         const phaseColors = {
-          healthy: { fog: baseFog.clone(), density: biomeConfig.fogDensity, wash: new THREE.Color(0xd69c79), blend: 0.02, life: 0.74 },
-          heat: { fog: baseFog.clone().lerp(new THREE.Color(0x8e7968), 0.28), density: biomeConfig.fogDensity + 0.002, wash: new THREE.Color(0xf09b70), blend: 0.2, life: 0.54 },
-          bleaching: { fog: baseFog.clone().lerp(new THREE.Color(0xa7aaa1), 0.42), density: biomeConfig.fogDensity + 0.004, wash: new THREE.Color(0xe8ddcc), blend: 0.72, life: 0.3 },
-          recovery: { fog: baseFog.clone().lerp(new THREE.Color(0x4cae87), 0.26), density: Math.max(0.007, biomeConfig.fogDensity - 0.001), wash: new THREE.Color(0x92c487), blend: 0.09, life: 0.8 },
+          healthy: { fog: baseFog.clone(), density: biomeConfig.fogDensity, wash: new THREE.Color(0xd69c79), blend: 0.02, pressure: 0.02, structureLoss: 0, life: 0.74 },
+          heat: { fog: baseFog.clone().lerp(new THREE.Color(0x8e7968), 0.28), density: biomeConfig.fogDensity + 0.002, wash: new THREE.Color(0xf09b70), blend: 0.09, pressure: 0.28, structureLoss: 0.006, life: 0.54 },
+          bleaching: { fog: baseFog.clone().lerp(new THREE.Color(0xa7aaa1), 0.42), density: biomeConfig.fogDensity + 0.004, wash: new THREE.Color(0xe8ddcc), blend: 0.2, pressure: 0.68, structureLoss: 0.038, life: 0.3 },
+          recovery: { fog: baseFog.clone().lerp(new THREE.Color(0x4cae87), 0.22), density: Math.max(0.007, biomeConfig.fogDensity - 0.001), wash: new THREE.Color(0x94c08c), blend: 0.05, pressure: 0.12, structureLoss: 0.012, life: 0.74 },
         };
         const targetColor = new THREE.Color();
         const spotVector = new THREE.Vector3();
@@ -1565,8 +1660,14 @@ export default function ReefScene({
           (scene.fog as InstanceType<typeof THREE.FogExp2>).density = THREE.MathUtils.lerp((scene.fog as InstanceType<typeof THREE.FogExp2>).density, currentPhase.density + (runoff ? 0.016 : 0), 1 - Math.exp(-delta * 1.4));
           for (const entry of livingMaterials) {
             if (!entry.material.color) continue;
-            const blend = restoredRef.current.includes(entry.hotspotId) ? 0.02 : currentPhase.blend;
+            const profile = SCANS[entry.scanKey];
+            const restoredBuffer = restoredRef.current.includes(entry.hotspotId) ? 0.24 : 1;
+            const stressBlend = currentPhase.pressure * profile.sensitivity * restoredBuffer;
+            const recoveryReturn = phaseRef.current === "recovery" ? profile.recovery * 0.16 : 0;
+            const runoffPenalty = runoff ? 0.1 * Math.max(0.3, profile.sensitivity) : 0;
+            const blend = THREE.MathUtils.clamp(currentPhase.blend + stressBlend + runoffPenalty - recoveryReturn, 0.02, 0.88);
             targetColor.copy(entry.base).lerp(currentPhase.wash, blend);
+            if (phaseRef.current === "recovery") targetColor.lerp(entry.base, profile.recovery * 0.22);
             entry.material.color.lerp(targetColor, 1 - Math.exp(-delta * 1.8));
           }
           lifeMaterial.opacity = THREE.MathUtils.lerp(lifeMaterial.opacity, currentPhase.life, 1 - Math.exp(-delta * 1.8));
@@ -1585,8 +1686,12 @@ export default function ReefScene({
           animatedCorals.forEach((target, index) => {
             const baseScale = typeof target.userData.baseScale === "number" ? target.userData.baseScale : 1;
             const animOffset = typeof target.userData.animOffset === "number" ? target.userData.animOffset : index * 1.7;
+            const scanKey = target.userData.scanKey as ScanAssetKey | undefined;
+            const profile = scanKey ? SCANS[scanKey] : undefined;
+            const restoredBuffer = restoredRef.current.includes(target.userData.hotspotId as string) ? 0.25 : 1;
+            const stressScale = currentPhase.structureLoss * (profile?.sensitivity ?? 0.65) * restoredBuffer;
             const pulse = reduced ? 1 : 1 + Math.sin(elapsed * 0.8 + animOffset) * 0.008;
-            target.scale.setScalar(baseScale * pulse);
+            target.scale.setScalar(baseScale * pulse * (1 - stressScale));
           });
           if (!reduced) {
             for (let index = 0; index < lifeParticleCount; index += 1) {

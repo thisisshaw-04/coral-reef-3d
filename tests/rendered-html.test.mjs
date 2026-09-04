@@ -270,3 +270,31 @@ test("keeps water ambience free of straight line overlays", async () => {
   assert.doesNotMatch(scene, /new THREE\.LineSegments/);
   assert.doesNotMatch(scene, /new THREE\.LineBasicMaterial/);
 });
+
+test("scopes scanned coral and animal models to researched reef regions", async () => {
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
+  assert.match(scene, /sensitivity: 0\.96/);
+  assert.match(scene, /recovery: 0\.7/);
+  assert.match(scene, /"great-barrier": makeAmbientScanColonies\("gbr"/);
+  assert.doesNotMatch(scene, /"great-barrier": AMBIENT_SCAN_COLONIES/);
+  assert.match(scene, /"caribbean-reef": \[/);
+  assert.match(scene, /smithsonian-lactophrys-bicaudalis\.glb/);
+  assert.match(scene, /"coral-triangle": \[/);
+  assert.match(scene, /smithsonian-linckia-laevigata\.glb/);
+  assert.match(scene, /scanKey: ScanAssetKey/);
+});
+
+test("uses DHW-informed timeline and species-specific bleaching response", async () => {
+  const data = await readFile(new URL("../app/reef-data.ts", import.meta.url), "utf8");
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
+  assert.match(data, /title: "Recovery watch"/);
+  assert.match(data, /phase: "heat"/);
+  assert.match(data, /title: "Low-stress scenario"/);
+  assert.match(data, /DHW near 4 can trigger bleaching/);
+  assert.match(scene, /pressure: 0\.68/);
+  assert.match(scene, /currentPhase\.pressure \* profile\.sensitivity/);
+  assert.match(scene, /profile\.recovery \* 0\.16/);
+  assert.match(scene, /currentPhase\.structureLoss \* \(profile\?\.sensitivity/);
+});

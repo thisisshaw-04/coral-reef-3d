@@ -659,21 +659,21 @@ export const moments: ReefMoment[] = [
   },
   {
     year: "2026",
-    title: "Today · intervene",
-    phase: "healthy",
-    temp: 0.7,
-    dhw: 3.2,
+    title: "Recovery watch",
+    phase: "heat",
+    temp: 0.8,
+    dhw: 3.8,
     ph: 8.06,
-    health: 68,
+    health: 49,
   },
   {
     year: "2035",
-    title: "Recovery window",
+    title: "Low-stress scenario",
     phase: "recovery",
     temp: 0.4,
     dhw: 1.1,
     ph: 8.08,
-    health: 84,
+    health: 72,
   },
 ];
 
@@ -687,7 +687,7 @@ export const emptyRoom: ReefRoom = {
 export const stressCopy: Record<Stressor, { label: string; effect: string }> = {
   heat: {
     label: "Heat +1.5C",
-    effect: "Thermal stress accumulates over weeks; bleaching risk rises.",
+    effect: "DHW near 4 can trigger bleaching; DHW near 8 signals widespread bleaching and mortality risk.",
   },
   co2: {
     label: "CO2 / pH -0.1",

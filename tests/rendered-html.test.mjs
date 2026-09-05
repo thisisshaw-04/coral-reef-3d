@@ -299,11 +299,15 @@ test("uses disciplined HUD spacing with softer corners", async () => {
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
   assert.match(css, /v27 - disciplined HUD spacing and softer corners/);
-  assert.match(css, /\.tool-console\s*{[\s\S]*?width: min\(760px, calc\(100vw - 48px\)\)/);
   assert.match(css, /\.tool-console\s*{[\s\S]*?grid-template-columns: repeat\(6, minmax\(0, 1fr\)\)/);
-  assert.match(css, /\.tool-console\s*{[\s\S]*?border-radius: 20px/);
-  assert.match(css, /\.tool-console button\s*{[\s\S]*?height: 48px/);
-  assert.match(css, /\.tool-console button\s*{[\s\S]*?border-radius: 14px/);
+  assert.match(css, /v36 - tighter compact tool dock/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?width: min\(680px, calc\(100vw - 48px\)\)/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?gap: clamp\(3px, 0\.45vw, 6px\)/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?padding: 4px/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?border-radius: 18px/);
+  assert.match(css, /\.tool-console button\s*{[\s\S]*?height: 40px/);
+  assert.match(css, /\.tool-console button\s*{[\s\S]*?padding: 4px 8px 3px/);
+  assert.match(css, /\.tool-console button\s*{[\s\S]*?border-radius: 12px/);
   assert.match(css, /\.time-current\s*{[\s\S]*?height: 58px/);
   assert.match(css, /\.timeline-metrics span\s*{[\s\S]*?border-radius: 12px/);
 });

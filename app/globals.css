@@ -8724,3 +8724,26 @@ a:focus-visible,
     padding: 10px 12px !important;
   }
 }
+
+/* v54 - remove duplicate story masthead and timeline clutter */
+.mission-bar {
+  grid-template-columns: minmax(220px, 0.82fr) minmax(220px, 0.82fr) !important;
+}
+
+.mission-room {
+  justify-self: end !important;
+}
+
+.story-panel__rail {
+  display: none !important;
+}
+
+.story-panel footer {
+  margin-top: 16px !important;
+}
+
+@media (max-width: 900px) {
+  .mission-bar {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+}

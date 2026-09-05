@@ -503,16 +503,19 @@ test("uses DHW-informed timeline and species-specific bleaching response", async
   assert.match(data, /title: "Low-stress scenario"/);
   assert.match(data, /DHW near 4 can trigger bleaching/);
   assert.match(scene, /pressure: 0\.68/);
-  assert.match(scene, /currentPhase\.pressure \* profile\.sensitivity/);
+  assert.match(scene, /visiblePhase\.pressure \* profile\.sensitivity/);
   assert.match(scene, /profile\.recovery \* 0\.16/);
-  assert.match(scene, /currentPhase\.structureLoss \* \(profile\?\.sensitivity/);
+  assert.match(scene, /visiblePhase\.structureLoss \* \(profile\?\.sensitivity/);
+  assert.match(scene, /const visiblePhase =/);
+  assert.match(scene, /visiblePhase\.pressure = THREE\.MathUtils\.lerp\(visiblePhase\.pressure, currentPhase\.pressure, phaseEase\)/);
+  assert.match(scene, /transitionLag: 0\.62 \+ random\(\) \* 0\.72/);
 });
 
 test("keeps the live mission masthead compact and aligned", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
-  assert.match(page, /<span>REEF RELAY<\/span>/);
+  assert.doesNotMatch(page, /className="mission-brand"/);
   assert.doesNotMatch(page, /REEF RELAY<small>Living Reef Lab<\/small>/);
   assert.match(page, /className="sub-title__brand"/);
   assert.match(page, /<strong>REEF RELAY<\/strong>/);
@@ -521,7 +524,7 @@ test("keeps the live mission masthead compact and aligned", async () => {
   assert.doesNotMatch(page, /SCAN · SELECT ANY COLONY TO OPEN ITS EVIDENCE CARD/);
   assert.match(css, /v28 - compact aligned mission masthead/);
   assert.match(css, /v51 - editorial live masthead lockup/);
-  assert.match(css, /\.mission-brand span\s*{[\s\S]*?font-weight: 360/);
+  assert.match(css, /v54 - remove duplicate story masthead and timeline clutter/);
   assert.match(css, /\.sub-title\s*{[\s\S]*?grid-template-columns: auto minmax\(170px, 1fr\)/);
   assert.match(css, /\.sub-title__brand strong\s*{[\s\S]*?font-weight: 320/);
 });
@@ -531,9 +534,7 @@ test("keeps the objective card small and the center masthead refined", async () 
 
   assert.match(css, /v35 - compact objective card and refined mission hierarchy/);
   assert.match(css, /v38 - compact live reef relay heading/);
-  assert.match(css, /\.mission-bar\s*{[\s\S]*?grid-template-columns: minmax\(220px, 0\.86fr\) minmax\(420px, auto\) minmax\(220px, 0\.86fr\)/);
-  assert.match(css, /\.mission-brand span\s*{[\s\S]*?font-size: clamp\(24px, 2\.15vw, 36px\)/);
-  assert.match(css, /\.mission-brand span\s*{[\s\S]*?font-weight: 300/);
+  assert.match(css, /\.mission-bar\s*{[\s\S]*?grid-template-columns: minmax\(220px, 0\.82fr\) minmax\(220px, 0\.82fr\) !important/);
   assert.match(css, /\.sub-title\s*{[\s\S]*?top: clamp\(58px, 6\.4vh, 76px\)/);
   assert.match(css, /\.sub-title\s*{[\s\S]*?width: min\(860px, calc\(100vw - 620px\)\)/);
   assert.match(css, /\.sub-title strong\s*{[\s\S]*?font-weight: 300/);
@@ -673,7 +674,8 @@ test("adds an educational storytelling mode with free exploration exit", async (
   assert.match(css, /\.story-panel\s*{/);
   assert.match(css, /\.story-panel__anchor\s*{/);
   assert.match(css, /\.reef-scene__marker\.is-focused \.reef-scene__reticle::before/);
-  assert.match(css, /\.story-panel__rail\s*{[\s\S]*?grid-template-columns: repeat\(5, minmax\(0, 1fr\)\)/);
+  assert.doesNotMatch(page, /className="story-panel__rail"/);
+  assert.match(css, /\.story-panel__rail\s*{[\s\S]*?display: none !important/);
   assert.match(css, /\.tool-console\s*{[\s\S]*?grid-template-columns: repeat\(7, minmax\(0, 1fr\)\)/);
 });
 
@@ -689,9 +691,7 @@ test("keeps onboarding drifting through the reef with a calmer centered masthead
   assert.match(scene, /desired\.addScaledVector\(direction, 1\.05\)/);
   assert.match(css, /v47 - quiet unified glass system and onboarding reef drift/);
   assert.match(css, /--reef-glass-bg:/);
-  assert.match(css, /\.mission-brand\s*{[\s\S]*?justify-self: center/);
-  assert.match(css, /\.mission-brand span\s*{[\s\S]*?font-size: clamp\(13px, 0\.94vw, 17px\)/);
-  assert.match(css, /\.mission-brand::after,[\s\S]*?\.mission-brand span::after\s*{[\s\S]*?content: none !important/);
+  assert.match(css, /v54 - remove duplicate story masthead and timeline clutter/);
   assert.match(css, /\.world-button,[\s\S]*?\.note-form button\s*{[\s\S]*?background: var\(--reef-glass-bg\)/);
   assert.match(css, /\.mission-briefing\s*{[\s\S]*?rgb\(4 24 31 \/ 0\.42\)/);
 });

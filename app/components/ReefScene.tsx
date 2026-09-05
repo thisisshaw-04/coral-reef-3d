@@ -1049,6 +1049,7 @@ export default function ReefScene({
           base: Color;
           hotspotId: string;
           scanKey: ScanAssetKey;
+          transitionLag: number;
         }> = [];
         const coralTargets: Object3D[] = [];
         const animatedCorals: Object3D[] = [];
@@ -1669,7 +1670,7 @@ export default function ReefScene({
               if (typeof living.roughness === "number") living.roughness = Math.max(0.5, living.roughness);
               if (typeof living.metalness === "number") living.metalness = 0;
               if (asset.filterDarkBase) filterDarkDisplayBase(material);
-              livingMaterials.push({ material: living, base: living.color.clone(), hotspotId: hotspot.id, scanKey });
+              livingMaterials.push({ material: living, base: living.color.clone(), hotspotId: hotspot.id, scanKey, transitionLag: 0.62 + random() * 0.72 });
             }
           });
           const groundedBounds = new THREE.Box3().setFromObject(model);
@@ -2023,6 +2024,15 @@ export default function ReefScene({
           bleaching: { fog: baseFog.clone().lerp(new THREE.Color(0xa7aaa1), 0.42), density: biomeConfig.fogDensity + 0.004, wash: new THREE.Color(0xe8ddcc), blend: 0.2, pressure: 0.68, structureLoss: 0.038, life: 0.3 },
           recovery: { fog: baseFog.clone().lerp(new THREE.Color(0x4cae87), 0.22), density: Math.max(0.007, biomeConfig.fogDensity - 0.001), wash: new THREE.Color(0x94c08c), blend: 0.05, pressure: 0.12, structureLoss: 0.012, life: 0.74 },
         };
+        const visiblePhase = {
+          fog: phaseColors[phaseRef.current].fog.clone(),
+          density: phaseColors[phaseRef.current].density,
+          wash: phaseColors[phaseRef.current].wash.clone(),
+          blend: phaseColors[phaseRef.current].blend,
+          pressure: phaseColors[phaseRef.current].pressure,
+          structureLoss: phaseColors[phaseRef.current].structureLoss,
+          life: phaseColors[phaseRef.current].life,
+        };
         const targetColor = new THREE.Color();
         const spotVector = new THREE.Vector3();
 
@@ -2031,22 +2041,30 @@ export default function ReefScene({
           const delta = Math.min(clock.getDelta(), 0.05);
           const elapsed = clock.elapsedTime;
           const currentPhase = phaseColors[phaseRef.current];
+          const phaseEase = 1 - Math.exp(-delta * 0.36);
+          visiblePhase.fog.lerp(currentPhase.fog, phaseEase);
+          visiblePhase.wash.lerp(currentPhase.wash, phaseEase);
+          visiblePhase.density = THREE.MathUtils.lerp(visiblePhase.density, currentPhase.density, phaseEase);
+          visiblePhase.blend = THREE.MathUtils.lerp(visiblePhase.blend, currentPhase.blend, phaseEase);
+          visiblePhase.pressure = THREE.MathUtils.lerp(visiblePhase.pressure, currentPhase.pressure, phaseEase);
+          visiblePhase.structureLoss = THREE.MathUtils.lerp(visiblePhase.structureLoss, currentPhase.structureLoss, phaseEase);
+          visiblePhase.life = THREE.MathUtils.lerp(visiblePhase.life, currentPhase.life, phaseEase);
           const runoff = stressorRef.current === "runoff";
-          scene.fog!.color.lerp(currentPhase.fog, 1 - Math.exp(-delta * 1.4));
-          (scene.fog as InstanceType<typeof THREE.FogExp2>).density = THREE.MathUtils.lerp((scene.fog as InstanceType<typeof THREE.FogExp2>).density, currentPhase.density + (runoff ? 0.016 : 0), 1 - Math.exp(-delta * 1.4));
+          scene.fog!.color.lerp(visiblePhase.fog, 1 - Math.exp(-delta * 0.8));
+          (scene.fog as InstanceType<typeof THREE.FogExp2>).density = THREE.MathUtils.lerp((scene.fog as InstanceType<typeof THREE.FogExp2>).density, visiblePhase.density + (runoff ? 0.016 : 0), 1 - Math.exp(-delta * 0.8));
           for (const entry of livingMaterials) {
             if (!entry.material.color) continue;
             const profile = SCANS[entry.scanKey];
             const restoredBuffer = restoredRef.current.includes(entry.hotspotId) ? 0.24 : 1;
-            const stressBlend = currentPhase.pressure * profile.sensitivity * restoredBuffer;
+            const stressBlend = visiblePhase.pressure * profile.sensitivity * restoredBuffer;
             const recoveryReturn = phaseRef.current === "recovery" ? profile.recovery * 0.16 : 0;
             const runoffPenalty = runoff ? 0.1 * Math.max(0.3, profile.sensitivity) : 0;
-            const blend = THREE.MathUtils.clamp(currentPhase.blend + stressBlend + runoffPenalty - recoveryReturn, 0.02, 0.88);
-            targetColor.copy(entry.base).lerp(currentPhase.wash, blend);
+            const blend = THREE.MathUtils.clamp(visiblePhase.blend + stressBlend + runoffPenalty - recoveryReturn, 0.02, 0.88);
+            targetColor.copy(entry.base).lerp(visiblePhase.wash, blend);
             if (phaseRef.current === "recovery") targetColor.lerp(entry.base, profile.recovery * 0.22);
-            entry.material.color.lerp(targetColor, 1 - Math.exp(-delta * 1.8));
+            entry.material.color.lerp(targetColor, 1 - Math.exp(-delta * (0.42 + entry.transitionLag * 0.28)));
           }
-          lifeMaterial.opacity = THREE.MathUtils.lerp(lifeMaterial.opacity, currentPhase.life, 1 - Math.exp(-delta * 1.8));
+          lifeMaterial.opacity = THREE.MathUtils.lerp(lifeMaterial.opacity, visiblePhase.life, 1 - Math.exp(-delta * 0.7));
 
           causticTexture.offset.x = (elapsed * 0.012) % 1;
           causticTexture.offset.y = (elapsed * -0.008) % 1;
@@ -2069,7 +2087,7 @@ export default function ReefScene({
             const scanKey = target.userData.scanKey as ScanAssetKey | undefined;
             const profile = scanKey ? SCANS[scanKey] : undefined;
             const restoredBuffer = restoredRef.current.includes(target.userData.hotspotId as string) ? 0.25 : 1;
-            const stressScale = currentPhase.structureLoss * (profile?.sensitivity ?? 0.65) * restoredBuffer;
+            const stressScale = visiblePhase.structureLoss * (profile?.sensitivity ?? 0.65) * restoredBuffer;
             const pulse = reduced ? 1 : 1 + Math.sin(elapsed * 0.8 + animOffset) * 0.008;
             target.scale.setScalar(baseScale * pulse * (1 - stressScale));
           });

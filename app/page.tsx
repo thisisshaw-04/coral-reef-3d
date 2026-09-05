@@ -532,10 +532,6 @@ export default function Home() {
           </span>
           <ChevronDown />
         </button>
-        <div className="mission-brand">
-          <Waves />
-          <span>REEF RELAY</span>
-        </div>
         <div className="mission-room">
           <span>
             {room.explorers.length || 1} DIVER
@@ -716,20 +712,6 @@ export default function Home() {
               <h2>{activeStory.title}</h2>
               <p>{activeStory.body}</p>
               <strong>{activeStory.takeaway}</strong>
-              <div className="story-panel__rail" aria-label="Story progress">
-                {storySteps.map((step, index) => (
-                  <button
-                    type="button"
-                    key={step.label}
-                    className={index === storyStep ? "is-active" : ""}
-                    onClick={() => chooseStoryStep(index)}
-                    aria-label={`Open ${step.label}`}
-                  >
-                    <i />
-                    <span>{moments[step.momentIndex].year}</span>
-                  </button>
-                ))}
-              </div>
               <footer>
                 <button
                   type="button"

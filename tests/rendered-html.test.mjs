@@ -389,9 +389,11 @@ test("keeps the objective card small and the center masthead refined", async () 
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
   assert.match(css, /v35 - compact objective card and refined mission hierarchy/);
+  assert.match(css, /v38 - compact live reef relay heading/);
   assert.match(css, /\.mission-bar\s*{[\s\S]*?grid-template-columns: minmax\(220px, 0\.86fr\) minmax\(420px, auto\) minmax\(220px, 0\.86fr\)/);
-  assert.match(css, /\.mission-brand span\s*{[\s\S]*?font-size: clamp\(38px, 3\.8vw, 62px\)/);
+  assert.match(css, /\.mission-brand span\s*{[\s\S]*?font-size: clamp\(24px, 2\.15vw, 36px\)/);
   assert.match(css, /\.mission-brand span\s*{[\s\S]*?font-weight: 300/);
+  assert.match(css, /\.sub-title\s*{[\s\S]*?top: clamp\(58px, 6\.4vh, 76px\)/);
   assert.match(css, /\.sub-title\s*{[\s\S]*?width: min\(860px, calc\(100vw - 620px\)\)/);
   assert.match(css, /\.sub-title strong\s*{[\s\S]*?font-weight: 300/);
   assert.match(css, /\.field-lesson\s*{[\s\S]*?width: min\(300px, 20vw\)/);

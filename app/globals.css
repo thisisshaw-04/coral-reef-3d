@@ -7432,3 +7432,45 @@ a:focus-visible,
     width: min(280px, calc(100vw - 36px));
   }
 }
+
+/* v38 - compact live reef relay heading */
+.mission-bar {
+  top: 18px;
+}
+
+.mission-brand {
+  gap: 10px;
+  padding-top: 0;
+}
+
+.mission-brand > svg {
+  width: clamp(19px, 1.45vw, 25px);
+  height: clamp(19px, 1.45vw, 25px);
+  translate: 0 0;
+}
+
+.mission-brand span {
+  font-size: clamp(24px, 2.15vw, 36px);
+  font-weight: 320;
+  letter-spacing: 0.15em;
+  line-height: 1;
+  text-shadow: 0 8px 24px rgb(0 16 26 / 0.28);
+}
+
+.mission-brand::after {
+  width: clamp(48px, 6vw, 92px);
+}
+
+.sub-title {
+  top: clamp(58px, 6.4vh, 76px);
+  gap: 5px;
+}
+
+.sub-title span {
+  font-size: clamp(9px, 0.68vw, 12px);
+}
+
+.sub-title strong {
+  font-size: clamp(10px, 0.78vw, 14px);
+  letter-spacing: 0.18em;
+}

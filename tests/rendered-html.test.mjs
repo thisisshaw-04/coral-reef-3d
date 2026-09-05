@@ -8,6 +8,10 @@ test("builds the Reef Relay production worker and client", async () => {
   await access(new URL("../dist/client/models/acropora-hyacinthus.glb", import.meta.url));
   await access(new URL("../dist/client/models/smithsonian-acropora-palmata.glb", import.meta.url));
   await access(new URL("../dist/client/models/smithsonian-linckia-laevigata.glb", import.meta.url));
+  await access(new URL("../dist/client/models/smithsonian-tubipora-musica.glb", import.meta.url));
+  await access(new URL("../dist/client/models/smithsonian-tridacna-squamosa.glb", import.meta.url));
+  await access(new URL("../dist/client/models/smithsonian-chonelasma-oreia.glb", import.meta.url));
+  await access(new URL("../dist/client/models/smithsonian-endoxocrinus-parrae.glb", import.meta.url));
 });
 
 test("publishes truthful product metadata and preview contract", async () => {
@@ -208,6 +212,11 @@ test("replaces fake reef-floor blobs with modeled rubble and benthic life", asyn
   assert.match(scene, /const makeRubbleGeometry = \(\) =>/);
   assert.match(scene, /const makeTubeSpongeGeometry = \(\) =>/);
   assert.match(scene, /const reefRubble = new THREE\.InstancedMesh/);
+  assert.match(scene, /floorScannedHabitatsByBiome/);
+  assert.match(scene, /smithsonian-tubipora-musica\.glb/);
+  assert.match(scene, /smithsonian-tridacna-squamosa\.glb/);
+  assert.match(scene, /smithsonian-chonelasma-oreia\.glb/);
+  assert.match(scene, /smithsonian-endoxocrinus-parrae\.glb/);
   assert.match(scene, /countFor\(1560, 680, biomeConfig\.grassDensity\)/);
   assert.match(scene, /countFor\(430, 175, biomeConfig\.kelpDensity\)/);
   assert.match(scene, /countFor\(340, 140, biomeConfig\.seaFanDensity\)/);

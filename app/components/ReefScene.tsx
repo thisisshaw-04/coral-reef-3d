@@ -1543,6 +1543,96 @@ export default function ReefScene({
           ),
         );
 
+        type FloorScanAsset = {
+          src: string;
+          count: number;
+          fit: number;
+          tint: number;
+          clusterOffset: number;
+          scaleMin: number;
+          scaleMax: number;
+          lift?: number;
+          floorActor?: boolean;
+        };
+        const floorScannedHabitatsByBiome: Record<ReefBiomeId, FloorScanAsset[]> = {
+          "great-barrier": [
+            { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(9, 4, 1), fit: 4.2, tint: 0xbb735b, clusterOffset: 1, scaleMin: 0.7, scaleMax: 1.22 },
+            { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(7, 3, 1), fit: 3.1, tint: 0xd7c7a3, clusterOffset: 4, scaleMin: 0.72, scaleMax: 1.16 },
+            { src: "/models/smithsonian-tridacna-squamosa.glb", count: countFor(8, 3, 1), fit: 2.45, tint: 0xd8b67b, clusterOffset: 8, scaleMin: 0.78, scaleMax: 1.28, lift: 0.05 },
+            { src: "/models/smithsonian-endoxocrinus-parrae.glb", count: countFor(10, 4, 1), fit: 3.35, tint: 0x8cbf92, clusterOffset: 11, scaleMin: 0.68, scaleMax: 1.04, floorActor: true },
+          ],
+          "sisters-islands": [
+            { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(10, 4, 1), fit: 3.3, tint: 0xcfc19b, clusterOffset: 0, scaleMin: 0.78, scaleMax: 1.18 },
+            { src: "/models/smithsonian-tridacna-squamosa.glb", count: countFor(7, 3, 1), fit: 2.25, tint: 0xc7ad7a, clusterOffset: 3, scaleMin: 0.72, scaleMax: 1.12, lift: 0.05 },
+            { src: "/models/smithsonian-endoxocrinus-parrae.glb", count: countFor(13, 5, 1), fit: 3.15, tint: 0x8fbf86, clusterOffset: 5, scaleMin: 0.72, scaleMax: 1.1, floorActor: true },
+            { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(5, 2, 1), fit: 3.5, tint: 0xb77561, clusterOffset: 8, scaleMin: 0.66, scaleMax: 0.96 },
+          ],
+          "coral-triangle": [
+            { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(12, 5, 1), fit: 4.5, tint: 0xc97862, clusterOffset: 2, scaleMin: 0.76, scaleMax: 1.26 },
+            { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(9, 4, 1), fit: 3.4, tint: 0xd6c9a7, clusterOffset: 5, scaleMin: 0.76, scaleMax: 1.22 },
+            { src: "/models/smithsonian-tridacna-squamosa.glb", count: countFor(10, 4, 1), fit: 2.6, tint: 0xddb87c, clusterOffset: 8, scaleMin: 0.78, scaleMax: 1.34, lift: 0.05 },
+            { src: "/models/smithsonian-endoxocrinus-parrae.glb", count: countFor(16, 6, 1), fit: 3.55, tint: 0x8bc693, clusterOffset: 10, scaleMin: 0.7, scaleMax: 1.12, floorActor: true },
+          ],
+          "caribbean-reef": [
+            { src: "/models/smithsonian-tridacna-squamosa.glb", count: countFor(6, 2, 1), fit: 2.15, tint: 0xd8b176, clusterOffset: 1, scaleMin: 0.74, scaleMax: 1.08, lift: 0.05 },
+            { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(8, 3, 1), fit: 3.85, tint: 0xb96e58, clusterOffset: 4, scaleMin: 0.68, scaleMax: 1.14 },
+            { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(8, 3, 1), fit: 3.05, tint: 0xcec09b, clusterOffset: 7, scaleMin: 0.74, scaleMax: 1.16 },
+            { src: "/models/smithsonian-endoxocrinus-parrae.glb", count: countFor(8, 3, 1), fit: 3.1, tint: 0x88b886, clusterOffset: 9, scaleMin: 0.64, scaleMax: 0.98, floorActor: true },
+          ],
+        };
+        await Promise.allSettled(
+          floorScannedHabitatsByBiome[biome].map(async (asset) => {
+            const gltf = await gltfLoader.loadAsync(asset.src);
+            if (!alive) return;
+            const template = gltf.scene;
+            const bounds = new THREE.Box3().setFromObject(template);
+            const templateSize = bounds.getSize(new THREE.Vector3());
+            const templateCenter = bounds.getCenter(new THREE.Vector3());
+            const fit = asset.fit / Math.max(templateSize.x, templateSize.y, templateSize.z, 0.001);
+            template.position.copy(templateCenter.multiplyScalar(-fit));
+            template.scale.setScalar(fit);
+            template.traverse((object) => {
+              if (!isMesh(object)) return;
+              object.castShadow = false;
+              object.receiveShadow = true;
+            });
+
+            for (let index = 0; index < asset.count; index += 1) {
+              const cluster = clusters[(index + asset.clusterOffset) % clusters.length];
+              const theta = random() * Math.PI * 2;
+              const radius = 8 + random() * (cluster[3] + 12);
+              const x = cluster[0] + Math.cos(theta) * radius + (random() - 0.5) * 12;
+              const z = cluster[2] + Math.sin(theta) * radius * 0.92 + (random() - 0.5) * 8;
+              const habitat = template.clone(true);
+              const tint = new THREE.Color(asset.tint);
+              habitat.traverse((object) => {
+                if (!isMesh(object)) return;
+                const source = Array.isArray(object.material) ? object.material : [object.material];
+                const cloned = source.map((material) => material.clone());
+                object.material = Array.isArray(object.material) ? cloned : cloned[0];
+                for (const material of cloned) {
+                  const surface = material as Material & { color?: Color; roughness?: number; metalness?: number };
+                  if (surface.color) surface.color.lerp(tint, 0.26);
+                  if (typeof surface.roughness === "number") surface.roughness = Math.max(0.68, surface.roughness);
+                  if (typeof surface.metalness === "number") surface.metalness = 0;
+                }
+              });
+              const habitatBounds = new THREE.Box3().setFromObject(habitat);
+              const habitatBottom = Number.isFinite(habitatBounds.min.y) ? habitatBounds.min.y : -0.5;
+              habitat.position.y -= habitatBottom;
+
+              const pivot = new THREE.Group();
+              const baseScale = asset.scaleMin + random() * (asset.scaleMax - asset.scaleMin);
+              pivot.add(habitat);
+              pivot.position.set(x, seabedHeight(x, z) + (asset.lift ?? 0.02), z);
+              pivot.rotation.set((random() - 0.5) * 0.12, random() * Math.PI * 2, (random() - 0.5) * 0.12);
+              pivot.scale.setScalar(baseScale);
+              if (asset.floorActor) bottomActors.push({ object: pivot, baseScale, offset: random() * Math.PI * 2 });
+              world.add(pivot);
+            }
+          }),
+        );
+
         const creatureAssetsByBiome: Record<ReefBiomeId, Array<{
           src: string;
           count: number;

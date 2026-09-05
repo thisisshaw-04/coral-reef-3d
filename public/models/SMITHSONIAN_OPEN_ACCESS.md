@@ -19,6 +19,12 @@ Reef-dwelling animal scans:
 - Lactophrys bicaudalis, USNM 273167: https://3d-api.si.edu/content/document/3d_package:b64f9c0a-3634-4043-9b1d-a2aaf2823317
 - Linckia laevigata, USNM E15868: https://3d-api.si.edu/content/document/3d_package:aff2c3e5-e909-4c18-87ce-8390bac19186
 
+Reef-floor habitat scans:
+- Tubipora musica: https://3d-api.si.edu/content/document/3d_package:6efd0a97-ef3c-4903-a48c-acb6055d5130
+- Tridacna (Flodacna) squamosa: https://3d-api.si.edu/content/document/3d_package:701a39f3-c97a-4951-9de4-1125229eb703
+- Chonelasma oreia: https://3d-api.si.edu/content/document/3d_package:ea941ed0-326b-4c21-b9d4-e03a07495453
+- Endoxocrinus parrae: https://3d-api.si.edu/content/document/3d_package:c6826906-381b-4d2b-881f-c01e3207e9ad
+
 Reference pages:
 - Smithsonian 3D Corals collection: https://3d.si.edu/corals
 - Smithsonian 3D API documentation: https://3d-api.si.edu/api-docs/

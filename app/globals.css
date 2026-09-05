@@ -8974,3 +8974,34 @@ a:focus-visible,
     max-height: min(420px, 44vh) !important;
   }
 }
+
+/* v56 - tighter top-right mission chips */
+.mission-room {
+  gap: 7px !important;
+}
+
+.mission-room button,
+.mission-room > strong {
+  min-height: 42px !important;
+  height: 42px !important;
+  padding: 0 13px !important;
+  border-radius: 18px !important;
+  font-size: 11px !important;
+  letter-spacing: 0.14em !important;
+  box-shadow:
+    0 10px 26px rgb(0 8 13 / 0.18),
+    inset 0 1px 0 rgb(255 255 255 / 0.12) !important;
+}
+
+.mission-room button {
+  min-width: 118px !important;
+}
+
+.mission-room > strong {
+  min-width: 70px !important;
+}
+
+.mission-room button svg {
+  width: 17px !important;
+  height: 17px !important;
+}

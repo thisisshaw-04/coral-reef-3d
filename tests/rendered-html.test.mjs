@@ -763,3 +763,14 @@ test("keeps specimen signals compact and aligned with calmer panels", async () =
   assert.match(css, /\.signal-chart \.recharts-responsive-container\s*{[\s\S]*?height: 86px !important/);
   assert.match(css, /\.evidence-card p,[\s\S]*?\.tool-card p,[\s\S]*?\.saved-note,[\s\S]*?\.signal-chart p,[\s\S]*?\.effect-note\s*{[\s\S]*?line-height: 1\.32 !important/);
 });
+
+test("keeps the top-right mission chips slim", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v56 - tighter top-right mission chips/);
+  assert.match(css, /\.mission-room\s*{[\s\S]*?gap: 7px !important/);
+  assert.match(css, /\.mission-room button,[\s\S]*?\.mission-room > strong\s*{[\s\S]*?height: 42px !important/);
+  assert.match(css, /\.mission-room button,[\s\S]*?\.mission-room > strong\s*{[\s\S]*?padding: 0 13px !important/);
+  assert.match(css, /\.mission-room button\s*{[\s\S]*?min-width: 118px !important/);
+  assert.match(css, /\.mission-room > strong\s*{[\s\S]*?min-width: 70px !important/);
+});

@@ -326,6 +326,18 @@ test("keeps the main intro modal near half the page width", async () => {
   assert.match(css, /@media \(max-width: 1100px\)[\s\S]*?\.entry-actions\s*{[\s\S]*?grid-template-columns: 1fr/);
 });
 
+test("keeps the intro modal visually half its previous size", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v52 - truly half-size intro modal/);
+  assert.match(css, /\.expedition-entry\s*{[\s\S]*?width: min\(480px, 46vw\) !important/);
+  assert.match(css, /\.expedition-entry\s*{[\s\S]*?max-height: min\(560px, calc\(100vh - 72px\)\) !important/);
+  assert.match(css, /\.expedition-entry\s*{[\s\S]*?padding: clamp\(20px, 2\.1vw, 28px\) !important/);
+  assert.match(css, /\.expedition-entry h1\s*{[\s\S]*?font-size: clamp\(25px, 2\.35vw, 38px\) !important/);
+  assert.match(css, /\.expedition-entry p\s*{[\s\S]*?font-size: clamp\(11px, 0\.88vw, 14px\) !important/);
+  assert.match(css, /\.begin-button,[\s\S]*?\.expedition-entry form\s*{[\s\S]*?min-height: clamp\(38px, 3\.2vw, 46px\) !important/);
+});
+
 test("uses a sleek rail-only timeline selection", async () => {
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 

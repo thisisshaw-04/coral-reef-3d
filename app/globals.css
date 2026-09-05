@@ -8578,3 +8578,93 @@ a:focus-visible,
     height: 15px;
   }
 }
+
+/* v52 - truly half-size intro modal */
+.expedition-entry {
+  width: min(480px, 46vw) !important;
+  max-height: min(560px, calc(100vh - 72px)) !important;
+  padding: clamp(20px, 2.1vw, 28px) !important;
+  top: 50% !important;
+}
+
+.expedition-entry > span {
+  font-size: clamp(7px, 0.52vw, 9px) !important;
+  letter-spacing: 0.2em !important;
+}
+
+.expedition-entry h1 {
+  max-width: 11ch !important;
+  margin: clamp(12px, 1.4vw, 18px) 0 10px !important;
+  font-size: clamp(25px, 2.35vw, 38px) !important;
+  line-height: 1.06 !important;
+}
+
+.expedition-entry p {
+  max-width: 330px !important;
+  margin-bottom: clamp(16px, 1.7vw, 22px) !important;
+  font-size: clamp(11px, 0.88vw, 14px) !important;
+  line-height: 1.42 !important;
+}
+
+.entry-actions {
+  gap: clamp(8px, 1vw, 12px) !important;
+  margin-top: clamp(16px, 1.7vw, 22px) !important;
+}
+
+.begin-button,
+.expedition-entry form {
+  min-height: clamp(38px, 3.2vw, 46px) !important;
+}
+
+.begin-button {
+  padding: 0 clamp(12px, 1.2vw, 16px) !important;
+  font-size: clamp(7px, 0.58vw, 9px) !important;
+  letter-spacing: 0.16em !important;
+}
+
+.begin-button svg {
+  width: clamp(15px, 1.25vw, 20px) !important;
+}
+
+.expedition-entry form {
+  grid-template-columns: minmax(0, 1fr) minmax(50px, 0.32fr) !important;
+  padding: 4px !important;
+}
+
+.expedition-entry form input {
+  padding: 0 8px 0 12px !important;
+  font-size: clamp(7px, 0.56vw, 9px) !important;
+}
+
+.expedition-entry form button {
+  min-height: clamp(30px, 2.5vw, 38px) !important;
+  padding: 0 10px !important;
+  font-size: clamp(7px, 0.54vw, 8px) !important;
+}
+
+.expedition-entry > small {
+  margin-top: clamp(14px, 1.4vw, 18px) !important;
+  font-size: clamp(7px, 0.54vw, 8px) !important;
+  letter-spacing: 0.18em !important;
+}
+
+@media (max-width: 980px) {
+  .expedition-entry {
+    width: min(420px, calc(100vw - 32px)) !important;
+  }
+}
+
+@media (max-width: 620px) {
+  .expedition-entry {
+    width: min(360px, calc(100vw - 28px)) !important;
+    padding: 18px !important;
+  }
+
+  .expedition-entry h1 {
+    font-size: clamp(27px, 8vw, 34px) !important;
+  }
+
+  .entry-actions {
+    grid-template-columns: 1fr !important;
+  }
+}

@@ -816,3 +816,20 @@ test("keeps the specimen header sticky above compact metric boxes", async () => 
   assert.match(css, /\.specimen-monitor dl\s*{[\s\S]*?grid-template-columns: repeat\(3, minmax\(0, 1fr\)\) !important/);
   assert.match(css, /\.specimen-monitor dl div\s*{[\s\S]*?align-content: space-between !important/);
 });
+
+test("uses one responsive cockpit grid and calibrated timeline", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v59 - unified responsive cockpit layout/);
+  assert.match(css, /--cockpit-edge: clamp\(14px, 2vw, 32px\)/);
+  assert.match(css, /--cockpit-glass:/);
+  assert.match(css, /\.sub-title\s*{[\s\S]*?translate: 0 !important/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?left: 50% !important[\s\S]*?transform: translateX\(-50%\) !important/);
+  assert.match(css, /\.stress-trigger\s*{[\s\S]*?bottom: var\(--lower-controls-bottom\) !important/);
+  assert.match(css, /\.time-current\s*{[\s\S]*?width: min\(1120px, calc\(100vw - \(var\(--cockpit-edge\) \* 2\)\)\) !important/);
+  assert.match(css, /\.time-current nav\s*{[\s\S]*?grid-template-columns: repeat\(5, minmax\(0, 1fr\)\) !important/);
+  assert.match(css, /\.time-current nav button::before\s*{[\s\S]*?left: 50% !important[\s\S]*?width: 100% !important/);
+  assert.match(css, /@media \(max-width: 900px\)[\s\S]*?\.time-current\s*{[\s\S]*?width: calc\(100vw - 24px\) !important/);
+  assert.match(css, /@media \(max-width: 620px\)[\s\S]*?\.tool-console\s*{[\s\S]*?left: 12px !important[\s\S]*?right: 12px !important/);
+  assert.match(css, /\.mission-briefing\s*{[\s\S]*?width: min\(620px, calc\(100vw - 32px\)\) !important/);
+});

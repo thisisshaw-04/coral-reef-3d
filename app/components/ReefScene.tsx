@@ -463,6 +463,9 @@ const WORLD_BOUNDS = {
 };
 const MIN_DIVE_DEPTH_METERS = 10;
 const DEPTH_METERS_PER_WORLD_UNIT = 0.65;
+const FREE_SWIM_SPEED = 9.6;
+const FREE_SWIM_SHIFT_SPEED = 17.2;
+const VERTICAL_SWIM_SPEED = 5.4;
 
 const FLOOR_WIDTH = 560;
 const FLOOR_DEPTH = 900;
@@ -1083,7 +1086,7 @@ export default function ReefScene({
         const coralTargets: Object3D[] = [];
         const animatedCorals: Object3D[] = [];
         const fishActors: Array<{ object: Object3D; offset: number; lane: number; depth: number; radius: number; height: number; speed: number; wobble: number }> = [];
-        const bottomActors: Array<{ object: Object3D; baseScale: number; offset: number }> = [];
+        const bottomActors: Array<{ object: Object3D; baseScale: number }> = [];
         const textures: Array<{ dispose: () => void }> = [];
 
         scene.add(new THREE.HemisphereLight(0xbff7ee, 0x103a4a, 1.78 * biomeConfig.exposure));
@@ -1840,7 +1843,7 @@ export default function ReefScene({
               pivot.position.set(x, seabedHeight(x, z) + (asset.lift ?? 0.02), z);
               pivot.rotation.set((random() - 0.5) * 0.12, random() * Math.PI * 2, (random() - 0.5) * 0.12);
               pivot.scale.setScalar(baseScale);
-              if (asset.floorActor) bottomActors.push({ object: pivot, baseScale, offset: random() * Math.PI * 2 });
+              if (asset.floorActor) bottomActors.push({ object: pivot, baseScale });
               world.add(pivot);
             }
           }),
@@ -1902,7 +1905,7 @@ export default function ReefScene({
                 pivot.rotation.set((random() - 0.5) * 0.18, random() * Math.PI * 2, (random() - 0.5) * 0.18);
                 const baseScale = 0.82 + random() * 0.42;
                 pivot.scale.setScalar(baseScale);
-                bottomActors.push({ object: pivot, baseScale, offset: random() * Math.PI * 2 });
+                bottomActors.push({ object: pivot, baseScale });
               } else {
                 fishActors.push({
                   object: pivot,
@@ -2143,15 +2146,11 @@ export default function ReefScene({
               const meta = index * 4;
               const phase = lifeMeta[meta] + elapsed * lifeMeta[meta + 1];
               const radius = lifeMeta[meta + 3];
-              const buoyancy = (Math.sin(phase * 1.8) + Math.cos(elapsed * 0.52 + index)) * 0.055;
               lifePositions[offset] =
                 lifeBase[offset] +
                 Math.cos(phase) * radius * 0.08 +
                 Math.sin(elapsed * 0.34 + lifeBase[offset + 2] * 0.05) * 0.16;
-              lifePositions[offset + 1] =
-                lifeBase[offset + 1] +
-                Math.sin(phase * 1.35) * lifeMeta[meta + 2] * 0.18 +
-                buoyancy;
+              lifePositions[offset + 1] = lifeBase[offset + 1];
               lifePositions[offset + 2] =
                 lifeBase[offset + 2] +
                 Math.sin(phase) * radius * 0.1 +
@@ -2169,9 +2168,8 @@ export default function ReefScene({
             actor.object.rotation.y = Math.PI + Math.sin(t * 0.7) * 0.55;
             actor.object.rotation.z = Math.sin(t * 1.5) * 0.025;
           });
-          bottomActors.forEach((actor, index) => {
-            const pulse = reduced ? 1 : 1 + Math.sin(elapsed * 0.18 + actor.offset + index * 0.25) * 0.01;
-            actor.object.scale.setScalar(actor.baseScale * pulse);
+          bottomActors.forEach((actor) => {
+            actor.object.scale.setScalar(actor.baseScale);
           });
 
           const focused = focusRef.current ? hotspotsRef.current.find((item) => item.id === focusRef.current) : undefined;
@@ -2220,8 +2218,8 @@ export default function ReefScene({
             }
             direction.set(-Math.sin(nav.yaw), 0, -Math.cos(nav.yaw));
             right.set(Math.cos(nav.yaw), 0, -Math.sin(nav.yaw));
-            const boost = nav.keys.has("shift") ? 12.4 : 6.8;
-            desired.set(0, vertical * 3.6, 0);
+            const boost = nav.keys.has("shift") ? FREE_SWIM_SHIFT_SPEED : FREE_SWIM_SPEED;
+            desired.set(0, vertical * VERTICAL_SWIM_SPEED, 0);
             desired.addScaledVector(direction, ((wantsForward ? 1 : 0) - (wantsBack ? 1 : 0)) * boost);
             desired.addScaledVector(right, ((wantsRight ? 1 : 0) - (wantsLeft ? 1 : 0)) * boost * 0.82);
             if (ambientDriftRef.current && !hasManualMovement && activeRef.current) {

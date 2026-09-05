@@ -92,12 +92,19 @@ test("uses distinct procedural seabed textures and faster movement", async () =>
   assert.match(scene, /texture\.repeat\.set\(1, 1\)/);
   assert.match(scene, /map: floorTexture/);
   assert.match(scene, /-event\.deltaY \* 0\.0027/);
-  assert.match(scene, /nav\.keys\.has\("shift"\) \? 12\.4 : 6\.8/);
+  assert.match(scene, /const FREE_SWIM_SPEED = 9\.6/);
+  assert.match(scene, /const FREE_SWIM_SHIFT_SPEED = 17\.2/);
+  assert.match(scene, /const VERTICAL_SWIM_SPEED = 5\.4/);
+  assert.match(scene, /nav\.keys\.has\("shift"\) \? FREE_SWIM_SHIFT_SPEED : FREE_SWIM_SPEED/);
   assert.match(scene, /event\.code === "Space"/);
   assert.match(scene, /event\.code === "AltLeft" \|\| event\.code === "AltRight"/);
   assert.match(scene, /nav\.keys\.has\("e"\) \|\| nav\.keys\.has\("space"\)/);
   assert.match(scene, /nav\.keys\.has\("q"\) \|\| nav\.keys\.has\("alt"\)/);
-  assert.match(scene, /vertical \* 3\.6/);
+  assert.match(scene, /vertical \* VERTICAL_SWIM_SPEED/);
+  assert.match(scene, /lifePositions\[offset \+ 1\] = lifeBase\[offset \+ 1\]/);
+  assert.match(scene, /actor\.object\.scale\.setScalar\(actor\.baseScale\)/);
+  assert.doesNotMatch(scene, /const buoyancy =/);
+  assert.doesNotMatch(scene, /actor\.baseScale \* pulse/);
 });
 
 test("updates the visible depth readout from live vertical movement", async () => {

@@ -487,6 +487,7 @@ export default function Home() {
         phase={phase}
         stressor={stressor}
         restoredIds={restored}
+        ambientDrift={showBriefing}
         onHotspotSelect={inspect}
         onReady={() => setSceneReady(true)}
         onEngineChange={setEngine}

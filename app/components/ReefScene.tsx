@@ -46,6 +46,7 @@ type ReefSceneProps = {
   phase?: ReefPhase;
   stressor?: "heat" | "co2" | "plastic" | "runoff" | null;
   restoredIds?: string[];
+  ambientDrift?: boolean;
   className?: string;
   onHotspotSelect?: (id: string) => void;
   onReady?: () => void;
@@ -726,6 +727,7 @@ export default function ReefScene({
   phase = "healthy",
   stressor = null,
   restoredIds = [],
+  ambientDrift = false,
   className,
   onHotspotSelect,
   onReady,
@@ -741,6 +743,7 @@ export default function ReefScene({
   const phaseRef = useRef(phase);
   const stressorRef = useRef(stressor);
   const restoredRef = useRef(restoredIds);
+  const ambientDriftRef = useRef(ambientDrift);
   const hotspotsRef = useRef(hotspots);
   const callbacksRef = useRef({ onHotspotSelect, onReady, onEngineChange, onZoneChange });
   const [activatedOnce, setActivatedOnce] = useState(active);
@@ -766,6 +769,7 @@ export default function ReefScene({
 
   useEffect(() => { stressorRef.current = stressor; }, [stressor]);
   useEffect(() => { restoredRef.current = restoredIds; }, [restoredIds]);
+  useEffect(() => { ambientDriftRef.current = ambientDrift; }, [ambientDrift]);
 
   useEffect(() => {
     hotspotsRef.current = hotspots;
@@ -2072,12 +2076,22 @@ export default function ReefScene({
             const vertical =
               (nav.keys.has("e") || nav.keys.has("space") ? 1 : 0) -
               (nav.keys.has("q") || nav.keys.has("alt") ? 1 : 0);
+            const hasManualMovement = wantsForward || wantsBack || wantsLeft || wantsRight || vertical !== 0;
+            if (ambientDriftRef.current && !hasManualMovement && activeRef.current) {
+              nav.yaw += delta * 0.026;
+              nav.pitch = THREE.MathUtils.lerp(nav.pitch, -0.045 + Math.sin(elapsed * 0.18) * 0.035, 1 - Math.exp(-delta * 0.7));
+            }
             direction.set(-Math.sin(nav.yaw), 0, -Math.cos(nav.yaw));
             right.set(Math.cos(nav.yaw), 0, -Math.sin(nav.yaw));
             const boost = nav.keys.has("shift") ? 12.4 : 6.8;
             desired.set(0, vertical * 3.6, 0);
             desired.addScaledVector(direction, ((wantsForward ? 1 : 0) - (wantsBack ? 1 : 0)) * boost);
             desired.addScaledVector(right, ((wantsRight ? 1 : 0) - (wantsLeft ? 1 : 0)) * boost * 0.82);
+            if (ambientDriftRef.current && !hasManualMovement && activeRef.current) {
+              desired.addScaledVector(direction, 1.05);
+              desired.addScaledVector(right, Math.sin(elapsed * 0.2) * 0.42);
+              desired.y = Math.sin(elapsed * 0.26) * 0.28;
+            }
             nav.velocity.lerp(desired, 1 - Math.exp(-delta * 6.4));
             if (!activeRef.current) nav.velocity.multiplyScalar(Math.exp(-delta * 8));
             camera.position.addScaledVector(nav.velocity, delta);

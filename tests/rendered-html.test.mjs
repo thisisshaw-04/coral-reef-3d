@@ -593,6 +593,25 @@ test("adds an educational storytelling mode with free exploration exit", async (
   assert.match(css, /\.tool-console\s*{[\s\S]*?grid-template-columns: repeat\(7, minmax\(0, 1fr\)\)/);
 });
 
+test("keeps onboarding drifting through the reef with a calmer centered masthead", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(page, /ambientDrift=\{showBriefing\}/);
+  assert.match(scene, /ambientDrift\?: boolean/);
+  assert.match(scene, /ambientDriftRef/);
+  assert.match(scene, /nav\.yaw \+= delta \* 0\.026/);
+  assert.match(scene, /desired\.addScaledVector\(direction, 1\.05\)/);
+  assert.match(css, /v47 - quiet unified glass system and onboarding reef drift/);
+  assert.match(css, /--reef-glass-bg:/);
+  assert.match(css, /\.mission-brand\s*{[\s\S]*?justify-self: center/);
+  assert.match(css, /\.mission-brand span\s*{[\s\S]*?font-size: clamp\(13px, 0\.94vw, 17px\)/);
+  assert.match(css, /\.mission-brand::after,[\s\S]*?\.mission-brand span::after\s*{[\s\S]*?content: none !important/);
+  assert.match(css, /\.world-button,[\s\S]*?\.note-form button\s*{[\s\S]*?background: var\(--reef-glass-bg\)/);
+  assert.match(css, /\.mission-briefing\s*{[\s\S]*?rgb\(4 24 31 \/ 0\.42\)/);
+});
+
 test("keeps the bottom research dock near half width", async () => {
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 

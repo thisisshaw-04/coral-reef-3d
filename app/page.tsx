@@ -507,7 +507,7 @@ export default function Home() {
         guidedFocus={Boolean(storyFocusId)}
         hotspots={activeColonies}
         mappedIds={sceneMappedIds}
-        fallbackSrc="/reef-cockpit.webp"
+        fallbackSrc="/reef-cockpit-v2.png"
         phase={phase}
         stressor={stressor}
         restoredIds={restored}

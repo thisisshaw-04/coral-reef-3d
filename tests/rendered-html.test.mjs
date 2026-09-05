@@ -5,6 +5,7 @@ import test from "node:test";
 test("builds the Reef Relay production worker and client", async () => {
   await access(new URL("../dist/server/index.js", import.meta.url));
   await access(new URL("../dist/client/reef-entry-v4.webp", import.meta.url));
+  await access(new URL("../dist/client/reef-cockpit-v2.png", import.meta.url));
   await access(new URL("../dist/client/models/acropora-hyacinthus.glb", import.meta.url));
   await access(new URL("../dist/client/models/smithsonian-acropora-palmata.glb", import.meta.url));
   await access(new URL("../dist/client/models/smithsonian-acropora-cervicornis.glb", import.meta.url));
@@ -19,9 +20,15 @@ test("builds the Reef Relay production worker and client", async () => {
 
 test("publishes truthful product metadata and preview contract", async () => {
   const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
   assert.match(layout, /Reef Relay — The Living City/);
   assert.match(layout, /"codex-preview": "development"/);
-  assert.match(layout, /reef-entry-v4\.webp/);
+  assert.match(layout, /reef-cockpit-v2\.png/);
+  assert.doesNotMatch(layout, /reef-entry-v4\.webp/);
+  assert.match(page, /fallbackSrc="\/reef-cockpit-v2\.png"/);
+  assert.match(scene, /fallbackSrc = "\/reef-cockpit-v2\.png"/);
 });
 
 test("keeps live voice gated behind explicit server configuration", async () => {

@@ -792,7 +792,7 @@ export default function ReefScene({
   guidedFocus = false,
   hotspots = DEFAULT_HOTSPOTS,
   mappedIds = [],
-  fallbackSrc = "/reef-entry-v4.webp",
+  fallbackSrc = "/reef-cockpit-v2.png",
   phase = "healthy",
   stressor = null,
   restoredIds = [],

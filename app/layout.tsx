@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Reef Relay — The Living City",
     description: "Enter the water. Read a living reef. Protect what connects us.",
-    images: [{ url: "/reef-entry-v4.webp", width: 1920, height: 1080 }],
+    images: [{ url: "/reef-cockpit-v2.png", width: 1672, height: 941 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Reef Relay — The Living City",
     description: "Enter the water. Read a living reef. Protect what connects us.",
-    images: ["/reef-entry-v4.webp"],
+    images: ["/reef-cockpit-v2.png"],
   },
   other: {
     "codex-preview": "development",

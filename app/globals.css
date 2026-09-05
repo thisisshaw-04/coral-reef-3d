@@ -8364,6 +8364,91 @@ a:focus-visible,
   }
 }
 
+/* v50 - aligned compact lower HUD edges */
+.expedition-v5 {
+  --bottom-hud-width: min(35vw, 532px);
+  --bottom-hud-min: 420px;
+  --bottom-hud-left: clamp(248px, 25vw, 485px);
+  --bottom-hud-bottom: clamp(118px, 13.6vh, 148px);
+  --bottom-hud-right: calc(100vw - (var(--bottom-hud-left) + max(var(--bottom-hud-width), var(--bottom-hud-min))));
+}
+
+.tool-console {
+  left: var(--bottom-hud-left);
+  right: auto;
+  bottom: var(--bottom-hud-bottom);
+  width: var(--bottom-hud-width);
+  min-width: var(--bottom-hud-min);
+  transform: none;
+}
+
+.tool-console button {
+  height: 36px;
+  padding: 3px 5px 2px;
+}
+
+.tool-console svg {
+  width: 14px;
+  height: 14px;
+}
+
+.tool-console span {
+  font-size: 7.5px;
+  letter-spacing: 0.09em;
+}
+
+.stress-trigger {
+  right: max(18px, var(--bottom-hud-right));
+  bottom: var(--bottom-hud-bottom);
+}
+
+.time-current {
+  left: max(18px, calc(var(--bottom-hud-left) - 230px));
+  right: max(18px, var(--bottom-hud-right));
+  width: auto;
+}
+
+@media (max-width: 1180px) {
+  .expedition-v5 {
+    --bottom-hud-width: min(54vw, 520px);
+    --bottom-hud-min: 0px;
+    --bottom-hud-left: clamp(18px, 4vw, 42px);
+    --bottom-hud-bottom: 94px;
+  }
+
+  .tool-console {
+    width: var(--bottom-hud-width);
+    min-width: 0;
+  }
+
+  .stress-trigger {
+    bottom: var(--bottom-hud-bottom);
+  }
+}
+
+@media (max-width: 760px) {
+  .expedition-v5 {
+    --bottom-hud-width: calc(100vw - 28px);
+    --bottom-hud-left: 14px;
+    --bottom-hud-bottom: 86px;
+    --bottom-hud-right: 14px;
+  }
+
+  .tool-console {
+    width: var(--bottom-hud-width);
+  }
+
+  .stress-trigger {
+    right: 14px;
+    bottom: calc(var(--bottom-hud-bottom) + 48px);
+  }
+
+  .time-current {
+    left: 14px;
+    right: 14px;
+  }
+}
+
 @media (max-width: 900px) {
   .mission-brand {
     display: flex;

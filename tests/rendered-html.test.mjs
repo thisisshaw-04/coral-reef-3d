@@ -644,4 +644,13 @@ test("keeps the bottom research dock near half width", async () => {
   assert.match(css, /\.tool-console button\s*{[\s\S]*?height: 39px/);
   assert.match(css, /\.tool-console svg\s*{[\s\S]*?width: 16px/);
   assert.match(css, /@media \(max-width: 1180px\)[\s\S]*?\.tool-console\s*{[\s\S]*?width: min\(620px, calc\(100vw - 36px\)\)/);
+  assert.match(css, /v50 - aligned compact lower HUD edges/);
+  assert.match(css, /--bottom-hud-width: min\(35vw, 532px\)/);
+  assert.match(css, /--bottom-hud-right: calc\(100vw - \(var\(--bottom-hud-left\) \+ max\(var\(--bottom-hud-width\), var\(--bottom-hud-min\)\)\)/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?left: var\(--bottom-hud-left\)/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?width: var\(--bottom-hud-width\)/);
+  assert.match(css, /\.tool-console button\s*{[\s\S]*?height: 36px/);
+  assert.match(css, /\.stress-trigger\s*{[\s\S]*?right: max\(18px, var\(--bottom-hud-right\)\)/);
+  assert.match(css, /\.stress-trigger\s*{[\s\S]*?bottom: var\(--bottom-hud-bottom\)/);
+  assert.match(css, /\.time-current\s*{[\s\S]*?right: max\(18px, var\(--bottom-hud-right\)\)/);
 });

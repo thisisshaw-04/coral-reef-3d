@@ -1,24 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
-  <title id="title">Restore with caution</title>
-  <desc id="desc">A young coral sprout protected by a restoration halo.</desc>
-  <defs>
-    <linearGradient id="a" x1="18" x2="78" y1="14" y2="82" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#fff"/>
-      <stop offset=".48" stop-color="#f1fdff"/>
-      <stop offset="1" stop-color="#baffef"/>
-    </linearGradient>
-    <filter id="b" width="150%" height="150%" x="-25%" y="-25%" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="5" flood-color="#001923" flood-opacity=".32" stdDeviation="4"/>
-      <feDropShadow dx="0" dy="0" flood-color="#e2fff8" flood-opacity=".5" stdDeviation="3"/>
-    </filter>
-  </defs>
-  <g fill="none" stroke="url(#a)" stroke-linecap="round" stroke-linejoin="round" filter="url(#b)">
-    <path stroke-width="5" d="M48 72V43"/>
-    <path stroke-width="5" d="M48 47c-14 0-22-8-24-22 14 0 23 8 24 22Z"/>
-    <path stroke-width="5" d="M49 56c13-1 21-8 23-21-13 0-22 8-23 21Z"/>
-    <path stroke-width="5" d="M26 76h44"/>
-    <path stroke-width="4" d="M19 42c3-15 15-26 29-26s26 11 29 26"/>
-    <path stroke-width="4" d="m72 41 6 1 1-6"/>
-  </g>
-  <circle cx="34" cy="22" r="6" fill="#fff" opacity=".9"/>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="128"
+  height="128"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="url(#reefIconStroke)"
+  stroke-width="1.75"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class="icon icon-tabler icons-tabler-outline icon-tabler-plant-2"
+>
+  <defs><linearGradient id="reefIconStroke" x1="4" y1="3" x2="20" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffffff"/><stop offset="0.58" stop-color="#f6fbff"/><stop offset="1" stop-color="#8ff8df"/></linearGradient></defs><path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M2 9a10 10 0 1 0 20 0" />
+  <path d="M12 19a10 10 0 0 1 10 -10" />
+  <path d="M2 9a10 10 0 0 1 10 10" />
+  <path d="M12 4a9.7 9.7 0 0 1 2.99 7.5" />
+  <path d="M9.01 11.5a9.7 9.7 0 0 1 2.99 -7.5" />
 </svg>

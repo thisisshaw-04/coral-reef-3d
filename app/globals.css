@@ -7402,6 +7402,19 @@ a:focus-visible,
   filter: none;
 }
 
+/* v40 - sourced briefing icons */
+.briefing-points i {
+  width: clamp(44px, 3.8vw, 56px);
+  height: clamp(44px, 3.8vw, 56px);
+  margin-bottom: 12px;
+}
+
+.briefing-points i img {
+  filter:
+    drop-shadow(0 2px 5px rgb(0 12 20 / 0.2))
+    drop-shadow(0 0 10px rgb(143 248 223 / 0.12));
+}
+
 /* v33 - steady timeline orbs without pulsing outer rings */
 .time-current nav button i,
 .time-current nav button.is-past i,

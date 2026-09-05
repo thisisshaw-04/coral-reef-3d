@@ -196,11 +196,16 @@ test("uses icon lenses for briefing points instead of numeric dots", async () =>
   assert.match(css, /v30 - polished briefing image icons/);
   assert.match(css, /\.briefing-points i img\s*{[\s\S]*?object-fit: contain/);
   assert.match(css, /v32 - transparent PNG briefing icons without lens chrome/);
+  assert.match(css, /v40 - sourced briefing icons/);
   assert.match(css, /\.briefing-points i\s*{[\s\S]*?background: transparent/);
   assert.match(css, /\.briefing-points i\s*{[\s\S]*?box-shadow: none/);
   await access(new URL("../public/icons/reef-find-colonies.png", import.meta.url));
   await access(new URL("../public/icons/reef-shape-first.png", import.meta.url));
   await access(new URL("../public/icons/reef-evidence-id.png", import.meta.url));
+  const sourcedIcon = await readFile(new URL("../public/icons/reef-find-colonies.svg", import.meta.url), "utf8");
+  assert.match(sourcedIcon, /icon-tabler/);
+  assert.match(sourcedIcon, /reefIconStroke/);
+  await access(new URL("../public/icons/TABLER_ICONS_MIT.md", import.meta.url));
 });
 
 test("separates the bottom tool dock from the timeline", async () => {

@@ -1,26 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
-  <title id="title">Look at shape first</title>
-  <desc id="desc">Coral forms arranged for comparison.</desc>
-  <defs>
-    <linearGradient id="a" x1="18" x2="80" y1="14" y2="82" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#fff"/>
-      <stop offset=".45" stop-color="#eefcff"/>
-      <stop offset="1" stop-color="#baffef"/>
-    </linearGradient>
-    <filter id="b" width="150%" height="150%" x="-25%" y="-25%" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="5" flood-color="#001720" flood-opacity=".32" stdDeviation="4"/>
-      <feDropShadow dx="0" dy="0" flood-color="#d8fff6" flood-opacity=".45" stdDeviation="3"/>
-    </filter>
-  </defs>
-  <g fill="none" stroke="url(#a)" stroke-linecap="round" stroke-linejoin="round" filter="url(#b)">
-    <path stroke-width="5" d="M48 17 67 50H29L48 17Z"/>
-    <rect width="23" height="23" x="17" y="56" stroke-width="5" rx="5"/>
-    <circle cx="69" cy="67" r="12" stroke-width="5"/>
-    <path stroke-width="4" d="M24 35c6-6 15-8 24-7"/>
-    <path stroke-width="4" d="M58 28c5 1 10 4 14 8"/>
-  </g>
-  <g fill="#fff">
-    <circle cx="27" cy="25" r="9" opacity=".95"/>
-    <circle cx="73" cy="33" r="4" opacity=".75"/>
-  </g>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="128"
+  height="128"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="url(#reefIconStroke)"
+  stroke-width="1.75"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class="icon icon-tabler icons-tabler-outline icon-tabler-category-2"
+>
+  <defs><linearGradient id="reefIconStroke" x1="4" y1="3" x2="20" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffffff"/><stop offset="0.58" stop-color="#f6fbff"/><stop offset="1" stop-color="#8ff8df"/></linearGradient></defs><path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M14 4h6v6h-6l0 -6" />
+  <path d="M4 14h6v6h-6l0 -6" />
+  <path d="M14 17a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+  <path d="M4 7a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
 </svg>

@@ -107,6 +107,10 @@ test("uses distinct procedural seabed textures and faster movement", async () =>
   assert.match(scene, /actor\.object\.scale\.setScalar\(actor\.baseScale\)/);
   assert.doesNotMatch(scene, /const buoyancy =/);
   assert.doesNotMatch(scene, /actor\.baseScale \* pulse/);
+  assert.doesNotMatch(scene, /grass\.rotation\.z = reduced/);
+  assert.doesNotMatch(scene, /kelp\.rotation\.z = reduced/);
+  assert.doesNotMatch(scene, /seaFans\.rotation\.z = reduced/);
+  assert.doesNotMatch(scene, /softPolyps\.rotation\.z = reduced/);
 });
 
 test("updates the visible depth readout from live vertical movement", async () => {

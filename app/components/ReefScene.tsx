@@ -2124,10 +2124,6 @@ export default function ReefScene({
           surfaceGlints.position.x = reduced ? 0 : Math.sin(elapsed * 0.06) * 5.4;
           surfaceGlints.position.z = reduced ? 0 : Math.cos(elapsed * 0.045) * 4.6;
           particles.position.x = Math.sin(elapsed * 0.04) * 6;
-          grass.rotation.z = reduced ? 0 : Math.sin(elapsed * 0.42) * 0.014;
-          kelp.rotation.z = reduced ? 0 : Math.sin(elapsed * 0.32) * 0.022;
-          seaFans.rotation.z = reduced ? 0 : Math.sin(elapsed * 0.28) * 0.012;
-          softPolyps.rotation.z = reduced ? 0 : Math.sin(elapsed * 0.5) * 0.01;
           animatedCorals.forEach((target, index) => {
             const baseScale = typeof target.userData.baseScale === "number" ? target.userData.baseScale : 1;
             const animOffset = typeof target.userData.animOffset === "number" ? target.userData.animOffset : index * 1.7;

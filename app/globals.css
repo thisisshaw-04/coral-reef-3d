@@ -8277,6 +8277,58 @@ a:focus-visible,
   opacity: 0.28;
 }
 
+/* v48 - compact living-city drawer copy */
+.world-drawer {
+  width: min(360px, calc(100vw - 40px));
+  max-height: min(480px, calc(100vh - 124px));
+  padding: 9px;
+  border-radius: 16px;
+}
+
+.world-drawer > span {
+  margin: 1px 7px 7px;
+  font-size: 8px;
+  font-weight: 560;
+  letter-spacing: 0.16em;
+}
+
+.world-drawer > button {
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: clamp(15px, 1.06vw, 18px);
+  line-height: 1.04;
+}
+
+.world-drawer > button + button {
+  margin-top: 6px;
+}
+
+.world-drawer > button small {
+  font-size: clamp(8.5px, 0.62vw, 10px);
+  line-height: 1.14;
+  color: rgb(246 255 253 / 0.52);
+}
+
+.world-drawer > button em {
+  max-width: 34ch;
+  font-size: clamp(8.25px, 0.58vw, 9.75px);
+  line-height: 1.18;
+  color: rgb(246 255 253 / 0.42);
+}
+
+@media (max-width: 620px) {
+  .world-drawer {
+    width: min(340px, calc(100vw - 22px));
+    max-height: min(430px, calc(100vh - 126px));
+    padding: 8px;
+  }
+
+  .world-drawer > button {
+    padding: 9px 10px;
+  }
+}
+
 @media (max-width: 900px) {
   .mission-brand {
     display: flex;

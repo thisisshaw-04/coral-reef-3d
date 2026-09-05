@@ -519,6 +519,13 @@ test("keeps the living city selector compact and less white", async () => {
   assert.match(css, /\.world-drawer > button\s*{[\s\S]*?padding: 14px 16px/);
   assert.match(css, /\.world-drawer > button\s*{[\s\S]*?font-size: clamp\(19px, 1\.5vw, 24px\)/);
   assert.match(css, /\.world-drawer > button em\s*{[\s\S]*?max-width: 42ch/);
+  assert.match(css, /v48 - compact living-city drawer copy/);
+  assert.match(css, /\.world-drawer\s*{[\s\S]*?width: min\(360px, calc\(100vw - 40px\)\)/);
+  assert.match(css, /\.world-drawer\s*{[\s\S]*?max-height: min\(480px, calc\(100vh - 124px\)\)/);
+  assert.match(css, /\.world-drawer > button\s*{[\s\S]*?padding: 10px 12px/);
+  assert.match(css, /\.world-drawer > button\s*{[\s\S]*?font-size: clamp\(15px, 1\.06vw, 18px\)/);
+  assert.match(css, /\.world-drawer > button small\s*{[\s\S]*?font-size: clamp\(8\.5px, 0\.62vw, 10px\)/);
+  assert.match(css, /\.world-drawer > button em\s*{[\s\S]*?max-width: 34ch/);
 });
 
 test("turns every scanned coral into a clickable evolving library entry", async () => {

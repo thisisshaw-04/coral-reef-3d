@@ -93,6 +93,21 @@ test("uses distinct procedural seabed textures and faster movement", async () =>
   assert.match(scene, /vertical \* 3\.6/);
 });
 
+test("starts every reef dive inside the coral field", async () => {
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
+  assert.match(scene, /const BIOME_SPAWNS: Record/);
+  assert.match(scene, /"great-barrier": \{ x: -6, z: -122, height: 6\.4/);
+  assert.match(scene, /"sisters-islands": \{ x: -4, z: -128, height: 6/);
+  assert.match(scene, /"coral-triangle": \{ x: -8, z: -174, height: 6\.6/);
+  assert.match(scene, /"caribbean-reef": \{ x: 4, z: -142, height: 6\.2/);
+  assert.match(scene, /camera\.position\.set\(\s*spawn\.x,\s*seabedHeight\(spawn\.x, spawn\.z\) \+ spawn\.height,\s*spawn\.z,\s*\)/);
+  assert.match(scene, /const spawnDirection = new THREE\.Vector3\(\)/);
+  assert.match(scene, /yaw: Math\.atan2\(-spawnDirection\.x, -spawnDirection\.z\)/);
+  assert.match(scene, /const look = spawnLookAt\.clone\(\)/);
+  assert.doesNotMatch(scene, /camera\.position\.set\(0, 5\.2, 17\)/);
+});
+
 test("uses the clean Google Sans entry action system", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");

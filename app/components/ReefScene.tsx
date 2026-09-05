@@ -447,6 +447,21 @@ const DEFAULT_CLUSTERS: Array<[number, number, number, number]> = [
   [-32, 0, -468, 44],
 ];
 
+const BIOME_SPAWNS: Record<
+  ReefBiomeId,
+  {
+    x: number;
+    z: number;
+    height: number;
+    lookAt: [number, number, number];
+  }
+> = {
+  "great-barrier": { x: -6, z: -122, height: 6.4, lookAt: [34, 3.2, -184] },
+  "sisters-islands": { x: -4, z: -128, height: 6, lookAt: [42, 3.1, -198] },
+  "coral-triangle": { x: -8, z: -174, height: 6.6, lookAt: [52, 3.3, -246] },
+  "caribbean-reef": { x: 4, z: -142, height: 6.2, lookAt: [42, 3.2, -226] },
+};
+
 const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
   "great-barrier": {
     seed: 2035,
@@ -795,6 +810,7 @@ export default function ReefScene({
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         const lowPower = coarse || (navigator.hardwareConcurrency || 8) <= 4;
         const biomeConfig = BIOME_CONFIG[biome];
+        const spawn = BIOME_SPAWNS[biome];
         const random = seededRandom(biomeConfig.seed);
         const countFor = (desktop: number, mobile: number, multiplier = 1) =>
           Math.max(1, Math.round((lowPower ? mobile : desktop) * multiplier));
@@ -948,7 +964,19 @@ export default function ReefScene({
 
         const camera = new THREE.PerspectiveCamera(64, 1, 0.1, 520);
         camera.rotation.order = "YXZ";
-        camera.position.set(0, 5.2, 17);
+        const spawnLookAt = new THREE.Vector3(
+          spawn.lookAt[0],
+          seabedHeight(spawn.lookAt[0], spawn.lookAt[2]) + spawn.lookAt[1],
+          spawn.lookAt[2],
+        );
+        camera.position.set(
+          spawn.x,
+          seabedHeight(spawn.x, spawn.z) + spawn.height,
+          spawn.z,
+        );
+        camera.lookAt(spawnLookAt);
+        const spawnDirection = new THREE.Vector3();
+        camera.getWorldDirection(spawnDirection);
 
         const world = new THREE.Group();
         scene.add(world);
@@ -1772,14 +1800,26 @@ export default function ReefScene({
         const particles = new THREE.Points(particleGeometry, new THREE.PointsMaterial({ color: 0xb8efe7, size: lowPower ? 0.04 : 0.052, transparent: true, opacity: 0.34, depthWrite: false }));
         world.add(particles);
 
-        const nav = { yaw: 0, pitch: -0.14, velocity: new THREE.Vector3(), keys: new Set<string>(), dragging: false, moved: false, lastX: 0, lastY: 0, mobileForward: false, zone: "", lastFocus: "" as string | null };
+        const nav = {
+          yaw: Math.atan2(-spawnDirection.x, -spawnDirection.z),
+          pitch: Math.asin(THREE.MathUtils.clamp(spawnDirection.y, -1, 1)),
+          velocity: new THREE.Vector3(),
+          keys: new Set<string>(),
+          dragging: false,
+          moved: false,
+          lastX: 0,
+          lastY: 0,
+          mobileForward: false,
+          zone: "",
+          lastFocus: "" as string | null,
+        };
         const raycaster = new THREE.Raycaster();
         const pointer = new THREE.Vector2();
         const direction = new THREE.Vector3();
         const right = new THREE.Vector3();
         const projected = new THREE.Vector3();
         const desired = new THREE.Vector3();
-        const look = new THREE.Vector3(0, 2.5, -10);
+        const look = spawnLookAt.clone();
         const clock = new THREE.Clock();
 
         const resize = () => {

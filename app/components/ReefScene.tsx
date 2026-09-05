@@ -1227,17 +1227,23 @@ export default function ReefScene({
           return bladeGeometry;
         };
         const makeRubbleGeometry = () => {
-          const rubbleGeometry = new THREE.DodecahedronGeometry(1, 1);
+          const rubbleGeometry = new THREE.SphereGeometry(1, 18, 10);
           const rubblePosition = rubbleGeometry.attributes.position;
           for (let index = 0; index < rubblePosition.count; index += 1) {
             const x = rubblePosition.getX(index);
             const y = rubblePosition.getY(index);
             const z = rubblePosition.getZ(index);
             const warp =
-              0.74 +
-              Math.sin(index * 2.41) * 0.14 +
-              Math.cos(x * 3.2 + z * 1.7) * 0.12;
-            rubblePosition.setXYZ(index, x * warp, y * (0.34 + warp * 0.18), z * (0.68 + warp * 0.22));
+              0.86 +
+              Math.sin(index * 1.37 + x * 2.4) * 0.08 +
+              Math.cos(z * 2.8 + y * 1.9) * 0.07;
+            const baseFlatten = y < -0.55 ? 0.78 : 1;
+            rubblePosition.setXYZ(
+              index,
+              x * warp * (0.92 + Math.sin(z * 3.1) * 0.05),
+              y * (0.18 + warp * 0.14) * baseFlatten,
+              z * warp * (0.74 + Math.cos(x * 2.2) * 0.06),
+            );
           }
           rubbleGeometry.computeVertexNormals();
           return rubbleGeometry;
@@ -1256,24 +1262,24 @@ export default function ReefScene({
         };
 
         const rocks = new THREE.InstancedMesh(
-          new THREE.IcosahedronGeometry(1, 1),
-          new THREE.MeshStandardMaterial({ color: 0x3d6b62, roughness: 0.94 }),
-          countFor(420, 190, biomeConfig.rockDensity),
+          makeRubbleGeometry(),
+          new THREE.MeshStandardMaterial({ color: 0x687569, roughness: 0.96, metalness: 0.01 }),
+          countFor(140, 58, biomeConfig.rockDensity * 0.6),
         );
         const matrix = new THREE.Matrix4();
         const quaternion = new THREE.Quaternion();
         const position = new THREE.Vector3();
         const scale = new THREE.Vector3();
         for (let index = 0; index < rocks.count; index += 1) {
-          const shelf = index % 5 === 0;
+          const shelf = index % 7 === 0;
           const x = shelf
             ? (random() < 0.5 ? -1 : 1) * (FLOOR_WIDTH * 0.27 + random() * FLOOR_WIDTH * 0.2)
             : (random() - 0.5) * FLOOR_WIDTH * 0.88;
           const z = FLOOR_CENTER_Z + FLOOR_DEPTH * 0.44 - random() * FLOOR_DEPTH * 0.86;
-          const size = shelf ? 2.4 + random() * 7.8 : 0.45 + random() * 3.1;
-          position.set(x, seabedHeight(x, z) + size * 0.28, z);
+          const size = shelf ? 0.85 + random() * 2.15 : 0.28 + random() * 1.05;
+          position.set(x, seabedHeight(x, z) + size * 0.12, z);
           quaternion.setFromEuler(new THREE.Euler(random(), random() * Math.PI, random()));
-          scale.set(size * (0.7 + random() * 0.55), size * (0.42 + random() * 0.38), size);
+          scale.set(size * (0.9 + random() * 0.38), size * (0.48 + random() * 0.18), size * (0.82 + random() * 0.36));
           matrix.compose(position, quaternion, scale);
           rocks.setMatrixAt(index, matrix);
         }
@@ -1591,27 +1597,36 @@ export default function ReefScene({
           scaleMax: number;
           lift?: number;
           floorActor?: boolean;
+          tintMix?: number;
         };
         const floorScannedHabitatsByBiome: Record<ReefBiomeId, FloorScanAsset[]> = {
           "great-barrier": [
+            { src: "/models/polyhaven/rock_07/rock_07_1k.gltf", count: countFor(18, 8, biomeConfig.rockDensity), fit: 3.15, tint: 0x7c8273, clusterOffset: 0, scaleMin: 0.62, scaleMax: 1.28, lift: 0.01, tintMix: 0.12 },
+            { src: "/models/polyhaven/stone_01/stone_01_1k.gltf", count: countFor(22, 10, biomeConfig.rockDensity), fit: 1.95, tint: 0x8a8977, clusterOffset: 6, scaleMin: 0.72, scaleMax: 1.46, lift: 0.008, tintMix: 0.1 },
             { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(9, 4, 1), fit: 4.2, tint: 0xbb735b, clusterOffset: 1, scaleMin: 0.7, scaleMax: 1.22 },
             { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(7, 3, 1), fit: 3.1, tint: 0xd7c7a3, clusterOffset: 4, scaleMin: 0.72, scaleMax: 1.16 },
             { src: "/models/smithsonian-tridacna-squamosa.glb", count: countFor(8, 3, 1), fit: 2.45, tint: 0xd8b67b, clusterOffset: 8, scaleMin: 0.78, scaleMax: 1.28, lift: 0.05 },
             { src: "/models/smithsonian-endoxocrinus-parrae.glb", count: countFor(10, 4, 1), fit: 3.35, tint: 0x8cbf92, clusterOffset: 11, scaleMin: 0.68, scaleMax: 1.04, floorActor: true },
           ],
           "sisters-islands": [
+            { src: "/models/polyhaven/stone_01/stone_01_1k.gltf", count: countFor(18, 8, biomeConfig.rockDensity), fit: 1.75, tint: 0x8b8a7c, clusterOffset: 1, scaleMin: 0.68, scaleMax: 1.36, lift: 0.008, tintMix: 0.12 },
+            { src: "/models/polyhaven/rock_07/rock_07_1k.gltf", count: countFor(13, 6, biomeConfig.rockDensity), fit: 2.75, tint: 0x6f7c70, clusterOffset: 6, scaleMin: 0.58, scaleMax: 1.14, lift: 0.01, tintMix: 0.12 },
             { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(10, 4, 1), fit: 3.3, tint: 0xcfc19b, clusterOffset: 0, scaleMin: 0.78, scaleMax: 1.18 },
             { src: "/models/smithsonian-tridacna-squamosa.glb", count: countFor(7, 3, 1), fit: 2.25, tint: 0xc7ad7a, clusterOffset: 3, scaleMin: 0.72, scaleMax: 1.12, lift: 0.05 },
             { src: "/models/smithsonian-endoxocrinus-parrae.glb", count: countFor(13, 5, 1), fit: 3.15, tint: 0x8fbf86, clusterOffset: 5, scaleMin: 0.72, scaleMax: 1.1, floorActor: true },
             { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(5, 2, 1), fit: 3.5, tint: 0xb77561, clusterOffset: 8, scaleMin: 0.66, scaleMax: 0.96 },
           ],
           "coral-triangle": [
+            { src: "/models/polyhaven/rock_07/rock_07_1k.gltf", count: countFor(22, 10, biomeConfig.rockDensity), fit: 3.25, tint: 0x768371, clusterOffset: 0, scaleMin: 0.64, scaleMax: 1.34, lift: 0.01, tintMix: 0.1 },
+            { src: "/models/polyhaven/stone_01/stone_01_1k.gltf", count: countFor(24, 11, biomeConfig.rockDensity), fit: 2.05, tint: 0x8e8978, clusterOffset: 7, scaleMin: 0.7, scaleMax: 1.52, lift: 0.008, tintMix: 0.1 },
             { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(12, 5, 1), fit: 4.5, tint: 0xc97862, clusterOffset: 2, scaleMin: 0.76, scaleMax: 1.26 },
             { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(9, 4, 1), fit: 3.4, tint: 0xd6c9a7, clusterOffset: 5, scaleMin: 0.76, scaleMax: 1.22 },
             { src: "/models/smithsonian-tridacna-squamosa.glb", count: countFor(10, 4, 1), fit: 2.6, tint: 0xddb87c, clusterOffset: 8, scaleMin: 0.78, scaleMax: 1.34, lift: 0.05 },
             { src: "/models/smithsonian-endoxocrinus-parrae.glb", count: countFor(16, 6, 1), fit: 3.55, tint: 0x8bc693, clusterOffset: 10, scaleMin: 0.7, scaleMax: 1.12, floorActor: true },
           ],
           "caribbean-reef": [
+            { src: "/models/polyhaven/stone_01/stone_01_1k.gltf", count: countFor(20, 9, biomeConfig.rockDensity), fit: 1.9, tint: 0x827c6c, clusterOffset: 1, scaleMin: 0.7, scaleMax: 1.42, lift: 0.008, tintMix: 0.12 },
+            { src: "/models/polyhaven/rock_07/rock_07_1k.gltf", count: countFor(17, 7, biomeConfig.rockDensity), fit: 3.05, tint: 0x6d7468, clusterOffset: 5, scaleMin: 0.58, scaleMax: 1.22, lift: 0.01, tintMix: 0.12 },
             { src: "/models/smithsonian-tridacna-squamosa.glb", count: countFor(6, 2, 1), fit: 2.15, tint: 0xd8b176, clusterOffset: 1, scaleMin: 0.74, scaleMax: 1.08, lift: 0.05 },
             { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(8, 3, 1), fit: 3.85, tint: 0xb96e58, clusterOffset: 4, scaleMin: 0.68, scaleMax: 1.14 },
             { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(8, 3, 1), fit: 3.05, tint: 0xcec09b, clusterOffset: 7, scaleMin: 0.74, scaleMax: 1.16 },
@@ -1650,7 +1665,7 @@ export default function ReefScene({
                 object.material = Array.isArray(object.material) ? cloned : cloned[0];
                 for (const material of cloned) {
                   const surface = material as Material & { color?: Color; roughness?: number; metalness?: number };
-                  if (surface.color) surface.color.lerp(tint, 0.26);
+                  if (surface.color) surface.color.lerp(tint, asset.tintMix ?? 0.26);
                   if (typeof surface.roughness === "number") surface.roughness = Math.max(0.68, surface.roughness);
                   if (typeof surface.metalness === "number") surface.metalness = 0;
                 }

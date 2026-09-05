@@ -13,6 +13,8 @@ test("builds the Reef Relay production worker and client", async () => {
   await access(new URL("../dist/client/models/smithsonian-tridacna-squamosa.glb", import.meta.url));
   await access(new URL("../dist/client/models/smithsonian-chonelasma-oreia.glb", import.meta.url));
   await access(new URL("../dist/client/models/smithsonian-endoxocrinus-parrae.glb", import.meta.url));
+  await access(new URL("../dist/client/models/polyhaven/rock_07/rock_07_1k.gltf", import.meta.url));
+  await access(new URL("../dist/client/models/polyhaven/stone_01/stone_01_1k.gltf", import.meta.url));
 });
 
 test("publishes truthful product metadata and preview contract", async () => {
@@ -219,6 +221,8 @@ test("replaces fake reef-floor blobs with modeled rubble and benthic life", asyn
   assert.match(scene, /const makeTubeSpongeGeometry = \(\) =>/);
   assert.match(scene, /const reefRubble = new THREE\.InstancedMesh/);
   assert.match(scene, /floorScannedHabitatsByBiome/);
+  assert.match(scene, /polyhaven\/rock_07\/rock_07_1k\.gltf/);
+  assert.match(scene, /polyhaven\/stone_01\/stone_01_1k\.gltf/);
   assert.match(scene, /smithsonian-tubipora-musica\.glb/);
   assert.match(scene, /smithsonian-tridacna-squamosa\.glb/);
   assert.match(scene, /smithsonian-chonelasma-oreia\.glb/);
@@ -228,6 +232,8 @@ test("replaces fake reef-floor blobs with modeled rubble and benthic life", asyn
   assert.match(scene, /countFor\(340, 140, biomeConfig\.seaFanDensity\)/);
   assert.match(scene, /countFor\(1080, 430, biomeConfig\.softPolypDensity\)/);
   assert.match(scene, /smithsonian-linckia-laevigata\.glb/);
+  assert.doesNotMatch(scene, /new THREE\.IcosahedronGeometry\(1, 1\)/);
+  assert.doesNotMatch(scene, /new THREE\.DodecahedronGeometry\(1, 1\)/);
   assert.doesNotMatch(scene, /const coralHeads = new THREE\.InstancedMesh/);
   assert.doesNotMatch(scene, /new THREE\.SphereGeometry\(1, 16, 8, 0, Math\.PI \* 2, 0, Math\.PI \/ 2\)/);
 });

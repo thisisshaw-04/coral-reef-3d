@@ -465,6 +465,19 @@ test("fits the field objective copy into a compact corner panel", async () => {
   assert.match(css, /\.field-lesson li\s*{[\s\S]*?line-height: 1\.28/);
 });
 
+test("keeps the living city selector compact and less white", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v43 - slimmer darker living-city selector/);
+  assert.match(css, /\.world-drawer\s*{[\s\S]*?width: min\(430px, calc\(100vw - 44px\)\)/);
+  assert.match(css, /\.world-drawer\s*{[\s\S]*?max-height: min\(610px, calc\(100vh - 140px\)\)/);
+  assert.match(css, /\.world-drawer\s*{[\s\S]*?padding: 12px/);
+  assert.match(css, /\.world-drawer\s*{[\s\S]*?rgb\(3 15 18 \/ 0\.34\)/);
+  assert.match(css, /\.world-drawer > button\s*{[\s\S]*?padding: 14px 16px/);
+  assert.match(css, /\.world-drawer > button\s*{[\s\S]*?font-size: clamp\(19px, 1\.5vw, 24px\)/);
+  assert.match(css, /\.world-drawer > button em\s*{[\s\S]*?max-width: 42ch/);
+});
+
 test("turns every scanned coral into a clickable evolving library entry", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const data = await readFile(new URL("../app/reef-data.ts", import.meta.url), "utf8");

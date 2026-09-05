@@ -624,6 +624,7 @@ test("turns every scanned coral into a clickable evolving library entry", async 
   assert.match(page, /createLibraryColonyFromHotspot\(hotspot, activeWorld\)/);
   assert.match(page, /hotspots=\{activeColonies\}/);
   assert.match(page, /sceneMappedIds/);
+  assert.match(page, /!selected && tool !== "story" && tool !== "library"/);
   assert.match(page, /\["library", BookOpen, "Library"\]/);
   assert.match(page, /<CoralLibrary/);
   assert.match(library, /Coral Library/);

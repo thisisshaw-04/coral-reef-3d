@@ -686,7 +686,7 @@ export default function Home() {
             ))}
           </div>
 
-          {!selected && tool !== "story" && (
+          {!selected && tool !== "story" && tool !== "library" && (
             <aside className="field-lesson">
               <span>FIELD OBJECTIVE</span>
               <strong>{activeWorld.objectiveTitle}</strong>

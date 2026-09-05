@@ -8039,3 +8039,43 @@ a:focus-visible,
     display: none;
   }
 }
+
+/* v45 - half-width research tool dock */
+.tool-console {
+  width: min(50vw, 760px);
+  min-width: 560px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 3px;
+  padding: 4px;
+}
+
+.tool-console button {
+  min-width: 0;
+  height: 39px;
+  padding: 4px 6px 3px;
+  gap: 2px;
+}
+
+.tool-console svg {
+  width: 16px;
+  height: 16px;
+}
+
+.tool-console span {
+  font-size: 8.5px;
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 1180px) {
+  .tool-console {
+    width: min(620px, calc(100vw - 36px));
+    min-width: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .tool-console {
+    width: calc(100vw - 28px);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}

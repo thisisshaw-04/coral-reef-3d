@@ -549,3 +549,14 @@ test("adds an educational storytelling mode with free exploration exit", async (
   assert.match(css, /\.story-panel__rail\s*{[\s\S]*?grid-template-columns: repeat\(5, minmax\(0, 1fr\)\)/);
   assert.match(css, /\.tool-console\s*{[\s\S]*?grid-template-columns: repeat\(7, minmax\(0, 1fr\)\)/);
 });
+
+test("keeps the bottom research dock near half width", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v45 - half-width research tool dock/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?width: min\(50vw, 760px\)/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?min-width: 560px/);
+  assert.match(css, /\.tool-console button\s*{[\s\S]*?height: 39px/);
+  assert.match(css, /\.tool-console svg\s*{[\s\S]*?width: 16px/);
+  assert.match(css, /@media \(max-width: 1180px\)[\s\S]*?\.tool-console\s*{[\s\S]*?width: min\(620px, calc\(100vw - 36px\)\)/);
+});

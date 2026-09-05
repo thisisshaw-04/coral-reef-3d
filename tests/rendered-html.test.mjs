@@ -731,3 +731,18 @@ test("keeps the bottom research dock near half width", async () => {
   assert.match(css, /\.stress-trigger\s*{[\s\S]*?bottom: var\(--bottom-hud-bottom\)/);
   assert.match(css, /\.time-current\s*{[\s\S]*?right: max\(18px, var\(--bottom-hud-right\)\)/);
 });
+
+test("keeps specimen signals compact and aligned with calmer panels", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v55 - compact, calmer specimen signal spacing/);
+  assert.match(css, /\.specimen-monitor\s*{[\s\S]*?display: grid !important/);
+  assert.match(css, /\.specimen-monitor\s*{[\s\S]*?gap: 8px !important/);
+  assert.match(css, /\.specimen-monitor\s*{[\s\S]*?width: min\(330px, calc\(100vw - 36px\)\) !important/);
+  assert.match(css, /\.specimen-monitor::after,[\s\S]*?\.stress-menu::after\s*{[\s\S]*?display: none !important/);
+  assert.match(css, /\.signal-button\s*{[\s\S]*?width: auto !important/);
+  assert.match(css, /\.signal-button\s*{[\s\S]*?height: 34px !important/);
+  assert.match(css, /\.signal-chart\s*{[\s\S]*?padding: 8px 9px 9px !important/);
+  assert.match(css, /\.signal-chart \.recharts-responsive-container\s*{[\s\S]*?height: 86px !important/);
+  assert.match(css, /\.evidence-card p,[\s\S]*?\.tool-card p,[\s\S]*?\.saved-note,[\s\S]*?\.signal-chart p,[\s\S]*?\.effect-note\s*{[\s\S]*?line-height: 1\.32 !important/);
+});

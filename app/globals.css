@@ -7061,3 +7061,94 @@ a:focus-visible,
 .briefing-points i svg {
   display: none;
 }
+
+/* v31 - stable full-width time current rail */
+.time-current {
+  display: grid;
+  grid-template-columns:
+    minmax(132px, 0.56fr)
+    minmax(116px, 0.48fr)
+    minmax(420px, 3fr)
+    minmax(190px, max-content);
+  overflow: hidden;
+}
+
+.time-current > button {
+  display: inline-flex !important;
+}
+
+.timeline-readout {
+  display: grid !important;
+}
+
+.timeline-metrics {
+  display: flex !important;
+}
+
+.time-current nav {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  justify-self: stretch;
+  width: 100%;
+  min-width: 0;
+}
+
+.time-current nav::before,
+.time-current nav::after {
+  left: 10%;
+  right: 10%;
+  top: 18px;
+}
+
+.time-current nav::after {
+  right: auto;
+  width: calc(var(--timeline-progress) * 0.8);
+}
+
+.time-current nav button {
+  min-width: 0;
+  width: 100%;
+  justify-self: stretch;
+}
+
+.time-current nav button::before {
+  content: none !important;
+  display: none !important;
+}
+
+.time-current nav button i {
+  transform: translateY(1px);
+}
+
+.time-current nav button.is-active i {
+  transform: translateY(1px) scale(1.16);
+}
+
+@media (max-width: 1180px) {
+  .time-current {
+    grid-template-columns: minmax(118px, 0.55fr) minmax(96px, 0.45fr) minmax(360px, 2.8fr);
+  }
+
+  .timeline-metrics {
+    display: none !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .time-current {
+    grid-template-columns: 1fr;
+    height: 58px;
+    padding-inline: 16px;
+  }
+
+  .time-current > button,
+  .timeline-readout,
+  .timeline-metrics {
+    display: none !important;
+  }
+
+  .time-current nav {
+    grid-column: 1;
+    height: 46px;
+  }
+}

@@ -250,6 +250,18 @@ test("uses a sleek rail-only timeline selection", async () => {
   assert.match(css, /\.timeline-metrics,[\s\S]*?\.timeline-metrics span,[\s\S]*?\.timeline-metrics b\s*{[\s\S]*?font-family: var\(--reef-ui-font\)/);
 });
 
+test("keeps the time current dots distributed across the full rail", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v31 - stable full-width time current rail/);
+  assert.match(css, /\.time-current\s*{[\s\S]*?display: grid/);
+  assert.match(css, /\.time-current nav\s*{[\s\S]*?display: grid !important/);
+  assert.match(css, /\.time-current nav\s*{[\s\S]*?grid-template-columns: repeat\(5, minmax\(0, 1fr\)\)/);
+  assert.match(css, /\.time-current nav\s*{[\s\S]*?width: 100%/);
+  assert.match(css, /\.time-current nav button::before\s*{[\s\S]*?content: none !important/);
+  assert.match(css, /@media \(max-width: 860px\)[\s\S]*?\.time-current\s*{[\s\S]*?grid-template-columns: 1fr/);
+});
+
 test("uses disciplined HUD spacing with softer corners", async () => {
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 

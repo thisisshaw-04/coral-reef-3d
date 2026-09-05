@@ -9086,3 +9086,23 @@ a:focus-visible,
   text-align: left !important;
   white-space: normal !important;
 }
+
+/* v58 - full-width two-line intro headline */
+.expedition-entry h1 {
+  max-width: none !important;
+  width: 100% !important;
+  margin: 12px 0 10px !important;
+  font-size: 30px !important;
+  line-height: 1.06 !important;
+  white-space: nowrap !important;
+}
+
+.expedition-entry h1 em {
+  display: block !important;
+}
+
+@media (max-width: 620px) {
+  .expedition-entry h1 {
+    font-size: 22px !important;
+  }
+}

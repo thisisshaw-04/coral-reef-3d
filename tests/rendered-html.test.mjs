@@ -371,6 +371,18 @@ test("keeps the intro modal visually half its previous size", async () => {
   assert.match(css, /\.begin-button,[\s\S]*?\.expedition-entry form\s*{[\s\S]*?min-height: clamp\(38px, 3\.2vw, 46px\) !important/);
 });
 
+test("keeps the intro headline as two full-width lines", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(page, /The ocean&apos;s living city\.[\s\S]*?<br \/>[\s\S]*?<em>Under your command\.<\/em>/);
+  assert.match(css, /v58 - full-width two-line intro headline/);
+  assert.match(css, /\.expedition-entry h1\s*{[\s\S]*?max-width: none !important/);
+  assert.match(css, /\.expedition-entry h1\s*{[\s\S]*?width: 100% !important/);
+  assert.match(css, /\.expedition-entry h1\s*{[\s\S]*?white-space: nowrap !important/);
+  assert.match(css, /\.expedition-entry h1 em\s*{[\s\S]*?display: block !important/);
+});
+
 test("uses a sleek rail-only timeline selection", async () => {
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 

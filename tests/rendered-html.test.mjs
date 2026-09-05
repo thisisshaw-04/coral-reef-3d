@@ -28,7 +28,7 @@ test("publishes truthful product metadata and preview contract", async () => {
   assert.match(layout, /"codex-preview": "development"/);
   assert.match(layout, /reef-default-background\.png/);
   assert.doesNotMatch(layout, /reef-entry-v4\.webp/);
-  assert.match(layout, /width: 3827, height: 2042/);
+  assert.match(layout, /width: 1672, height: 941/);
   assert.match(page, /fallbackSrc="\/reef-default-background\.png"/);
   assert.match(scene, /fallbackSrc = "\/reef-default-background\.png"/);
 });

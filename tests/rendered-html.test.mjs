@@ -299,6 +299,16 @@ test("keeps water ambience free of straight line overlays", async () => {
   assert.doesNotMatch(scene, /new THREE\.LineBasicMaterial/);
 });
 
+test("keeps colony reticles steady without the green glow state", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v34 - quiet colony markers without alternating green glow/);
+  assert.match(css, /\.reef-scene__reticle,[\s\S]*?\.reef-scene__marker\.is-mapped \.reef-scene__reticle\s*{[\s\S]*?animation: none !important/);
+  assert.match(css, /\.reef-scene__reticle,[\s\S]*?\.reef-scene__marker\.is-mapped \.reef-scene__reticle\s*{[\s\S]*?background: transparent/);
+  assert.match(css, /\.reef-scene__reticle,[\s\S]*?\.reef-scene__marker\.is-mapped \.reef-scene__reticle\s*{[\s\S]*?box-shadow: none/);
+  assert.match(css, /\.reef-scene__marker\.is-mapped \.reef-scene__reticle i svg\s*{[\s\S]*?display: none/);
+});
+
 test("scopes scanned coral and animal models to researched reef regions", async () => {
   const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
 

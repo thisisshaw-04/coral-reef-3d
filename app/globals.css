@@ -7194,3 +7194,31 @@ a:focus-visible,
 .time-current nav button.is-active i {
   transform: translateY(1px) scale(1.12);
 }
+
+/* v34 - quiet colony markers without alternating green glow */
+.reef-scene__reticle,
+.reef-scene__marker.is-mapped .reef-scene__reticle {
+  animation: none !important;
+  border-color: rgb(255 255 255 / 0.72);
+  background: transparent;
+  box-shadow: none;
+}
+
+.reef-scene__reticle::before,
+.reef-scene__reticle::after {
+  background: rgb(255 255 255 / 0.54);
+  box-shadow: none;
+}
+
+.reef-scene__reticle i,
+.reef-scene__marker.is-mapped .reef-scene__reticle i {
+  width: 8px;
+  height: 8px;
+  color: #ffffff;
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.reef-scene__marker.is-mapped .reef-scene__reticle i svg {
+  display: none;
+}

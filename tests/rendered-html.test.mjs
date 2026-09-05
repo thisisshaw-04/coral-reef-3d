@@ -208,6 +208,10 @@ test("replaces fake reef-floor blobs with modeled rubble and benthic life", asyn
   assert.match(scene, /const makeRubbleGeometry = \(\) =>/);
   assert.match(scene, /const makeTubeSpongeGeometry = \(\) =>/);
   assert.match(scene, /const reefRubble = new THREE\.InstancedMesh/);
+  assert.match(scene, /countFor\(1560, 680, biomeConfig\.grassDensity\)/);
+  assert.match(scene, /countFor\(430, 175, biomeConfig\.kelpDensity\)/);
+  assert.match(scene, /countFor\(340, 140, biomeConfig\.seaFanDensity\)/);
+  assert.match(scene, /countFor\(1080, 430, biomeConfig\.softPolypDensity\)/);
   assert.match(scene, /smithsonian-linckia-laevigata\.glb/);
   assert.doesNotMatch(scene, /const coralHeads = new THREE\.InstancedMesh/);
   assert.doesNotMatch(scene, /new THREE\.SphereGeometry\(1, 16, 8, 0, Math\.PI \* 2, 0, Math\.PI \/ 2\)/);
@@ -294,6 +298,10 @@ test("keeps water ambience free of straight line overlays", async () => {
   const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
 
   assert.match(scene, /const surfaceGlints = new THREE\.Points/);
+  assert.match(scene, /const surfaceReflectionTexture = new THREE\.CanvasTexture\(reflectionCanvas\)/);
+  assert.match(scene, /const surfaceReflections = new THREE\.Mesh/);
+  assert.match(scene, /surfaceReflectionTexture\.offset\.x/);
+  assert.match(scene, /surfaceReflectionMaterial\.opacity/);
   assert.doesNotMatch(scene, /surfaceRipples/);
   assert.doesNotMatch(scene, /new THREE\.LineSegments/);
   assert.doesNotMatch(scene, /new THREE\.LineBasicMaterial/);

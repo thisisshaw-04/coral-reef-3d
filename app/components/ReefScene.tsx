@@ -452,15 +452,15 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
     waterY: 13.45,
     textureRepeat: [46, 72],
     exposure: 1.08,
-    rockDensity: 1.05,
-    spongeDensity: 0.9,
-    grassDensity: 0.82,
-    kelpDensity: 0.72,
+    rockDensity: 1.18,
+    spongeDensity: 1.18,
+    grassDensity: 1.28,
+    kelpDensity: 0.94,
     coralHeadDensity: 1.05,
-    seaFanDensity: 0.9,
-    softPolypDensity: 0.92,
+    seaFanDensity: 1.18,
+    softPolypDensity: 1.34,
     fishDensity: 1.05,
-    bottomLifeDensity: 0.95,
+    bottomLifeDensity: 1.18,
     particleDensity: 0.9,
     lifeDensity: 0.98,
     grassColor: 0x2aa67d,
@@ -493,15 +493,15 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
     waterY: 11.6,
     textureRepeat: [54, 88],
     exposure: 0.98,
-    rockDensity: 0.72,
-    spongeDensity: 1.45,
-    grassDensity: 1.72,
-    kelpDensity: 0.38,
+    rockDensity: 0.9,
+    spongeDensity: 1.72,
+    grassDensity: 2.08,
+    kelpDensity: 0.52,
     coralHeadDensity: 0.82,
-    seaFanDensity: 0.58,
-    softPolypDensity: 1.28,
+    seaFanDensity: 0.82,
+    softPolypDensity: 1.58,
     fishDensity: 0.78,
-    bottomLifeDensity: 1.2,
+    bottomLifeDensity: 1.42,
     particleDensity: 1.5,
     lifeDensity: 0.84,
     grassColor: 0x3f9c63,
@@ -546,15 +546,15 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
     waterY: 14.2,
     textureRepeat: [48, 78],
     exposure: 1.12,
-    rockDensity: 1.26,
-    spongeDensity: 1.05,
-    grassDensity: 1.05,
-    kelpDensity: 0.82,
+    rockDensity: 1.42,
+    spongeDensity: 1.32,
+    grassDensity: 1.42,
+    kelpDensity: 1.04,
     coralHeadDensity: 1.38,
-    seaFanDensity: 1.22,
-    softPolypDensity: 1.42,
+    seaFanDensity: 1.58,
+    softPolypDensity: 1.78,
     fishDensity: 1.55,
-    bottomLifeDensity: 1.05,
+    bottomLifeDensity: 1.28,
     particleDensity: 1.05,
     lifeDensity: 1.42,
     grassColor: 0x2fb88a,
@@ -600,15 +600,15 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
     waterY: 13.1,
     textureRepeat: [42, 68],
     exposure: 1.05,
-    rockDensity: 1.18,
-    spongeDensity: 1.34,
-    grassDensity: 0.74,
-    kelpDensity: 0.45,
+    rockDensity: 1.34,
+    spongeDensity: 1.62,
+    grassDensity: 0.98,
+    kelpDensity: 0.62,
     coralHeadDensity: 0.72,
-    seaFanDensity: 1.6,
-    softPolypDensity: 0.82,
+    seaFanDensity: 1.95,
+    softPolypDensity: 1.42,
     fishDensity: 1.28,
-    bottomLifeDensity: 0.72,
+    bottomLifeDensity: 0.96,
     particleDensity: 0.78,
     lifeDensity: 1.08,
     grassColor: 0x349f78,
@@ -1054,6 +1054,83 @@ export default function ReefScene({
         water.material.side = THREE.DoubleSide;
         world.add(water);
 
+        const reflectionCanvas = document.createElement("canvas");
+        reflectionCanvas.width = reflectionCanvas.height = 1024;
+        const reflectionContext = reflectionCanvas.getContext("2d");
+        if (reflectionContext) {
+          reflectionContext.clearRect(0, 0, 1024, 1024);
+          reflectionContext.globalCompositeOperation = "screen";
+          for (let index = 0; index < 84; index += 1) {
+            const y = random() * 1024;
+            const startX = -120 + random() * 240;
+            const length = 340 + random() * 560;
+            const lift = (random() - 0.5) * 84;
+            const gradient = reflectionContext.createLinearGradient(startX, y, startX + length, y + lift);
+            gradient.addColorStop(0, "rgba(255,255,255,0)");
+            gradient.addColorStop(0.28, `rgba(225,255,247,${0.05 + random() * 0.12})`);
+            gradient.addColorStop(0.52, `rgba(118,247,232,${0.04 + random() * 0.1})`);
+            gradient.addColorStop(0.78, `rgba(245,255,252,${0.035 + random() * 0.08})`);
+            gradient.addColorStop(1, "rgba(255,255,255,0)");
+            reflectionContext.strokeStyle = gradient;
+            reflectionContext.lineWidth = 5 + random() * 18;
+            reflectionContext.lineCap = "round";
+            reflectionContext.beginPath();
+            reflectionContext.moveTo(startX, y);
+            reflectionContext.bezierCurveTo(
+              startX + length * 0.24,
+              y - 36 + random() * 72,
+              startX + length * 0.48,
+              y + 44 - random() * 88,
+              startX + length * 0.72,
+              y + lift * 0.7,
+            );
+            reflectionContext.bezierCurveTo(
+              startX + length * 0.84,
+              y + lift + 22 - random() * 44,
+              startX + length * 0.94,
+              y + lift - 18 + random() * 36,
+              startX + length,
+              y + lift,
+            );
+            reflectionContext.stroke();
+          }
+          for (let index = 0; index < 46; index += 1) {
+            const x = random() * 1024;
+            const y = random() * 1024;
+            const radius = 16 + random() * 76;
+            const gradient = reflectionContext.createRadialGradient(x, y, 0, x, y, radius);
+            gradient.addColorStop(0, "rgba(255,255,255,0.18)");
+            gradient.addColorStop(0.34, "rgba(157,255,235,0.09)");
+            gradient.addColorStop(1, "rgba(255,255,255,0)");
+            reflectionContext.fillStyle = gradient;
+            reflectionContext.beginPath();
+            reflectionContext.ellipse(x, y, radius * 1.8, radius * 0.44, random() * Math.PI, 0, Math.PI * 2);
+            reflectionContext.fill();
+          }
+        }
+        const surfaceReflectionTexture = new THREE.CanvasTexture(reflectionCanvas);
+        surfaceReflectionTexture.wrapS = surfaceReflectionTexture.wrapT = THREE.RepeatWrapping;
+        surfaceReflectionTexture.repeat.set(3.2, 5.2);
+        surfaceReflectionTexture.anisotropy = lowPower ? 2 : 8;
+        textures.push(surfaceReflectionTexture);
+        const surfaceReflectionMaterial = new THREE.MeshBasicMaterial({
+          map: surfaceReflectionTexture,
+          color: 0xe8fffb,
+          transparent: true,
+          opacity: lowPower ? 0.16 : 0.24,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+        });
+        const surfaceReflections = new THREE.Mesh(
+          new THREE.PlaneGeometry(FLOOR_WIDTH * 1.34, FLOOR_DEPTH * 1.08),
+          surfaceReflectionMaterial,
+        );
+        surfaceReflections.rotation.x = -Math.PI / 2;
+        surfaceReflections.position.set(0, biomeConfig.waterY - 0.16, FLOOR_CENTER_Z + 20);
+        surfaceReflections.renderOrder = 2;
+        world.add(surfaceReflections);
+
         const surfaceParticleCount = countFor(540, 220, 0.8 + biomeConfig.particleDensity * 0.22);
         const surfaceGeometry = new THREE.BufferGeometry();
         const surfacePositions = new Float32Array(surfaceParticleCount * 3);
@@ -1144,7 +1221,7 @@ export default function ReefScene({
         const rocks = new THREE.InstancedMesh(
           new THREE.IcosahedronGeometry(1, 1),
           new THREE.MeshStandardMaterial({ color: 0x3d6b62, roughness: 0.94 }),
-          countFor(330, 150, biomeConfig.rockDensity),
+          countFor(420, 190, biomeConfig.rockDensity),
         );
         const matrix = new THREE.Matrix4();
         const quaternion = new THREE.Quaternion();
@@ -1170,7 +1247,7 @@ export default function ReefScene({
         const sponges = new THREE.InstancedMesh(
           makeTubeSpongeGeometry(),
           new THREE.MeshStandardMaterial({ color: 0xa97958, roughness: 0.92 }),
-          countFor(185, 82, biomeConfig.spongeDensity),
+          countFor(275, 122, biomeConfig.spongeDensity),
         );
         const clusters = biomeConfig.clusters;
         for (let index = 0; index < sponges.count; index += 1) {
@@ -1195,7 +1272,7 @@ export default function ReefScene({
         const grass = new THREE.InstancedMesh(
           makeBladeGeometry(2.35, 0.105, 0.11, 5),
           new THREE.MeshStandardMaterial({ color: biomeConfig.grassColor, roughness: 0.84, transparent: true, opacity: 0.66, side: THREE.DoubleSide }),
-          countFor(980, 430, biomeConfig.grassDensity),
+          countFor(1560, 680, biomeConfig.grassDensity),
         );
         for (let index = 0; index < grass.count; index += 1) {
           const meadow = index % 4 === 0;
@@ -1215,7 +1292,7 @@ export default function ReefScene({
         const kelp = new THREE.InstancedMesh(
           makeBladeGeometry(5.4, 0.26, 0.34, 8),
           new THREE.MeshStandardMaterial({ color: 0x5e9f6d, roughness: 0.82, transparent: true, opacity: 0.46, side: THREE.DoubleSide }),
-          countFor(280, 115, biomeConfig.kelpDensity),
+          countFor(430, 175, biomeConfig.kelpDensity),
         );
         for (let index = 0; index < kelp.count; index += 1) {
           const cluster = clusters[(index + 4) % clusters.length];
@@ -1239,7 +1316,7 @@ export default function ReefScene({
         const reefRubble = new THREE.InstancedMesh(
           makeRubbleGeometry(),
           new THREE.MeshStandardMaterial({ color: 0x7b7864, roughness: 0.96, metalness: 0.01 }),
-          countFor(420, 175, biomeConfig.rockDensity + biomeConfig.coralHeadDensity * 0.48),
+          countFor(640, 260, biomeConfig.rockDensity + biomeConfig.coralHeadDensity * 0.48),
         );
         for (let index = 0; index < reefRubble.count; index += 1) {
           const cluster = clusters[(index + 2) % clusters.length];
@@ -1263,7 +1340,7 @@ export default function ReefScene({
         const seaFans = new THREE.InstancedMesh(
           new THREE.PlaneGeometry(1, 1.8, 1, 5),
           new THREE.MeshStandardMaterial({ color: 0x35c8a2, roughness: 0.8, transparent: true, opacity: 0.68, side: THREE.DoubleSide }),
-          countFor(210, 90, biomeConfig.seaFanDensity),
+          countFor(340, 140, biomeConfig.seaFanDensity),
         );
         for (let index = 0; index < seaFans.count; index += 1) {
           const [x, z] = randomFloorPoint(0.82, 0.86);
@@ -1283,7 +1360,7 @@ export default function ReefScene({
         const softPolyps = new THREE.InstancedMesh(
           makeBladeGeometry(1.55, 0.045, 0.16, 5),
           new THREE.MeshStandardMaterial({ color: 0x9b7194, roughness: 0.86, transparent: true, opacity: 0.58, side: THREE.DoubleSide }),
-          countFor(680, 270, biomeConfig.softPolypDensity),
+          countFor(1080, 430, biomeConfig.softPolypDensity),
         );
         for (let index = 0; index < softPolyps.count; index += 1) {
           const cluster = clusters[(index + 7) % clusters.length];
@@ -1680,6 +1757,10 @@ export default function ReefScene({
           causticTexture.offset.y = (elapsed * -0.008) % 1;
           waterNormals.offset.x = (elapsed * 0.028) % 1;
           waterNormals.offset.y = (elapsed * 0.017) % 1;
+          surfaceReflectionTexture.offset.x = (elapsed * -0.006) % 1;
+          surfaceReflectionTexture.offset.y = (elapsed * 0.012) % 1;
+          surfaceReflections.position.y = biomeConfig.waterY - 0.16 + (reduced ? 0 : Math.sin(elapsed * 0.46) * 0.055);
+          surfaceReflectionMaterial.opacity = reduced ? 0.14 : 0.2 + Math.sin(elapsed * 0.58) * 0.035;
           surfaceGlints.position.x = reduced ? 0 : Math.sin(elapsed * 0.06) * 5.4;
           surfaceGlints.position.z = reduced ? 0 : Math.cos(elapsed * 0.045) * 4.6;
           particles.position.x = Math.sin(elapsed * 0.04) * 6;

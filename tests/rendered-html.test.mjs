@@ -461,6 +461,27 @@ test("scopes scanned coral and animal models to researched reef regions", async 
   assert.match(scene, /scanKey: ScanAssetKey/);
 });
 
+test("gives each reef region a distinct researched habitat signature", async () => {
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
+  assert.match(scene, /rockColor: 0x6f7768/);
+  assert.match(scene, /rockColor: 0x5e6857/);
+  assert.match(scene, /rockColor: 0x4e625c/);
+  assert.match(scene, /rockColor: 0x777062/);
+  assert.match(scene, /spongeHue: 0\.13/);
+  assert.match(scene, /seaFanHue: 0\.78/);
+  assert.match(scene, /fishCruiseHeight: \[2\.5, 5\.8\]/);
+  assert.match(scene, /fishCruiseHeight: \[4\.1, 9\.8\]/);
+  assert.match(scene, /biomeConfig\.spongeHue \+ random\(\) \* 0\.055/);
+  assert.match(scene, /biomeConfig\.benthicOpacity/);
+  assert.match(scene, /biomeConfig\.reefLifeSize/);
+  assert.match(scene, /const particleColor = biomeConfig\.terrain === "turbid-lagoon"/);
+  assert.match(scene, /height: biomeConfig\.fishCruiseHeight\[0\] \+ random\(\) \* \(biomeConfig\.fishCruiseHeight\[1\] - biomeConfig\.fishCruiseHeight\[0\]\)/);
+  assert.match(scene, /"sisters-islands": \[[\s\S]*?smithsonian-chonelasma-oreia\.glb[\s\S]*?count: countFor\(22, 9, 1\)/);
+  assert.match(scene, /"coral-triangle": \[[\s\S]*?smithsonian-tridacna-squamosa\.glb[\s\S]*?count: countFor\(18, 7, 1\)/);
+  assert.match(scene, /"caribbean-reef": \[[\s\S]*?smithsonian-lactophrys-bicaudalis\.glb/);
+});
+
 test("uses DHW-informed timeline and species-specific bleaching response", async () => {
   const data = await readFile(new URL("../app/reef-data.ts", import.meta.url), "utf8");
   const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");

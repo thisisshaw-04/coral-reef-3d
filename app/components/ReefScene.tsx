@@ -411,6 +411,14 @@ type ReefBiomeConfig = {
   particleDensity: number;
   lifeDensity: number;
   grassColor: number;
+  rockColor: number;
+  rubbleHue: number;
+  spongeHue: number;
+  spongeSaturation: number;
+  spongeLightness: number;
+  benthicOpacity: number;
+  reefLifeSize: number;
+  fishCruiseHeight: [number, number];
   kelpHue: number;
   seaFanHue: number;
   coralHue: number;
@@ -494,6 +502,14 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
     particleDensity: 0.9,
     lifeDensity: 0.98,
     grassColor: 0x2aa67d,
+    rockColor: 0x6f7768,
+    rubbleHue: 0.12,
+    spongeHue: 0.075,
+    spongeSaturation: 0.36,
+    spongeLightness: 0.46,
+    benthicOpacity: 0.72,
+    reefLifeSize: 0.09,
+    fishCruiseHeight: [3.8, 8.6],
     kelpHue: 0.31,
     seaFanHue: 0.39,
     coralHue: 0.055,
@@ -510,16 +526,16 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
     seed: 7612,
     terrain: "turbid-lagoon",
     floorTexture: "silt-lagoon",
-    background: 0x0c3d42,
-    fog: 0x427f74,
-    fogDensity: 0.017,
-    floorColor: 0x8e8e66,
-    wallColor: 0x244d45,
-    waterColor: 0x2f8178,
-    causticColor: 0xc8f0cf,
-    causticOpacity: 0.1,
-    waterAlpha: 0.58,
-    waterDistortion: 2.75,
+    background: 0x123b38,
+    fog: 0x5f7966,
+    fogDensity: 0.0205,
+    floorColor: 0x898669,
+    wallColor: 0x31493f,
+    waterColor: 0x5a826c,
+    causticColor: 0xcfe4bf,
+    causticOpacity: 0.075,
+    waterAlpha: 0.54,
+    waterDistortion: 2.25,
     waterY: 11.6,
     textureRepeat: [54, 88],
     exposure: 0.98,
@@ -534,9 +550,17 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
     bottomLifeDensity: 1.42,
     particleDensity: 1.5,
     lifeDensity: 0.84,
-    grassColor: 0x3f9c63,
+    grassColor: 0x5b9464,
+    rockColor: 0x5e6857,
+    rubbleHue: 0.2,
+    spongeHue: 0.13,
+    spongeSaturation: 0.42,
+    spongeLightness: 0.42,
+    benthicOpacity: 0.62,
+    reefLifeSize: 0.072,
+    fishCruiseHeight: [2.5, 5.8],
     kelpHue: 0.25,
-    seaFanHue: 0.35,
+    seaFanHue: 0.28,
     coralHue: 0.07,
     lifePalette: [0xffbd8b, 0xd4e48b, 0x75dcb4, 0xf0a1b9, 0xf6e0a1],
     clusters: [
@@ -563,14 +587,14 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
     seed: 91244,
     terrain: "triangle-wall",
     floorTexture: "coral-wall",
-    background: 0x045c72,
-    fog: 0x1d8d9c,
-    fogDensity: 0.0088,
-    floorColor: 0xa99874,
-    wallColor: 0x19606d,
-    waterColor: 0x0a90a5,
-    causticColor: 0xb9fff2,
-    causticOpacity: 0.18,
+    background: 0x035a70,
+    fog: 0x1494a6,
+    fogDensity: 0.0078,
+    floorColor: 0x978667,
+    wallColor: 0x175f6d,
+    waterColor: 0x0695ab,
+    causticColor: 0xc8fff0,
+    causticOpacity: 0.2,
     waterAlpha: 0.68,
     waterDistortion: 4.9,
     waterY: 14.2,
@@ -587,7 +611,15 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
     bottomLifeDensity: 1.28,
     particleDensity: 1.05,
     lifeDensity: 1.42,
-    grassColor: 0x2fb88a,
+    grassColor: 0x24b889,
+    rockColor: 0x4e625c,
+    rubbleHue: 0.085,
+    spongeHue: 0.04,
+    spongeSaturation: 0.52,
+    spongeLightness: 0.5,
+    benthicOpacity: 0.76,
+    reefLifeSize: 0.105,
+    fishCruiseHeight: [4.1, 9.8],
     kelpHue: 0.34,
     seaFanHue: 0.46,
     coralHue: 0.04,
@@ -617,14 +649,14 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
     seed: 44501,
     terrain: "caribbean-spur",
     floorTexture: "spur-groove",
-    background: 0x063d5a,
-    fog: 0x24758d,
-    fogDensity: 0.0096,
-    floorColor: 0xb0a37e,
-    wallColor: 0x1a5468,
-    waterColor: 0x0b7fa0,
-    causticColor: 0xd1fff5,
-    causticOpacity: 0.17,
+    background: 0x073f5d,
+    fog: 0x1f7fa2,
+    fogDensity: 0.0102,
+    floorColor: 0xbead83,
+    wallColor: 0x1a586f,
+    waterColor: 0x0783a8,
+    causticColor: 0xdffff4,
+    causticOpacity: 0.185,
     waterAlpha: 0.66,
     waterDistortion: 4.35,
     waterY: 13.1,
@@ -641,8 +673,16 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
     bottomLifeDensity: 0.96,
     particleDensity: 0.78,
     lifeDensity: 1.08,
-    grassColor: 0x349f78,
+    grassColor: 0x2e866d,
+    rockColor: 0x777062,
+    rubbleHue: 0.115,
+    spongeHue: 0.055,
+    spongeSaturation: 0.54,
+    spongeLightness: 0.48,
+    benthicOpacity: 0.68,
+    reefLifeSize: 0.082,
     kelpHue: 0.28,
+    fishCruiseHeight: [3.2, 7.1],
     seaFanHue: 0.78,
     coralHue: 0.065,
     lifePalette: [0xffb074, 0xffd77f, 0x8eeedc, 0x9dc6ff, 0xe8f5be],
@@ -1332,7 +1372,7 @@ export default function ReefScene({
 
         const rocks = new THREE.InstancedMesh(
           makeRubbleGeometry(),
-          new THREE.MeshStandardMaterial({ color: 0x687569, roughness: 0.96, metalness: 0.01 }),
+          new THREE.MeshStandardMaterial({ color: biomeConfig.rockColor, roughness: 0.96, metalness: 0.01 }),
           countFor(230, 92, biomeConfig.rockDensity * 0.72),
         );
         const matrix = new THREE.Matrix4();
@@ -1374,7 +1414,11 @@ export default function ReefScene({
           scale.set(0.34 + random() * 0.55, height, 0.34 + random() * 0.55);
           matrix.compose(position, quaternion, scale);
           sponges.setMatrixAt(index, matrix);
-          reefColor.setHSL(0.08 + random() * 0.04, 0.26 + random() * 0.18, 0.38 + random() * 0.16);
+          reefColor.setHSL(
+            biomeConfig.spongeHue + random() * 0.055,
+            biomeConfig.spongeSaturation + random() * 0.14,
+            biomeConfig.spongeLightness + random() * 0.12,
+          );
           sponges.setColorAt(index, reefColor);
         }
         sponges.instanceMatrix.needsUpdate = true;
@@ -1383,7 +1427,7 @@ export default function ReefScene({
 
         const grass = new THREE.InstancedMesh(
           makeSeagrassShootGeometry(),
-          new THREE.MeshStandardMaterial({ color: biomeConfig.grassColor, roughness: 0.88, transparent: true, opacity: 0.72 }),
+          new THREE.MeshStandardMaterial({ color: biomeConfig.grassColor, roughness: 0.88, transparent: true, opacity: biomeConfig.benthicOpacity }),
           countFor(980, 380, biomeConfig.grassDensity * 0.78),
         );
         for (let index = 0; index < grass.count; index += 1) {
@@ -1427,7 +1471,7 @@ export default function ReefScene({
 
         const reefRubble = new THREE.InstancedMesh(
           makeRubbleGeometry(),
-          new THREE.MeshStandardMaterial({ color: 0x7b7864, roughness: 0.96, metalness: 0.01 }),
+          new THREE.MeshStandardMaterial({ color: biomeConfig.rockColor, roughness: 0.96, metalness: 0.01 }),
           countFor(980, 420, biomeConfig.rockDensity + biomeConfig.coralHeadDensity * 0.62),
         );
         for (let index = 0; index < reefRubble.count; index += 1) {
@@ -1442,7 +1486,7 @@ export default function ReefScene({
           scale.set(size * (0.78 + random() * 0.65), size * (0.36 + random() * 0.32), size * (0.72 + random() * 0.7));
           matrix.compose(position, quaternion, scale);
           reefRubble.setMatrixAt(index, matrix);
-          reefColor.setHSL(0.1 + random() * 0.12, 0.12 + random() * 0.18, 0.32 + random() * 0.2);
+          reefColor.setHSL(biomeConfig.rubbleHue + random() * 0.105, 0.12 + random() * 0.2, 0.3 + random() * 0.22);
           reefRubble.setColorAt(index, reefColor);
         }
         reefRubble.instanceMatrix.needsUpdate = true;
@@ -1545,7 +1589,7 @@ export default function ReefScene({
         lifeGeometry.setAttribute("color", new THREE.BufferAttribute(lifeColors, 3));
         const lifeMaterial = new THREE.PointsMaterial({
           vertexColors: true,
-          size: lowPower ? 0.07 : 0.09,
+          size: lowPower ? biomeConfig.reefLifeSize * 0.78 : biomeConfig.reefLifeSize,
           transparent: true,
           opacity: 0.68,
           depthWrite: false,
@@ -1672,34 +1716,34 @@ export default function ReefScene({
           "great-barrier": [
             { src: "/models/polyhaven/rock_07/rock_07_1k.gltf", count: countFor(26, 11, biomeConfig.rockDensity), fit: 3.15, tint: 0x7c8273, clusterOffset: 0, scaleMin: 0.62, scaleMax: 1.28, lift: 0.01, tintMix: 0.12 },
             { src: "/models/polyhaven/stone_01/stone_01_1k.gltf", count: countFor(32, 14, biomeConfig.rockDensity), fit: 1.95, tint: 0x8a8977, clusterOffset: 6, scaleMin: 0.72, scaleMax: 1.46, lift: 0.008, tintMix: 0.1 },
-            { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(12, 5, 1), fit: 4.2, tint: 0xbb735b, clusterOffset: 1, scaleMin: 0.7, scaleMax: 1.22 },
-            { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(10, 4, 1), fit: 3.1, tint: 0xd7c7a3, clusterOffset: 4, scaleMin: 0.72, scaleMax: 1.16 },
+            { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(9, 4, 1), fit: 4.2, tint: 0xbb735b, clusterOffset: 1, scaleMin: 0.7, scaleMax: 1.18 },
+            { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(8, 3, 1), fit: 3.1, tint: 0xd7c7a3, clusterOffset: 4, scaleMin: 0.72, scaleMax: 1.08 },
             { src: "/models/smithsonian-tridacna-squamosa.glb", count: countFor(10, 4, 1), fit: 2.45, tint: 0xd8b67b, clusterOffset: 8, scaleMin: 0.78, scaleMax: 1.28, lift: 0.05 },
-            { src: "/models/smithsonian-endoxocrinus-parrae.glb", count: countFor(16, 6, 1), fit: 3.35, tint: 0x8cbf92, clusterOffset: 11, scaleMin: 0.68, scaleMax: 1.04, floorActor: true },
+            { src: "/models/smithsonian-endoxocrinus-parrae.glb", count: countFor(11, 4, 1), fit: 3.35, tint: 0x8cbf92, clusterOffset: 11, scaleMin: 0.68, scaleMax: 0.98, floorActor: true },
           ],
           "sisters-islands": [
             { src: "/models/polyhaven/stone_01/stone_01_1k.gltf", count: countFor(28, 12, biomeConfig.rockDensity), fit: 1.75, tint: 0x8b8a7c, clusterOffset: 1, scaleMin: 0.68, scaleMax: 1.36, lift: 0.008, tintMix: 0.12 },
-            { src: "/models/polyhaven/rock_07/rock_07_1k.gltf", count: countFor(20, 8, biomeConfig.rockDensity), fit: 2.75, tint: 0x6f7c70, clusterOffset: 6, scaleMin: 0.58, scaleMax: 1.14, lift: 0.01, tintMix: 0.12 },
-            { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(14, 6, 1), fit: 3.3, tint: 0xcfc19b, clusterOffset: 0, scaleMin: 0.78, scaleMax: 1.18 },
-            { src: "/models/smithsonian-tridacna-squamosa.glb", count: countFor(10, 4, 1), fit: 2.25, tint: 0xc7ad7a, clusterOffset: 3, scaleMin: 0.72, scaleMax: 1.12, lift: 0.05 },
-            { src: "/models/smithsonian-endoxocrinus-parrae.glb", count: countFor(18, 7, 1), fit: 3.15, tint: 0x8fbf86, clusterOffset: 5, scaleMin: 0.72, scaleMax: 1.1, floorActor: true },
-            { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(8, 3, 1), fit: 3.5, tint: 0xb77561, clusterOffset: 8, scaleMin: 0.66, scaleMax: 0.96 },
+            { src: "/models/polyhaven/rock_07/rock_07_1k.gltf", count: countFor(14, 6, biomeConfig.rockDensity), fit: 2.45, tint: 0x64705c, clusterOffset: 6, scaleMin: 0.52, scaleMax: 0.96, lift: 0.01, tintMix: 0.16 },
+            { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(22, 9, 1), fit: 3.45, tint: 0xbfae82, clusterOffset: 0, scaleMin: 0.78, scaleMax: 1.28 },
+            { src: "/models/smithsonian-tridacna-squamosa.glb", count: countFor(8, 3, 1), fit: 2.2, tint: 0xc1a970, clusterOffset: 3, scaleMin: 0.68, scaleMax: 1.04, lift: 0.05 },
+            { src: "/models/smithsonian-endoxocrinus-parrae.glb", count: countFor(24, 10, 1), fit: 3.15, tint: 0x85ad78, clusterOffset: 5, scaleMin: 0.72, scaleMax: 1.16, floorActor: true },
+            { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(6, 2, 1), fit: 3.5, tint: 0xa86f58, clusterOffset: 8, scaleMin: 0.62, scaleMax: 0.9 },
           ],
           "coral-triangle": [
-            { src: "/models/polyhaven/rock_07/rock_07_1k.gltf", count: countFor(34, 14, biomeConfig.rockDensity), fit: 3.25, tint: 0x768371, clusterOffset: 0, scaleMin: 0.64, scaleMax: 1.34, lift: 0.01, tintMix: 0.1 },
-            { src: "/models/polyhaven/stone_01/stone_01_1k.gltf", count: countFor(36, 15, biomeConfig.rockDensity), fit: 2.05, tint: 0x8e8978, clusterOffset: 7, scaleMin: 0.7, scaleMax: 1.52, lift: 0.008, tintMix: 0.1 },
-            { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(16, 6, 1), fit: 4.5, tint: 0xc97862, clusterOffset: 2, scaleMin: 0.76, scaleMax: 1.26 },
-            { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(13, 5, 1), fit: 3.4, tint: 0xd6c9a7, clusterOffset: 5, scaleMin: 0.76, scaleMax: 1.22 },
-            { src: "/models/smithsonian-tridacna-squamosa.glb", count: countFor(13, 5, 1), fit: 2.6, tint: 0xddb87c, clusterOffset: 8, scaleMin: 0.78, scaleMax: 1.34, lift: 0.05 },
-            { src: "/models/smithsonian-endoxocrinus-parrae.glb", count: countFor(22, 8, 1), fit: 3.55, tint: 0x8bc693, clusterOffset: 10, scaleMin: 0.7, scaleMax: 1.12, floorActor: true },
+            { src: "/models/polyhaven/rock_07/rock_07_1k.gltf", count: countFor(40, 17, biomeConfig.rockDensity), fit: 3.45, tint: 0x505b56, clusterOffset: 0, scaleMin: 0.66, scaleMax: 1.46, lift: 0.01, tintMix: 0.14 },
+            { src: "/models/polyhaven/stone_01/stone_01_1k.gltf", count: countFor(26, 11, biomeConfig.rockDensity), fit: 2.05, tint: 0x836f61, clusterOffset: 7, scaleMin: 0.7, scaleMax: 1.36, lift: 0.008, tintMix: 0.1 },
+            { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(20, 8, 1), fit: 4.5, tint: 0xd07862, clusterOffset: 2, scaleMin: 0.76, scaleMax: 1.34 },
+            { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(15, 6, 1), fit: 3.4, tint: 0xd6c9a7, clusterOffset: 5, scaleMin: 0.76, scaleMax: 1.22 },
+            { src: "/models/smithsonian-tridacna-squamosa.glb", count: countFor(18, 7, 1), fit: 2.6, tint: 0xe0b978, clusterOffset: 8, scaleMin: 0.78, scaleMax: 1.42, lift: 0.05 },
+            { src: "/models/smithsonian-endoxocrinus-parrae.glb", count: countFor(26, 10, 1), fit: 3.55, tint: 0x7fc98f, clusterOffset: 10, scaleMin: 0.7, scaleMax: 1.2, floorActor: true },
           ],
           "caribbean-reef": [
-            { src: "/models/polyhaven/stone_01/stone_01_1k.gltf", count: countFor(30, 12, biomeConfig.rockDensity), fit: 1.9, tint: 0x827c6c, clusterOffset: 1, scaleMin: 0.7, scaleMax: 1.42, lift: 0.008, tintMix: 0.12 },
-            { src: "/models/polyhaven/rock_07/rock_07_1k.gltf", count: countFor(26, 10, biomeConfig.rockDensity), fit: 3.05, tint: 0x6d7468, clusterOffset: 5, scaleMin: 0.58, scaleMax: 1.22, lift: 0.01, tintMix: 0.12 },
-            { src: "/models/smithsonian-tridacna-squamosa.glb", count: countFor(9, 3, 1), fit: 2.15, tint: 0xd8b176, clusterOffset: 1, scaleMin: 0.74, scaleMax: 1.08, lift: 0.05 },
-            { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(12, 4, 1), fit: 3.85, tint: 0xb96e58, clusterOffset: 4, scaleMin: 0.68, scaleMax: 1.14 },
-            { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(12, 4, 1), fit: 3.05, tint: 0xcec09b, clusterOffset: 7, scaleMin: 0.74, scaleMax: 1.16 },
-            { src: "/models/smithsonian-endoxocrinus-parrae.glb", count: countFor(12, 4, 1), fit: 3.1, tint: 0x88b886, clusterOffset: 9, scaleMin: 0.64, scaleMax: 0.98, floorActor: true },
+            { src: "/models/polyhaven/stone_01/stone_01_1k.gltf", count: countFor(38, 15, biomeConfig.rockDensity), fit: 1.9, tint: 0x91896f, clusterOffset: 1, scaleMin: 0.72, scaleMax: 1.52, lift: 0.008, tintMix: 0.12 },
+            { src: "/models/polyhaven/rock_07/rock_07_1k.gltf", count: countFor(18, 7, biomeConfig.rockDensity), fit: 2.8, tint: 0x6d7468, clusterOffset: 5, scaleMin: 0.52, scaleMax: 1.04, lift: 0.01, tintMix: 0.12 },
+            { src: "/models/smithsonian-tridacna-squamosa.glb", count: countFor(5, 2, 1), fit: 2.05, tint: 0xd4b47b, clusterOffset: 1, scaleMin: 0.7, scaleMax: 0.98, lift: 0.05 },
+            { src: "/models/smithsonian-tubipora-musica.glb", count: countFor(16, 6, 1), fit: 3.85, tint: 0xbd7159, clusterOffset: 4, scaleMin: 0.7, scaleMax: 1.18 },
+            { src: "/models/smithsonian-chonelasma-oreia.glb", count: countFor(20, 8, 1), fit: 3.05, tint: 0xd4c79e, clusterOffset: 7, scaleMin: 0.76, scaleMax: 1.24 },
+            { src: "/models/smithsonian-endoxocrinus-parrae.glb", count: countFor(7, 3, 1), fit: 3.1, tint: 0x88b886, clusterOffset: 9, scaleMin: 0.6, scaleMax: 0.88, floorActor: true },
           ],
         };
         await Promise.allSettled(
@@ -1819,7 +1863,7 @@ export default function ReefScene({
                   lane: (random() - 0.5) * FLOOR_WIDTH * 0.62,
                   depth: FLOOR_CENTER_Z + FLOOR_DEPTH * 0.36 - random() * FLOOR_DEPTH * 0.7,
                   radius: 7 + random() * 12,
-                  height: 3.3 + random() * 5.2,
+                  height: biomeConfig.fishCruiseHeight[0] + random() * (biomeConfig.fishCruiseHeight[1] - biomeConfig.fishCruiseHeight[0]),
                   speed: asset.speed + random() * 0.024,
                   wobble: 0.22 + random() * 0.42,
                 });
@@ -1838,7 +1882,8 @@ export default function ReefScene({
           particlePositions[index * 3 + 2] = FLOOR_CENTER_Z + (random() - 0.5) * FLOOR_DEPTH * 0.94;
         }
         particleGeometry.setAttribute("position", new THREE.BufferAttribute(particlePositions, 3));
-        const particles = new THREE.Points(particleGeometry, new THREE.PointsMaterial({ color: 0xb8efe7, size: lowPower ? 0.04 : 0.052, transparent: true, opacity: 0.34, depthWrite: false }));
+        const particleColor = biomeConfig.terrain === "turbid-lagoon" ? 0xd2e0b8 : biomeConfig.terrain === "caribbean-spur" ? 0xd8fff4 : 0xb8efe7;
+        const particles = new THREE.Points(particleGeometry, new THREE.PointsMaterial({ color: particleColor, size: lowPower ? 0.04 : 0.052, transparent: true, opacity: biomeConfig.terrain === "turbid-lagoon" ? 0.43 : 0.34, depthWrite: false }));
         world.add(particles);
 
         const nav = {

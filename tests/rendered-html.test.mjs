@@ -108,6 +108,18 @@ test("starts every reef dive inside the coral field", async () => {
   assert.doesNotMatch(scene, /camera\.position\.set\(0, 5\.2, 17\)/);
 });
 
+test("sculpts visible biome terrain instead of a flat seabed", async () => {
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
+  assert.match(scene, /const basin = biomeConfig\.clusters\.reduce/);
+  assert.match(scene, /const microRelief =/);
+  assert.match(scene, /basin \* 0\.82/);
+  assert.match(scene, /const shoals =/);
+  assert.match(scene, /const limestoneSteps =/);
+  assert.match(scene, /wallDrop = -Math\.max\(0, \(-z - 210\) \/ 210\) \* 3\.35/);
+  assert.match(scene, /floorPosition\.setXYZ\(index, x, seabedHeight\(x, z\), z\)/);
+});
+
 test("uses the clean Google Sans entry action system", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");

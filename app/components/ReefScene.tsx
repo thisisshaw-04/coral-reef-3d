@@ -815,37 +815,50 @@ export default function ReefScene({
         const countFor = (desktop: number, mobile: number, multiplier = 1) =>
           Math.max(1, Math.round((lowPower ? mobile : desktop) * multiplier));
         const seabedHeight = (x: number, z: number) => {
+          const basin = biomeConfig.clusters.reduce((height, [cx, , cz, radius]) => {
+            const dx = x - cx;
+            const dz = z - cz;
+            const falloff = Math.max(0, 1 - Math.hypot(dx, dz) / (radius * 2.15));
+            return height + falloff * falloff * 1.65;
+          }, 0);
+          const microRelief =
+            Math.sin(x * 0.115 + z * 0.071) * 0.16 +
+            Math.cos(x * 0.084 - z * 0.096) * 0.13;
           const softRidges =
-            Math.sin(x * 0.055 + z * 0.018) * 0.52 +
-            Math.cos(z * 0.043) * 0.42 +
-            Math.sin((x - z) * 0.032) * 0.3;
+            Math.sin(x * 0.055 + z * 0.018) * 0.86 +
+            Math.cos(z * 0.043) * 0.64 +
+            Math.sin((x - z) * 0.032) * 0.48 +
+            microRelief;
           const sideRise = Math.max(0, (Math.abs(x) - 136) / 92) ** 2 * 5.6;
           const farRise = Math.max(0, (-z - 360) / 170) * 5.2;
           const frontShelf = Math.max(0, (z - 42) / 130) * 2.4;
 
           if (biomeConfig.terrain === "turbid-lagoon") {
-            const lagoonChannel = Math.max(0, 1 - Math.abs(x * 0.42 + z * 0.05) / 34) * -0.95;
-            const siltBanks = Math.sin(x * 0.026 + z * 0.014) * 0.28 + Math.cos(z * 0.023) * 0.24;
-            return siltBanks + lagoonChannel + sideRise * 0.42 + farRise * 0.54 + frontShelf * 0.7 - 0.72;
+            const lagoonChannel = Math.max(0, 1 - Math.abs(x * 0.42 + z * 0.05) / 38) * -1.65;
+            const siltBanks = Math.sin(x * 0.026 + z * 0.014) * 0.46 + Math.cos(z * 0.023) * 0.38;
+            const shoals = Math.max(0, Math.sin((x - z * 0.18) * 0.028)) * 0.82;
+            return siltBanks + shoals + basin * 0.7 + lagoonChannel + sideRise * 0.42 + farRise * 0.54 + frontShelf * 0.7 - 0.72;
           }
 
           if (biomeConfig.terrain === "triangle-wall") {
-            const wallDrop = -Math.max(0, (-z - 210) / 210) * 2.4;
+            const wallDrop = -Math.max(0, (-z - 210) / 210) * 3.35;
             const volcanicRibs =
-              Math.max(0, Math.sin((x + 18) * 0.052)) * 1.2 +
-              Math.max(0, Math.cos((z + x * 0.36) * 0.035)) * 0.9;
-            return softRidges * 1.15 + volcanicRibs + sideRise * 0.72 + farRise * 0.36 + frontShelf - 0.82 + wallDrop;
+              Math.max(0, Math.sin((x + 18) * 0.052)) * 1.85 +
+              Math.max(0, Math.cos((z + x * 0.36) * 0.035)) * 1.2;
+            return softRidges * 1.25 + volcanicRibs + basin * 0.92 + sideRise * 0.72 + farRise * 0.36 + frontShelf - 0.82 + wallDrop;
           }
 
           if (biomeConfig.terrain === "caribbean-spur") {
             const groove = Math.sin((x + z * 0.16) * 0.055);
-            const spurs = Math.max(0, groove) * 1.35 - Math.max(0, -groove) * 0.72;
-            const terrace = Math.sin(z * 0.018) * 0.35;
-            return softRidges * 0.7 + spurs + terrace + sideRise * 0.62 + farRise * 0.48 + frontShelf - 0.86;
+            const spurs = Math.max(0, groove) * 2.05 - Math.max(0, -groove) * 1.25;
+            const terrace = Math.sin(z * 0.018) * 0.56;
+            const limestoneSteps = Math.max(0, Math.sin((z + 40) * 0.043)) * 0.74;
+            return softRidges * 0.78 + spurs + terrace + limestoneSteps + basin * 0.72 + sideRise * 0.62 + farRise * 0.48 + frontShelf - 0.86;
           }
 
-          const swimChannel = Math.max(0, 1 - Math.abs(x + z * 0.1) / 32) * -0.85;
-          return softRidges + swimChannel + sideRise + farRise + frontShelf - 0.9;
+          const swimChannel = Math.max(0, 1 - Math.abs(x + z * 0.1) / 34) * -1.35;
+          const reefFlatShelves = Math.max(0, Math.sin((x * 0.045 - z * 0.022) + 0.9)) * 0.74;
+          return softRidges + reefFlatShelves + basin * 0.82 + swimChannel + sideRise + farRise + frontShelf - 0.9;
         };
         const makeFloorTexture = () => {
           const canvas = document.createElement("canvas");

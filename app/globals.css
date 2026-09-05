@@ -7222,3 +7222,140 @@ a:focus-visible,
 .reef-scene__marker.is-mapped .reef-scene__reticle i svg {
   display: none;
 }
+
+/* v35 - compact objective card and refined mission hierarchy */
+.mission-bar {
+  top: 22px;
+  left: clamp(22px, 3vw, 48px);
+  right: clamp(22px, 3vw, 48px);
+  grid-template-columns: minmax(220px, 0.86fr) minmax(420px, auto) minmax(220px, 0.86fr);
+  align-items: start;
+}
+
+.mission-brand {
+  justify-self: center;
+  gap: 14px;
+  align-items: center;
+  padding-top: 4px;
+  text-align: left;
+}
+
+.mission-brand > svg {
+  width: clamp(24px, 2vw, 32px);
+  height: clamp(24px, 2vw, 32px);
+  flex: 0 0 auto;
+  opacity: 0.96;
+  translate: 0 -1px;
+}
+
+.mission-brand span {
+  font-size: clamp(38px, 3.8vw, 62px);
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  line-height: 0.94;
+  text-shadow: 0 10px 34px rgb(0 16 26 / 0.32);
+}
+
+.mission-brand::after {
+  content: "";
+  width: clamp(74px, 9vw, 150px);
+  height: 1px;
+  margin-left: 4px;
+  background: linear-gradient(90deg, rgb(255 255 255 / 0.2), transparent);
+}
+
+.sub-title {
+  top: clamp(86px, 9.2vh, 112px);
+  width: min(860px, calc(100vw - 620px));
+  gap: 8px;
+}
+
+.sub-title span {
+  color: rgb(255 255 255 / 0.72);
+  font-size: clamp(12px, 0.9vw, 15px);
+  font-weight: 360;
+  letter-spacing: 0.22em;
+}
+
+.sub-title strong {
+  color: rgb(255 255 255 / 0.84);
+  font-size: clamp(14px, 1.05vw, 18px);
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+.field-lesson {
+  left: clamp(24px, 3vw, 54px);
+  bottom: clamp(188px, 19vh, 226px);
+  width: min(300px, 20vw);
+  max-height: min(440px, calc(100vh - 310px));
+  padding: 18px;
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.field-lesson > span {
+  margin-bottom: 10px;
+  font-size: 10px;
+  font-weight: 360;
+  letter-spacing: 0.2em;
+}
+
+.field-lesson strong {
+  max-width: 13ch;
+  font-size: clamp(20px, 1.55vw, 27px);
+  font-weight: 340;
+  line-height: 1.12;
+}
+
+.field-lesson p {
+  max-width: 24ch;
+  margin-top: 12px;
+  font-size: clamp(12px, 0.9vw, 15px);
+  line-height: 1.42;
+}
+
+.field-lesson ol {
+  gap: 6px;
+  margin-top: 14px;
+  padding-left: 0;
+}
+
+.field-lesson li {
+  font-size: clamp(12px, 0.86vw, 14px);
+  line-height: 1.36;
+}
+
+.field-lesson > small {
+  max-width: 25ch;
+  margin-top: 14px;
+  padding-top: 12px;
+  font-size: clamp(10px, 0.78vw, 12px);
+  line-height: 1.35;
+}
+
+@media (min-width: 1600px) {
+  .field-lesson {
+    width: 286px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .mission-bar {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .mission-brand {
+    display: none;
+  }
+
+  .sub-title {
+    width: min(640px, calc(100vw - 48px));
+  }
+
+  .field-lesson {
+    width: min(280px, calc(100vw - 36px));
+  }
+}

@@ -359,6 +359,20 @@ test("keeps the live mission masthead compact and aligned", async () => {
   assert.match(css, /\.sub-title strong\s*{[\s\S]*?font-weight: 360/);
 });
 
+test("keeps the objective card small and the center masthead refined", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v35 - compact objective card and refined mission hierarchy/);
+  assert.match(css, /\.mission-bar\s*{[\s\S]*?grid-template-columns: minmax\(220px, 0\.86fr\) minmax\(420px, auto\) minmax\(220px, 0\.86fr\)/);
+  assert.match(css, /\.mission-brand span\s*{[\s\S]*?font-size: clamp\(38px, 3\.8vw, 62px\)/);
+  assert.match(css, /\.mission-brand span\s*{[\s\S]*?font-weight: 300/);
+  assert.match(css, /\.sub-title\s*{[\s\S]*?width: min\(860px, calc\(100vw - 620px\)\)/);
+  assert.match(css, /\.sub-title strong\s*{[\s\S]*?font-weight: 300/);
+  assert.match(css, /\.field-lesson\s*{[\s\S]*?width: min\(300px, 20vw\)/);
+  assert.match(css, /\.field-lesson\s*{[\s\S]*?max-height: min\(440px, calc\(100vh - 310px\)\)/);
+  assert.match(css, /\.field-lesson strong\s*{[\s\S]*?font-size: clamp\(20px, 1\.55vw, 27px\)/);
+});
+
 test("turns every scanned coral into a clickable evolving library entry", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const data = await readFile(new URL("../app/reef-data.ts", import.meta.url), "utf8");

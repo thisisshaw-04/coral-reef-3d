@@ -7147,8 +7147,29 @@ a:focus-visible,
     display: none !important;
   }
 
-  .time-current nav {
+.time-current nav {
     grid-column: 1;
     height: 46px;
   }
+}
+
+/* v32 - transparent PNG briefing icons without lens chrome */
+.briefing-points i {
+  width: clamp(54px, 4.6vw, 68px);
+  height: clamp(54px, 4.6vw, 68px);
+  margin-bottom: 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.briefing-points i img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  filter: none;
 }

@@ -176,13 +176,19 @@ test("uses icon lenses for briefing points instead of numeric dots", async () =>
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
   assert.match(page, /const briefingPointIcons =/);
-  assert.match(page, /\/icons\/reef-find-colonies\.svg/);
-  assert.match(page, /\/icons\/reef-shape-first\.svg/);
-  assert.match(page, /\/icons\/reef-evidence-id\.svg/);
+  assert.match(page, /\/icons\/reef-find-colonies\.png/);
+  assert.match(page, /\/icons\/reef-shape-first\.png/);
+  assert.match(page, /\/icons\/reef-evidence-id\.png/);
   assert.match(page, /<img src=\{iconSrc\} alt="" \/>/);
   assert.match(css, /v20 - briefing point icons/);
   assert.match(css, /v30 - polished briefing image icons/);
   assert.match(css, /\.briefing-points i img\s*{[\s\S]*?object-fit: contain/);
+  assert.match(css, /v32 - transparent PNG briefing icons without lens chrome/);
+  assert.match(css, /\.briefing-points i\s*{[\s\S]*?background: transparent/);
+  assert.match(css, /\.briefing-points i\s*{[\s\S]*?box-shadow: none/);
+  await access(new URL("../public/icons/reef-find-colonies.png", import.meta.url));
+  await access(new URL("../public/icons/reef-shape-first.png", import.meta.url));
+  await access(new URL("../public/icons/reef-evidence-id.png", import.meta.url));
 });
 
 test("separates the bottom tool dock from the timeline", async () => {

@@ -64,19 +64,19 @@ const briefingSteps = [
 
 const briefingPointIcons = [
   [
-    "/icons/reef-find-colonies.svg",
-    "/icons/reef-shape-first.svg",
-    "/icons/reef-evidence-id.svg",
+    "/icons/reef-find-colonies.png",
+    "/icons/reef-shape-first.png",
+    "/icons/reef-evidence-id.png",
   ],
   [
-    "/icons/reef-scan-colony.svg",
-    "/icons/reef-mark-health.svg",
-    "/icons/reef-note-observation.svg",
+    "/icons/reef-scan-colony.png",
+    "/icons/reef-mark-health.png",
+    "/icons/reef-note-observation.png",
   ],
   [
-    "/icons/reef-time-compare.svg",
-    "/icons/reef-bleaching-risk.svg",
-    "/icons/reef-restore-caution.svg",
+    "/icons/reef-time-compare.png",
+    "/icons/reef-bleaching-risk.png",
+    "/icons/reef-restore-caution.png",
   ],
 ];
 

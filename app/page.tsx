@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import {
   AudioLines,
   BookOpen,
@@ -11,7 +11,8 @@ import {
   Globe2,
   Map,
   MessageCircle,
-  MousePointer2,
+  Pause,
+  Play,
   Route,
   ScanLine,
   Share2,
@@ -152,12 +153,12 @@ export default function Home() {
   const [momentIndex, setMomentIndex] = useState(3);
   const [stressor, setStressor] = useState<Stressor | null>(null);
   const [showTimeline, setShowTimeline] = useState(true);
+  const [isTimelinePlaying, setIsTimelinePlaying] = useState(false);
   const [showBriefing, setShowBriefing] = useState(false);
   const [briefingStep, setBriefingStep] = useState(0);
   const [storyStep, setStoryStep] = useState(0);
   const [showStress, setShowStress] = useState(false);
   const [showWorlds, setShowWorlds] = useState(false);
-  const [showSignals, setShowSignals] = useState(false);
   const [worldId, setWorldId] = useState(defaultWorldId);
   const [joinCode, setJoinCode] = useState("");
   const [note, setNote] = useState("");
@@ -218,6 +219,24 @@ export default function Home() {
     () => moments.map((moment) => ({ year: moment.year, health: moment.health })),
     [],
   );
+
+  useEffect(() => {
+    if (!entered || !showTimeline || !isTimelinePlaying) return;
+
+    const timer = window.setTimeout(() => {
+      if (momentIndex >= moments.length - 1) {
+        setIsTimelinePlaying(false);
+        return;
+      }
+
+      const nextMoment = moments[momentIndex + 1];
+      setMomentIndex((index) => index + 1);
+      setPhase(nextMoment.phase);
+      setStressor(null);
+    }, 2200);
+
+    return () => window.clearTimeout(timer);
+  }, [entered, isTimelinePlaying, momentIndex, showTimeline]);
   const guide = useReefGuide({
     roomCode,
     context: selected
@@ -466,12 +485,28 @@ export default function Home() {
 
   const chooseMoment = (index: number) => {
     const nextMoment = moments[index];
+    setIsTimelinePlaying(false);
     setMomentIndex(index);
     setPhase(nextMoment.phase);
     setStressor(null);
     guide.announce(
       `${nextMoment.year}. ${nextMoment.title}. The same reef changes before your eyes.`,
     );
+  };
+
+  const toggleTimelinePlayback = () => {
+    if (isTimelinePlaying) {
+      setIsTimelinePlaying(false);
+      return;
+    }
+
+    if (momentIndex >= moments.length - 1) {
+      const firstMoment = moments[0];
+      setMomentIndex(0);
+      setPhase(firstMoment.phase);
+      setStressor(null);
+    }
+    setIsTimelinePlaying(true);
   };
 
   const applyStress = (next: Stressor) => {
@@ -520,18 +555,39 @@ export default function Home() {
       <div className="submarine-frame" aria-hidden="true" />
 
       <header className="mission-bar">
-        <button
-          className="world-button"
-          type="button"
-          onClick={() => setShowWorlds(!showWorlds)}
-        >
-          <Globe2 />
-          <span>
-            <small>GLOBAL NAVIGATOR</small>
-            <strong>{activeWorld.name}</strong>
-          </span>
-          <ChevronDown />
-        </button>
+        <div className="world-picker">
+          <button
+            className="world-button"
+            type="button"
+            onClick={() => setShowWorlds(!showWorlds)}
+          >
+            <Globe2 />
+            <span>
+              <small>REEF MAP</small>
+              <strong>{activeWorld.name}</strong>
+            </span>
+            <ChevronDown />
+          </button>
+          {showWorlds && (
+            <aside className="world-drawer">
+              <span>CHOOSE A CURATED REEF WORLD</span>
+              {reefWorlds.map((item) => (
+                <button
+                  type="button"
+                  key={item.id}
+                  className={item.id === activeWorld.id ? "is-active" : ""}
+                  onClick={() => chooseWorld(item)}
+                >
+                  {item.name}
+                  <small>{item.menuSummary}</small>
+                </button>
+              ))}
+              <p className="world-drawer__note">
+                Worlds are distinct learning environments. They are not live survey replicas.
+              </p>
+            </aside>
+          )}
+        </div>
         <div className="mission-room">
           <span>
             {room.explorers.length || 1} DIVER
@@ -543,24 +599,6 @@ export default function Home() {
           <strong>{diveDepth}</strong>
         </div>
       </header>
-
-      {showWorlds && (
-        <aside className="world-drawer">
-          <span>CHOOSE A LIVING CITY</span>
-          {reefWorlds.map((item) => (
-            <button
-              type="button"
-              key={item.id}
-              className={item.id === activeWorld.id ? "is-active" : ""}
-              onClick={() => chooseWorld(item)}
-            >
-              {item.name}
-              <small>{item.region} · {item.reefType}</small>
-              <em>{item.researchBasis}</em>
-            </button>
-          ))}
-        </aside>
-      )}
 
       {!entered && (
         <section className="expedition-entry">
@@ -668,23 +706,6 @@ export default function Home() {
               {selected && <small>{selected.species}</small>}
             </div>
           </div>
-          <div className="diver-cursors" aria-hidden="true">
-            {room.explorers.slice(0, 3).map((diver, index) => (
-              <span
-                key={diver.id}
-                style={
-                  {
-                    "--diver-color": diver.color,
-                    left: `${52 + index * 9}%`,
-                    top: `${30 + index * 13}%`,
-                  } as CSSProperties
-                }
-              >
-                <MousePointer2 />
-                {diver.name}
-              </span>
-            ))}
-          </div>
 
           {!selected && tool !== "story" && tool !== "library" && (
             <aside className="field-lesson">
@@ -700,39 +721,6 @@ export default function Home() {
             </aside>
           )}
 
-          {!selected && tool === "story" && (
-            <aside className="story-panel" aria-live="polite">
-              <span>{activeStory.label} · REEF TIME</span>
-              {activeStoryColony && (
-                <div className="story-panel__anchor">
-                  <b>{activeStoryColony.label}</b>
-                  <small>{activeStoryColony.common} · {activeStoryColony.zone}</small>
-                </div>
-              )}
-              <h2>{activeStory.title}</h2>
-              <p>{activeStory.body}</p>
-              <strong>{activeStory.takeaway}</strong>
-              <footer>
-                <button
-                  type="button"
-                  onClick={() => chooseStoryStep(storyStep - 1)}
-                  disabled={storyStep === 0}
-                >
-                  Back
-                </button>
-                {storyStep === storySteps.length - 1 ? (
-                  <button type="button" onClick={exitStory}>
-                    Explore freely
-                  </button>
-                ) : (
-                  <button type="button" onClick={() => chooseStoryStep(storyStep + 1)}>
-                    Next
-                  </button>
-                )}
-              </footer>
-            </aside>
-          )}
-
           {selected && (
             <SpecimenMonitor
               activeMoment={activeMoment}
@@ -742,7 +730,6 @@ export default function Home() {
               roomNote={room.annotations[selected.id]?.note}
               restored={restored}
               selected={selected}
-              showSignals={showSignals}
               stressor={stressor}
               tool={tool}
               onClose={() => setSelected(null)}
@@ -750,7 +737,6 @@ export default function Home() {
               onNoteChange={setNote}
               onRestore={restoreSelected}
               onSaveNote={saveNote}
-              onToggleSignals={() => setShowSignals(!showSignals)}
             />
           )}
 
@@ -778,107 +764,152 @@ export default function Home() {
             </div>
           )}
 
-          <nav className="tool-console" aria-label="Research tools">
-            {(
-              [
-                ["scan", ScanLine, "Scan"],
-                ["mark", Map, "Mark"],
-                ["note", MessageCircle, "Note"],
-                ["restore", Sprout, "Restore"],
-                ["library", BookOpen, "Library"],
-                ["story", Route, "Story"],
-              ] as const
-            ).map(([id, Icon, label]) => (
-              <button
-                key={id}
-                type="button"
-                className={tool === id ? "is-active" : ""}
-                onClick={() => applyTool(id)}
-              >
-                <Icon />
-                <span>{label}</span>
-              </button>
-            ))}
-            <button type="button" className="guide-toggle" onClick={guide.toggle}>
-              <AudioLines />
-              <span>{guide.status === "off" ? "Guide" : "Listening"}</span>
-            </button>
-          </nav>
-
-          <button
-            type="button"
-            className="stress-trigger"
-            onClick={() => setShowStress(!showStress)}
-          >
-            <ThermometerSun /> STRESS TEST
-          </button>
-          {showStress && (
-            <aside className="stress-menu">
-              <header>
-                <span>CHANGE ONE VARIABLE</span>
-                <button type="button" onClick={() => setShowStress(false)}>
-                  <X />
-                </button>
-              </header>
-              {(Object.keys(stressCopy) as Stressor[]).map((item) => (
-                <button key={item} type="button" onClick={() => applyStress(item)}>
-                  <strong>{stressCopy[item].label}</strong>
-                  <small>{stressCopy[item].effect}</small>
-                </button>
-              ))}
-              <p>Interactive forecast · not a prediction</p>
-            </aside>
-          )}
-
-          {showTimeline ? (
-            <footer className="time-current" data-phase={activeMoment.phase} style={timelineStyle}>
-              <button type="button" onClick={() => setShowTimeline(false)}>
-                <Clock3 /> TIME CURRENT
-              </button>
-              <div className="timeline-readout">
-                <span>{activeMoment.year}</span>
-                <strong>{activeMoment.title}</strong>
-              </div>
-              <nav>
-                {moments.map((moment, index) => (
+          <div className={`bottom-hud${tool === "story" && !selected ? " is-story" : ""}`}>
+            {tool === "story" && !selected && (
+              <aside className="story-panel" aria-live="polite">
+                <span>{activeStory.label} · REEF TIME</span>
+                {activeStoryColony && (
+                  <div className="story-panel__anchor">
+                    <b>{activeStoryColony.label}</b>
+                    <small>{activeStoryColony.common} · {activeStoryColony.zone}</small>
+                  </div>
+                )}
+                <h2>{activeStory.title}</h2>
+                <p>{activeStory.body}</p>
+                <strong>{activeStory.takeaway}</strong>
+                <footer>
                   <button
                     type="button"
-                    key={moment.year}
-                    className={
-                      index === momentIndex
-                        ? "is-active"
-                        : index < momentIndex
-                          ? "is-past"
-                          : ""
-                    }
-                    onClick={() => chooseMoment(index)}
+                    onClick={() => chooseStoryStep(storyStep - 1)}
+                    disabled={storyStep === 0}
                   >
-                    <i />
-                    <span>{moment.year}</span>
+                    Back
+                  </button>
+                  {storyStep === storySteps.length - 1 ? (
+                    <button type="button" onClick={exitStory}>
+                      Explore freely
+                    </button>
+                  ) : (
+                    <button type="button" onClick={() => chooseStoryStep(storyStep + 1)}>
+                      Next
+                    </button>
+                  )}
+                </footer>
+              </aside>
+            )}
+            <div className="bottom-hud__tools">
+              <nav className="tool-console" aria-label="Research tools">
+                {(
+                  [
+                    ["scan", ScanLine, "Scan"],
+                    ["mark", Map, "Mark"],
+                    ["note", MessageCircle, "Note"],
+                    ["restore", Sprout, "Restore"],
+                    ["library", BookOpen, "Library"],
+                    ["story", Route, "Story"],
+                  ] as const
+                ).map(([id, Icon, label]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    className={tool === id ? "is-active" : ""}
+                    onClick={() => applyTool(id)}
+                  >
+                    <Icon />
+                    <span>{label}</span>
                   </button>
                 ))}
+                <button type="button" className="guide-toggle" onClick={guide.toggle}>
+                  <AudioLines />
+                  <span>{guide.status === "off" ? "Guide" : "Listening"}</span>
+                </button>
               </nav>
-              <div className="timeline-metrics">
-                <span>
-                  SST <b>+{activeMoment.temp}C</b>
-                </span>
-                <span>
-                  DHW <b>{activeMoment.dhw}</b>
-                </span>
-                <span>
-                  pH <b>{activeMoment.ph}</b>
-                </span>
-              </div>
-            </footer>
-          ) : (
-            <button
-              type="button"
-              className="timeline-reopen"
-              onClick={() => setShowTimeline(true)}
-            >
-              <Clock3 /> TIME
-            </button>
-          )}
+            </div>
+            <div className="bottom-hud__stress">
+              <button
+                type="button"
+                className="stress-trigger"
+                onClick={() => setShowStress(!showStress)}
+              >
+                <ThermometerSun /> STRESS TEST
+              </button>
+              {showStress && (
+                <aside className="stress-menu">
+                  <header>
+                    <span>CHANGE ONE VARIABLE</span>
+                    <button type="button" onClick={() => setShowStress(false)}>
+                      <X />
+                    </button>
+                  </header>
+                  {(Object.keys(stressCopy) as Stressor[]).map((item) => (
+                    <button key={item} type="button" onClick={() => applyStress(item)}>
+                      <strong>{stressCopy[item].label}</strong>
+                      <small>{stressCopy[item].effect}</small>
+                    </button>
+                  ))}
+                  <p>Interactive forecast · not a prediction</p>
+                </aside>
+              )}
+            </div>
+
+            {showTimeline ? (
+              <footer className="time-current" data-phase={activeMoment.phase} style={timelineStyle}>
+                <button
+                  type="button"
+                  className="timeline-play"
+                  aria-label={isTimelinePlaying ? "Pause reef timeline" : "Play reef timeline"}
+                  aria-pressed={isTimelinePlaying}
+                  onClick={toggleTimelinePlayback}
+                >
+                  {isTimelinePlaying ? <Pause /> : <Play />}
+                  <span>{isTimelinePlaying ? "PAUSE" : "PLAY"}</span>
+                </button>
+                <nav aria-label="Reef history">
+                  {moments.map((moment, index) => (
+                    <button
+                      type="button"
+                      key={moment.year}
+                      className={
+                        index === momentIndex
+                          ? "is-active"
+                          : index < momentIndex
+                            ? "is-past"
+                            : ""
+                      }
+                      aria-current={index === momentIndex ? "step" : undefined}
+                      aria-label={`${moment.year}: ${moment.title}`}
+                      onClick={() => chooseMoment(index)}
+                    >
+                      <i aria-hidden="true" />
+                      <span>
+                        <b>{moment.year}</b>
+                        <small>{moment.title}</small>
+                      </span>
+                    </button>
+                  ))}
+                </nav>
+                <div className="timeline-metrics">
+                  <span>
+                    SST <b>+{activeMoment.temp}C</b>
+                  </span>
+                  <span>
+                    DHW <b>{activeMoment.dhw}</b>
+                  </span>
+                  <span>
+                    pH <b>{activeMoment.ph}</b>
+                  </span>
+                </div>
+              </footer>
+            ) : (
+              <button
+                type="button"
+                className="timeline-reopen"
+                onClick={() => setShowTimeline(true)}
+              >
+                <Clock3 /> TIME
+              </button>
+            )}
+          </div>
         </>
       )}
     </main>

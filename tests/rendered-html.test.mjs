@@ -360,16 +360,21 @@ test("keeps the main intro modal near half the page width", async () => {
   assert.match(css, /@media \(max-width: 1100px\)[\s\S]*?\.entry-actions\s*{[\s\S]*?grid-template-columns: 1fr/);
 });
 
-test("keeps the intro modal visually half its previous size", async () => {
+test("keeps the entry and briefing modals visually half their previous size", async () => {
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
-  assert.match(css, /v52 - truly half-size intro modal/);
+  assert.match(css, /v52 - truly half-size entry and briefing modals/);
   assert.match(css, /\.expedition-entry\s*{[\s\S]*?width: min\(480px, 46vw\) !important/);
   assert.match(css, /\.expedition-entry\s*{[\s\S]*?max-height: min\(560px, calc\(100vh - 72px\)\) !important/);
   assert.match(css, /\.expedition-entry\s*{[\s\S]*?padding: clamp\(20px, 2\.1vw, 28px\) !important/);
   assert.match(css, /\.expedition-entry h1\s*{[\s\S]*?font-size: clamp\(25px, 2\.35vw, 38px\) !important/);
   assert.match(css, /\.expedition-entry p\s*{[\s\S]*?font-size: clamp\(11px, 0\.88vw, 14px\) !important/);
   assert.match(css, /\.begin-button,[\s\S]*?\.expedition-entry form\s*{[\s\S]*?min-height: clamp\(38px, 3\.2vw, 46px\) !important/);
+  assert.match(css, /\.mission-briefing\s*{[\s\S]*?width: min\(480px, 46vw\) !important/);
+  assert.match(css, /\.mission-briefing\s*{[\s\S]*?max-height: min\(560px, calc\(100vh - 72px\)\) !important/);
+  assert.match(css, /\.mission-briefing h2\s*{[\s\S]*?font-size: 30px !important/);
+  assert.match(css, /\.briefing-points strong\s*{[\s\S]*?min-height: 84px !important/);
+  assert.match(css, /\.mission-briefing footer\s*{[\s\S]*?grid-template-columns: 90px 1fr 90px !important/);
 });
 
 test("keeps the intro headline as two full-width lines", async () => {
@@ -544,9 +549,9 @@ test("uses DHW-informed timeline and species-specific bleaching response", async
   const data = await readFile(new URL("../app/reef-data.ts", import.meta.url), "utf8");
   const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
 
-  assert.match(data, /title: "Recovery watch"/);
+  assert.match(data, /title: "Recovery monitored"/);
   assert.match(data, /phase: "heat"/);
-  assert.match(data, /title: "Low-stress scenario"/);
+  assert.match(data, /title: "Lower-stress future"/);
   assert.match(data, /DHW near 4 can trigger bleaching/);
   assert.match(scene, /pressure: 0\.68/);
   assert.match(scene, /visiblePhase\.pressure \* profile\.sensitivity/);
@@ -557,7 +562,7 @@ test("uses DHW-informed timeline and species-specific bleaching response", async
   assert.match(scene, /transitionLag: 0\.62 \+ random\(\) \* 0\.72/);
 });
 
-test("keeps the live mission masthead compact and aligned", async () => {
+test("keeps the live mission masthead compact and centered", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
@@ -569,10 +574,12 @@ test("keeps the live mission masthead compact and aligned", async () => {
   assert.match(page, /<span>EXPEDITION 01<\/span>/);
   assert.doesNotMatch(page, /SCAN · SELECT ANY COLONY TO OPEN ITS EVIDENCE CARD/);
   assert.match(css, /v28 - compact aligned mission masthead/);
-  assert.match(css, /v51 - editorial live masthead lockup/);
+  assert.match(css, /v51 - centered compact mission lockup/);
   assert.match(css, /v54 - remove duplicate story masthead and timeline clutter/);
-  assert.match(css, /\.sub-title\s*{[\s\S]*?grid-template-columns: auto minmax\(170px, 1fr\)/);
-  assert.match(css, /\.sub-title__brand strong\s*{[\s\S]*?font-weight: 320/);
+  assert.match(css, /\.sub-title\s*{[\s\S]*?width: min\(240px, 12\.5vw\)/);
+  assert.match(css, /\.sub-title\s*{[\s\S]*?max-width: 12\.5vw/);
+  assert.match(css, /\.sub-title\s*{[\s\S]*?grid-template-columns: 1fr/);
+  assert.match(css, /\.sub-title__brand strong\s*{[\s\S]*?font-size: clamp\(11px, 0\.9vw, 15px\)/);
 });
 
 test("keeps the objective card small and the center masthead refined", async () => {
@@ -624,17 +631,26 @@ test("keeps the living city selector compact and less white", async () => {
 });
 
 test("keeps the living-city drawer readable without clipped edges", async () => {
+  const data = await readFile(new URL("../app/reef-data.ts", import.meta.url), "utf8");
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
   assert.match(css, /v53 - cleaner living-city drawer copy and spacing/);
+  assert.match(page, /<small>REEF MAP<\/small>/);
+  assert.match(page, /CHOOSE A CURATED REEF WORLD/);
+  assert.match(page, /item\.menuSummary/);
+  assert.match(page, /Worlds are distinct learning environments/);
+  assert.doesNotMatch(page, /<em>\{item\.researchBasis\}<\/em>/);
+  assert.match(data, /Australia · Open shelf · plate corals · clear water · 22 m/);
+  assert.match(data, /Singapore · Turbid urban reef · boulders · soft light · 14 m/);
+  assert.match(data, /Indonesia · Volcanic slope · bubble vents · dense shoals · 18 m/);
+  assert.match(data, /Belize · Spur-and-groove · sea fans · sand channels · 16 m/);
   assert.match(css, /\.world-drawer\s*{[\s\S]*?top: clamp\(82px, 10vh, 104px\) !important/);
-  assert.match(css, /\.world-drawer\s*{[\s\S]*?width: min\(520px, calc\(100vw - 72px\)\) !important/);
+  assert.match(css, /\.world-drawer\s*{[\s\S]*?width: min\(460px, calc\(100vw - 72px\)\) !important/);
   assert.match(css, /\.world-drawer\s*{[\s\S]*?max-height: min\(560px, calc\(100vh - 132px\)\) !important/);
-  assert.match(css, /\.world-drawer\s*{[\s\S]*?padding: 12px 12px 18px !important/);
-  assert.match(css, /\.world-drawer > button\s*{[\s\S]*?font-size: clamp\(18px, 1\.22vw, 21px\) !important/);
-  assert.match(css, /\.world-drawer > button small\s*{[\s\S]*?font-size: clamp\(9px, 0\.62vw, 11px\) !important/);
-  assert.match(css, /\.world-drawer > button em\s*{[\s\S]*?max-width: none !important/);
-  assert.match(css, /\.world-drawer > button em\s*{[\s\S]*?font-size: clamp\(8\.5px, 0\.56vw, 10px\) !important/);
+  assert.match(css, /\.world-drawer > button\s*{[\s\S]*?background:[\s\S]*?radial-gradient/);
+  assert.match(css, /\.world-drawer > button small\s*{[\s\S]*?line-height: 1\.3 !important/);
+  assert.match(css, /\.world-drawer__note\s*{[\s\S]*?font-size: 10px !important/);
 });
 
 test("turns every scanned coral into a clickable evolving library entry", async () => {
@@ -740,10 +756,10 @@ test("keeps onboarding drifting through the reef with a calmer centered masthead
   assert.match(css, /--reef-glass-bg:/);
   assert.match(css, /v54 - remove duplicate story masthead and timeline clutter/);
   assert.match(css, /\.world-button,[\s\S]*?\.note-form button\s*{[\s\S]*?background: var\(--reef-glass-bg\)/);
-  assert.match(css, /\.mission-briefing\s*{[\s\S]*?rgb\(4 24 31 \/ 0\.42\)/);
+  assert.match(css, /\.mission-briefing\s*{[\s\S]*?background: var\(--reef-glass-bg\)/);
 });
 
-test("uses a left-brand live masthead without tool instruction copy", async () => {
+test("uses a centered live masthead without tool instruction copy", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
@@ -753,30 +769,165 @@ test("uses a left-brand live masthead without tool instruction copy", async () =
   assert.match(page, /<span>EXPEDITION 01<\/span>/);
   assert.doesNotMatch(page, /SCAN · SELECT ANY COLONY/);
   assert.doesNotMatch(page, /toolDirections/);
-  assert.match(css, /v51 - editorial live masthead lockup/);
-  assert.match(css, /\.sub-title\s*{[\s\S]*?grid-template-columns: auto minmax\(170px, 1fr\)/);
-  assert.match(css, /\.sub-title__brand strong\s*{[\s\S]*?font-size: clamp\(34px, 4\.4vw, 70px\)/);
-  assert.match(css, /\.sub-title__stack\s*{[\s\S]*?border-left: 1px solid rgb\(255 255 255 \/ 0\.2\)/);
+  assert.match(css, /v51 - centered compact mission lockup/);
+  assert.match(css, /\.sub-title\s*{[\s\S]*?top: clamp\(14px, 2vh, 22px\)/);
+  assert.match(css, /\.sub-title__brand strong\s*{[\s\S]*?font-size: clamp\(11px, 0\.9vw, 15px\)/);
+  assert.match(css, /\.sub-title__stack\s*{[\s\S]*?border-top: 1px solid rgb\(255 255 255 \/ 0\.2\)/);
 });
 
-test("keeps the bottom research dock near half width", async () => {
+test("centers the compact research dock above the full-width timeline", async () => {
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
-  assert.match(css, /v45 - half-width research tool dock/);
-  assert.match(css, /\.tool-console\s*{[\s\S]*?width: min\(50vw, 760px\)/);
-  assert.match(css, /\.tool-console\s*{[\s\S]*?min-width: 560px/);
+  assert.match(css, /v45 - seven-action research tool dock/);
   assert.match(css, /\.tool-console button\s*{[\s\S]*?height: 39px/);
   assert.match(css, /\.tool-console svg\s*{[\s\S]*?width: 16px/);
-  assert.match(css, /@media \(max-width: 1180px\)[\s\S]*?\.tool-console\s*{[\s\S]*?width: min\(620px, calc\(100vw - 36px\)\)/);
-  assert.match(css, /v50 - aligned compact lower HUD edges/);
-  assert.match(css, /--bottom-hud-width: min\(35vw, 532px\)/);
-  assert.match(css, /--bottom-hud-right: calc\(100vw - \(var\(--bottom-hud-left\) \+ max\(var\(--bottom-hud-width\), var\(--bottom-hud-min\)\)\)/);
-  assert.match(css, /\.tool-console\s*{[\s\S]*?left: var\(--bottom-hud-left\)/);
-  assert.match(css, /\.tool-console\s*{[\s\S]*?width: var\(--bottom-hud-width\)/);
+  assert.match(css, /v50 - aligned compact lower HUD/);
+  assert.match(css, /--bottom-hud-edge: clamp\(16px, 2\.4vw, 34px\)/);
+  assert.match(css, /--bottom-dock-width: min\(52vw, 820px\)/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?left: 50%[\s\S]*?right: auto/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?width: var\(--bottom-dock-width\)[\s\S]*?translate: -50% 0/);
   assert.match(css, /\.tool-console button\s*{[\s\S]*?height: 36px/);
-  assert.match(css, /\.stress-trigger\s*{[\s\S]*?right: max\(18px, var\(--bottom-hud-right\)\)/);
-  assert.match(css, /\.stress-trigger\s*{[\s\S]*?bottom: var\(--bottom-hud-bottom\)/);
-  assert.match(css, /\.time-current\s*{[\s\S]*?right: max\(18px, var\(--bottom-hud-right\)\)/);
+  assert.match(css, /\.stress-trigger\s*{[\s\S]*?right: calc\(\(100vw - var\(--bottom-dock-width\)\) \/ 2\)/);
+  assert.match(css, /\.time-current\s*{[\s\S]*?left: var\(--bottom-hud-edge\)[\s\S]*?right: var\(--bottom-hud-edge\)/);
+  assert.match(css, /\.mission-bar\s*{[\s\S]*?left: 50% !important[\s\S]*?transform: translateX\(-50%\) !important/);
+  assert.doesNotMatch(css, /repeating-linear-gradient\(116deg/);
+  assert.match(css, /--reef-glass-blur: blur\(30px\) saturate\(1\.2\) brightness\(1\.06\)/);
+});
+
+test("uses a playable labeled reef timeline in the frosted glass HUD", async () => {
+  const [page, css] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(page, /const \[isTimelinePlaying, setIsTimelinePlaying\] = useState\(false\)/);
+  assert.match(page, /const toggleTimelinePlayback = \(\) =>/);
+  assert.match(page, /className="timeline-play"/);
+  assert.match(page, /isTimelinePlaying \? <Pause \/> : <Play \/>/);
+  assert.match(page, /<b>{moment\.year}<\/b>[\s\S]*?<small>{moment\.title}<\/small>/);
+  assert.match(css, /v59 - playable labeled timeline in frosted glass/);
+  assert.match(css, /\.time-current\s*{[\s\S]*?background: var\(--reef-glass-bg\) !important/);
+  assert.match(css, /\.time-current nav\s*{[\s\S]*?grid-template-columns: repeat\(5, minmax\(0, 1fr\)\)/);
+});
+
+test("aligns the top controls to the HUD edges and centers the masthead on the viewport", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v61 - final viewport edges[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.mission-bar\s*{[\s\S]*?left: var\(--bottom-hud-edge\) !important/);
+  assert.match(latest, /right: var\(--bottom-hud-edge\) !important/);
+  assert.match(latest, /width: auto !important/);
+  assert.match(latest, /\.sub-title\s*{[\s\S]*?left: 50% !important/);
+  assert.match(latest, /translate: 0 !important/);
+  assert.match(latest, /transform: translateX\(-50%\) !important/);
+});
+
+test("places the stress action at the extreme right of the compact dock row", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v61 - final viewport edges[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.stress-trigger\s*{[\s\S]*?right: var\(--bottom-hud-edge\) !important/);
+  assert.match(latest, /bottom: var\(--bottom-hud-bottom\) !important/);
+  assert.match(latest, /@media \(max-width: 900px\)[\s\S]*?bottom: calc\(var\(--bottom-hud-bottom\) \+ 46px\) !important/);
+});
+
+test("keeps every reef-year caption readable on a collision-proof timeline", async () => {
+  const [page, data, css] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/reef-data.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  const latest = css.match(/v62 - collision-proof timeline navigation[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(page, /aria-label={`\$\{moment\.year\}: \$\{moment\.title\}`}/);
+  assert.match(data, /title: "First mass bleaching"/);
+  assert.match(data, /title: "Severe reef bleaching"/);
+  assert.match(data, /title: "Record heat stress"/);
+  assert.match(data, /title: "Recovery monitored"/);
+  assert.match(data, /title: "Lower-stress future"/);
+  assert.match(latest, /\.time-current\s*{[\s\S]*?display: flex !important/);
+  assert.match(latest, /\.time-current nav button\s*{[\s\S]*?flex: 1 1 0 !important/);
+  assert.match(latest, /\.time-current \.timeline-metrics\s*{[\s\S]*?display: none !important/);
+});
+
+test("stacks the research dock above the timeline without overlapping HUD chrome", async () => {
+  const [page, css] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  const latest = css.match(/v63 - stacked collision-free bottom HUD[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(page, /className=\{`bottom-hud/);
+  assert.match(page, /className="bottom-hud__tools"/);
+  assert.match(latest, /\.bottom-hud\s*{[\s\S]*?flex-direction: column/);
+  assert.match(latest, /\.bottom-hud__tools\s*{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) auto minmax\(0, 1fr\)/);
+  assert.match(latest, /\.bottom-hud \.tool-console,[\s\S]*?\.bottom-hud \.time-current,[\s\S]*?position: relative !important/);
+  assert.match(latest, /\.bottom-hud \.time-current nav button\s*{[\s\S]*?grid-template-rows: 28px minmax\(0, 1fr\)/);
+});
+
+test("gives the story card the same frosted glass treatment as the rest of the HUD", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v64 - story panel uses the shared frosted glass system[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.story-panel\s*{[\s\S]*?background: var\(--reef-glass-bg\) !important/);
+  assert.match(latest, /\.story-panel\s*{[\s\S]*?backdrop-filter: var\(--reef-glass-blur\) !important/);
+  assert.match(latest, /\.story-panel\s*{[\s\S]*?border: 1px solid var\(--reef-glass-border\) !important/);
+  assert.match(latest, /\.story-panel footer button:last-child\s*{[\s\S]*?background: var\(--reef-glass-bg-active\) !important/);
+});
+
+test("formats timeline years beside each marker with a sentence-case caption", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v65 - timeline year \+ caption sit beside each marker[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.bottom-hud \.time-current nav button\s*{[\s\S]*?grid-template-columns: 12px minmax\(0, 1fr\)/);
+  assert.match(latest, /\.bottom-hud \.time-current nav button b\s*{[\s\S]*?text-transform: uppercase/);
+  assert.match(latest, /\.bottom-hud \.time-current nav button small\s*{[\s\S]*?font: 400 11px/);
+  assert.match(latest, /\.bottom-hud \.time-current nav button small\s*{[\s\S]*?text-transform: none/);
+});
+
+test("keeps the reef map dropdown narrow and flush with the trigger", async () => {
+  const [page, css] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  const latest = css.match(/v66 - reef map dropdown matches the trigger edge[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(page, /className="world-picker"/);
+  assert.match(latest, /\.world-picker\s*{[\s\S]*?width: min\(272px, calc\(100vw - 32px\)\)/);
+  assert.match(latest, /\.world-picker \.world-drawer\s*{[\s\S]*?left: 0 !important/);
+  assert.match(latest, /\.world-picker \.world-drawer\s*{[\s\S]*?width: 100% !important/);
+});
+
+test("docks a compact story card beside the tool bar with stress test below", async () => {
+  const [page, css] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  const latest = css.match(/v67 - compact story card docked with the bottom HUD[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(page, /className=\{`bottom-hud\$\{tool === "story" && !selected \? " is-story" : ""\}`\}/);
+  assert.match(latest, /\.bottom-hud\.is-story\s*{[\s\S]*?grid-template-columns: minmax\(220px, 268px\) minmax\(0, 1fr\)/);
+  assert.match(latest, /\.bottom-hud\.is-story \.story-panel h2\s*{[\s\S]*?font-size: 16px/);
+  assert.match(latest, /\.bottom-hud\.is-story \.stress-trigger\s*{[\s\S]*?width: 100% !important/);
+});
+
+test("hides leftover submarine HUD column guides in the dive view", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v70 - remove leftover submarine HUD column guides[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.submarine-frame::before,[\s\S]*?\.submarine-frame::after\s*{[\s\S]*?content: none !important/);
+  assert.match(latest, /\.submarine-frame::before,[\s\S]*?\.submarine-frame::after\s*{[\s\S]*?display: none !important/);
+});
+
+test("darkens the shared frosted glass fill toward teal ink", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v69 - darker teal frosted glass HUD[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /--reef-glass-bg:[\s\S]*?rgb\(6 28 36 \/ 0\.24\)/);
+  assert.match(latest, /--reef-glass-bg-active:[\s\S]*?rgb\(8 36 46 \/ 0\.28\)/);
+  assert.match(latest, /linear-gradient\(145deg, rgb\(18 52 62 \/ 0\.36\)/);
+  assert.doesNotMatch(latest, /rgb\(242 255 253 \/ 0\.055\)/);
+  assert.doesNotMatch(latest, /--reef-glass-blur:/);
 });
 
 test("keeps specimen signals compact and aligned with calmer panels", async () => {
@@ -816,4 +967,217 @@ test("keeps the specimen header sticky above compact metric boxes", async () => 
   assert.match(css, /\.specimen-monitor__header button\s*{[\s\S]*?width: 30px !important/);
   assert.match(css, /\.specimen-monitor dl\s*{[\s\S]*?grid-template-columns: repeat\(3, minmax\(0, 1fr\)\) !important/);
   assert.match(css, /\.specimen-monitor dl div\s*{[\s\S]*?align-content: space-between !important/);
+});
+
+test("does not render a floating Diver R1 world tag in the dive view", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
+  assert.doesNotMatch(page, /diver-cursors/);
+  assert.doesNotMatch(page, /MousePointer2/);
+  assert.doesNotMatch(page, /Diver R1/);
+  assert.doesNotMatch(scene, /Diver R1/);
+  assert.doesNotMatch(scene, /diver-cursors/);
+  assert.match(scene, /reef-scene__marker-label/);
+});
+
+test("blends the species health header and grows the card for the signals graph", async () => {
+  const [monitor, css] = await Promise.all([
+    readFile(new URL("../app/components/SpecimenMonitor.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  const latest = css.match(/v68 - blend species health header and grow the card for the signals graph[\s\S]*?(?=\/\* v\d|$)/)?.[0] ?? "";
+
+  assert.match(monitor, /className="specimen-monitor is-signals"/);
+  assert.doesNotMatch(monitor, /signal-button/);
+  assert.doesNotMatch(monitor, /Hide signals/);
+  assert.doesNotMatch(monitor, /Open signals/);
+  assert.match(latest, /\.specimen-monitor__header\s*{[\s\S]*?background: transparent !important/);
+  assert.match(latest, /\.specimen-monitor__header\s*{[\s\S]*?box-shadow: none !important/);
+  assert.match(latest, /\.specimen-monitor__header\s*{[\s\S]*?backdrop-filter: none !important/);
+  assert.match(latest, /\.specimen-monitor\.is-signals\s*{[\s\S]*?max-height: none !important/);
+  assert.match(latest, /\.specimen-monitor\.is-signals\s*{[\s\S]*?overflow: visible !important/);
+  assert.match(latest, /\.specimen-monitor\.is-signals \.signal-chart\s*{[\s\S]*?grid-template-rows: 118px auto !important/);
+  assert.match(latest, /\.specimen-monitor\.is-signals \.signal-chart\s*{[\s\S]*?min-height: 168px !important/);
+  assert.match(latest, /\.specimen-monitor\.is-signals \.signal-chart\s*{[\s\S]*?overflow: visible !important/);
+  assert.match(latest, /\.specimen-monitor\.is-signals \.signal-chart > div,[\s\S]*?\.recharts-responsive-container\s*{[\s\S]*?height: 118px !important/);
+});
+
+test("places a half-width tool bar with stress at the right and story above the full-width timeline", async () => {
+  const [page, css] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  const latest = css.match(/v71 - full-width timeline, half-width tools, story left, stress right[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(page, /className="bottom-hud__tools"/);
+  assert.match(page, /className="bottom-hud__stress"/);
+  assert.doesNotMatch(page, /bottom-hud__side/);
+  assert.doesNotMatch(page, /bottom-hud__main/);
+  assert.match(latest, /\.bottom-hud\s*{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) minmax\(0, 50vw\) auto/);
+  assert.match(latest, /\.bottom-hud \.story-panel,[\s\S]*?\.bottom-hud\.is-story \.story-panel\s*{[\s\S]*?grid-column: 1/);
+  assert.match(latest, /\.bottom-hud__tools\s*{[\s\S]*?grid-column: 2/);
+  assert.match(latest, /\.bottom-hud__stress\s*{[\s\S]*?grid-column: 3/);
+  assert.match(latest, /\.bottom-hud \.time-current,[\s\S]*?\.bottom-hud \.timeline-reopen\s*{[\s\S]*?grid-column: 1 \/ -1/);
+  assert.match(latest, /\.bottom-hud \.time-current,[\s\S]*?\.bottom-hud \.timeline-reopen\s*{[\s\S]*?width: 100% !important/);
+});
+
+test("lightens the shared frosted glass fill toward white", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v72 - lighter white-leaning frosted glass HUD[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /--reef-glass-bg:[\s\S]*?rgb\(255 255 255 \/ 0\.28\)/);
+  assert.match(latest, /--reef-glass-bg:[\s\S]*?rgb\(255 255 255 \/ 0\.16\)/);
+  assert.match(latest, /--reef-glass-bg-active:[\s\S]*?rgb\(255 255 255 \/ 0\.34\)/);
+  assert.match(latest, /--reef-glass-bg-active:[\s\S]*?rgb\(255 255 255 \/ 0\.18\)/);
+  assert.doesNotMatch(latest, /rgb\(6 28 36 \/ 0\.24\)/);
+  assert.doesNotMatch(latest, /--reef-glass-blur:/);
+});
+
+test("centers the tool dock icons with tighter gaps", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v73 - center tool icons with tighter gaps[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.bottom-hud \.tool-console,[\s\S]*?\.bottom-hud\.is-story \.tool-console\s*{[\s\S]*?display: flex !important/);
+  assert.match(latest, /\.bottom-hud \.tool-console,[\s\S]*?\.bottom-hud\.is-story \.tool-console\s*{[\s\S]*?justify-content: center/);
+  assert.match(latest, /\.bottom-hud \.tool-console,[\s\S]*?\.bottom-hud\.is-story \.tool-console\s*{[\s\S]*?gap: 2px !important/);
+  assert.match(latest, /\.bottom-hud \.tool-console button,[\s\S]*?\.bottom-hud\.is-story \.tool-console button\s*{[\s\S]*?flex: 0 0 auto !important/);
+  assert.match(latest, /\.bottom-hud \.tool-console button,[\s\S]*?\.bottom-hud\.is-story \.tool-console button\s*{[\s\S]*?min-width: 48px !important/);
+});
+
+test("tints the frosted glass slightly darker and bluer", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v74 - slightly darker blue frost on the glass HUD[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /--reef-glass-bg:[\s\S]*?rgb\(186 220 242 \/ 0\.14\)/);
+  assert.match(latest, /--reef-glass-bg:[\s\S]*?rgb\(168 202 226 \/ 0\.13\)/);
+  assert.match(latest, /--reef-glass-bg-active:[\s\S]*?rgb\(176 210 232 \/ 0\.15\)/);
+  assert.doesNotMatch(latest, /rgb\(255 255 255 \/ 0\.28\)/);
+  assert.doesNotMatch(latest, /--reef-glass-blur:/);
+});
+
+test("keeps story panel Back and Next buttons the same size", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v75 - equal-width story panel footer buttons[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.story-panel footer,[\s\S]*?\.bottom-hud\.is-story \.story-panel footer\s*{[\s\S]*?grid-template-columns: 1fr 1fr !important/);
+  assert.match(latest, /\.story-panel footer button,[\s\S]*?\.bottom-hud\.is-story \.story-panel footer button\s*{[\s\S]*?width: 100% !important/);
+});
+
+test("centers a shrink-wrapped tool dock on the page", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v76 - page-centered shrink-wrapped tool dock[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.bottom-hud__tools\s*{[\s\S]*?grid-column: 1 \/ -1/);
+  assert.match(latest, /\.bottom-hud__tools\s*{[\s\S]*?justify-content: center/);
+  assert.match(latest, /\.bottom-hud \.tool-console,[\s\S]*?\.bottom-hud\.is-story \.tool-console\s*{[\s\S]*?width: max-content !important/);
+  assert.match(latest, /\.bottom-hud \.tool-console,[\s\S]*?\.bottom-hud\.is-story \.tool-console\s*{[\s\S]*?gap: 8px !important/);
+});
+
+test("connects the timeline rail to the first marker with thin Google Sans years a bit higher", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v77 - timeline rail meets the first marker, thin Google Sans, years sit a bit higher[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.bottom-hud \.time-current nav::before,[\s\S]*?\.bottom-hud \.time-current nav::after\s*{[\s\S]*?left: 13px !important/);
+  assert.match(latest, /\.bottom-hud \.time-current nav::before\s*{[\s\S]*?right: calc\(20% - 13px\) !important/);
+  assert.match(latest, /\.bottom-hud \.time-current nav button b\s*{[\s\S]*?Google Sans Thin/);
+  assert.match(latest, /\.bottom-hud \.time-current nav button b\s*{[\s\S]*?font-weight: 200 !important/);
+  assert.match(latest, /\.bottom-hud \.time-current nav button b\s*{[\s\S]*?transform: translateY\(-3px\)/);
+});
+
+test("always shows a compact species signals graph without a toggle", async () => {
+  const [monitor, css] = await Promise.all([
+    readFile(new URL("../app/components/SpecimenMonitor.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  const latest = css.match(/v78 - always-visible compact species signals graph[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(monitor, /className="specimen-monitor is-signals"/);
+  assert.match(monitor, /height=\{72\}/);
+  assert.doesNotMatch(monitor, /onToggleSignals/);
+  assert.doesNotMatch(monitor, /signal-button/);
+  assert.match(latest, /\.specimen-monitor \.signal-button\s*{[\s\S]*?display: none !important/);
+  assert.match(latest, /\.specimen-monitor \.signal-chart\s*{[\s\S]*?grid-template-rows: 72px auto !important/);
+  assert.match(latest, /\.recharts-responsive-container\s*{[\s\S]*?height: 72px !important/);
+});
+
+test("darkens the frosted glass fill a bit further", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v79 - slightly darker frosted glass HUD[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /--reef-glass-bg:[\s\S]*?rgb\(72 118 150 \/ 0\.32\)/);
+  assert.match(latest, /--reef-glass-bg:[\s\S]*?rgb\(22 48 72 \/ 0\.22\)/);
+  assert.match(latest, /--reef-glass-bg-active:[\s\S]*?rgb\(28 58 84 \/ 0\.24\)/);
+  assert.doesNotMatch(latest, /rgb\(168 202 226 \/ 0\.13\)/);
+  assert.doesNotMatch(latest, /--reef-glass-blur:/);
+});
+
+test("unifies glass corner radius and tints HUD icons teal", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v80 - one glass radius everywhere, teal HUD icons[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /--reef-glass-radius: 18px/);
+  assert.match(latest, /--reef-icon: #5de9cd/);
+  assert.match(latest, /border-radius: var\(--reef-glass-radius\) !important/);
+  assert.match(latest, /\.tool-console svg,[\s\S]*?color: var\(--reef-icon\) !important/);
+  assert.match(latest, /\.guide-toggle,[\s\S]*?color: var\(--reef-icon\) !important/);
+  assert.match(latest, /\.expedition-v5\[data-phase="heat"\],[\s\S]*?--hud: #ffffff/);
+});
+
+test("uses a lighter flat glass fill with white HUD labels", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v81 - lighter flat glass, white HUD labels, edge sheen only[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /--reef-glass-bg: rgb\(92 138 162 \/ 0\.4\)/);
+  assert.match(latest, /--reef-glass-bg-active: rgb\(110 160 184 \/ 0\.48\)/);
+  assert.doesNotMatch(latest, /linear-gradient/);
+  assert.doesNotMatch(latest, /radial-gradient/);
+  assert.match(latest, /inset 0 1px 0 rgb\(255 255 255 \/ 0\.5\)/);
+  assert.match(latest, /\.tool-console button span,[\s\S]*?color: #ffffff !important/);
+  assert.match(latest, /\.stress-trigger,[\s\S]*?\.time-current \.timeline-play[\s\S]*?color: #ffffff !important/);
+  assert.match(latest, /\.tool-console svg,[\s\S]*?color: var\(--reef-icon\) !important/);
+});
+
+test("keeps tool dock icons free of inner capsule chrome", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v82 - tool dock icons sit on the bar without inner capsules[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.tool-console button,[\s\S]*?background: transparent !important/);
+  assert.match(latest, /\.tool-console button\.is-active,[\s\S]*?border-radius: 0 !important/);
+  assert.match(latest, /box-shadow: none !important/);
+  assert.match(latest, /backdrop-filter: none !important/);
+  assert.match(latest, /\.tool-console button::before,[\s\S]*?display: none !important/);
+});
+
+test("thins the white HUD outline and makes glass a bit more transparent", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v83 - thinner white HUD outline, glass 10% more transparent[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /--reef-glass-bg: rgb\(92 138 162 \/ 0\.3\)/);
+  assert.match(latest, /--reef-glass-bg-active: rgb\(110 160 184 \/ 0\.38\)/);
+  assert.match(latest, /--reef-glass-border: rgb\(255 255 255 \/ 0\.42\)/);
+  assert.match(latest, /border-width: 0\.5px !important/);
+  assert.doesNotMatch(latest, /linear-gradient/);
+  assert.doesNotMatch(latest, /radial-gradient/);
+  assert.doesNotMatch(latest, /--reef-glass-blur:/);
+});
+
+test("keeps timeline years fully visible at the top", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v84 - keep timeline years fully visible at the top[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.bottom-hud \.time-current nav button b\s*{[\s\S]*?transform: none/);
+  assert.match(latest, /\.bottom-hud \.time-current nav button b\s*{[\s\S]*?overflow: visible !important/);
+  assert.match(latest, /\.bottom-hud \.time-current nav button b\s*{[\s\S]*?line-height: 1\.3 !important/);
+  assert.match(latest, /\.bottom-hud \.time-current nav button,[\s\S]*?overflow: visible !important/);
+});
+
+test("lifts timeline years with room above them", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v85 - lift timeline years with room above them[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.bottom-hud \.time-current\s*{[\s\S]*?height: 72px !important/);
+  assert.match(latest, /\.bottom-hud \.time-current\s*{[\s\S]*?padding-top: 14px !important/);
+  assert.match(latest, /\.bottom-hud \.time-current nav button b\s*{[\s\S]*?transform: translateY\(-6px\)/);
+  assert.match(latest, /\.bottom-hud \.time-current nav button b\s*{[\s\S]*?overflow: visible !important/);
 });

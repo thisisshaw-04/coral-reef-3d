@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { Activity, CheckCircle2, FlaskConical, MapPinned, MessageCircle, Sprout, X } from "lucide-react";
+import { CheckCircle2, FlaskConical, MapPinned, MessageCircle, Sprout, X } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { Colony, ReefMoment, Stressor, Tool } from "../reef-data";
 import { stressCopy } from "../reef-data";
@@ -23,7 +23,6 @@ type SpecimenMonitorProps = {
   roomNote?: string;
   restored: string[];
   selected: Colony;
-  showSignals: boolean;
   stressor: Stressor | null;
   tool: Tool;
   onClose: () => void;
@@ -31,7 +30,6 @@ type SpecimenMonitorProps = {
   onNoteChange: (note: string) => void;
   onRestore: () => void;
   onSaveNote: () => void;
-  onToggleSignals: () => void;
 };
 
 export function SpecimenMonitor({
@@ -42,7 +40,6 @@ export function SpecimenMonitor({
   roomNote,
   restored,
   selected,
-  showSignals,
   stressor,
   tool,
   onClose,
@@ -50,7 +47,6 @@ export function SpecimenMonitor({
   onNoteChange,
   onRestore,
   onSaveNote,
-  onToggleSignals,
 }: SpecimenMonitorProps) {
   const isRestored = restored.includes(selected.id) || record?.restored;
   const savedNote = record?.note || roomNote || "";
@@ -63,7 +59,7 @@ export function SpecimenMonitor({
   ] as const;
 
   return (
-    <aside className="specimen-monitor">
+    <aside className="specimen-monitor is-signals">
       <header className="specimen-monitor__header">
         <span>SPECIES HEALTH</span>
         <button type="button" onClick={onClose} aria-label="Close specimen">
@@ -109,46 +105,41 @@ export function SpecimenMonitor({
         <p>{selected.lesson.habitat}</p>
         <p>{selected.lesson.scientistCheck}</p>
       </section>
-      <button className="signal-button" type="button" onClick={onToggleSignals}>
-        <Activity /> {showSignals ? "Hide signals" : "Open signals"}
-      </button>
-      {showSignals && (
-        <div className="signal-chart">
-          <ResponsiveContainer width="100%" height={118}>
-            <AreaChart data={graph}>
-              <defs>
-                <linearGradient id="healthFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#5de9cd" stopOpacity={0.55} />
-                  <stop offset="100%" stopColor="#5de9cd" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis
-                dataKey="year"
-                tick={{ fill: "#83a5a2", fontSize: 9 }}
-                axisLine={false}
-              />
-              <YAxis hide domain={[0, 100]} />
-              <Tooltip
-                contentStyle={{
-                  background: "#031116",
-                  border: "1px solid #34635f",
-                  fontSize: 11,
-                }}
-              />
-              <Area
-                type="monotone"
-                dataKey="health"
-                stroke="#5de9cd"
-                fill="url(#healthFill)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-          <p>
-            <b>DHW = sum of weekly heat anomaly</b> above the bleaching
-            threshold. Around 4 C-weeks signals risk.
-          </p>
-        </div>
-      )}
+      <div className="signal-chart">
+        <ResponsiveContainer width="100%" height={72}>
+          <AreaChart data={graph}>
+            <defs>
+              <linearGradient id="healthFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#5de9cd" stopOpacity={0.55} />
+                <stop offset="100%" stopColor="#5de9cd" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <XAxis
+              dataKey="year"
+              tick={{ fill: "#83a5a2", fontSize: 9 }}
+              axisLine={false}
+            />
+            <YAxis hide domain={[0, 100]} />
+            <Tooltip
+              contentStyle={{
+                background: "#031116",
+                border: "1px solid #34635f",
+                fontSize: 11,
+              }}
+            />
+            <Area
+              type="monotone"
+              dataKey="health"
+              stroke="#5de9cd"
+              fill="url(#healthFill)"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+        <p>
+          <b>DHW = sum of weekly heat anomaly</b> above the bleaching
+          threshold. Around 4 C-weeks signals risk.
+        </p>
+      </div>
       {tool === "mark" && (
         <section className="tool-card" aria-label="Mark colony health">
           <span><MapPinned /> Mark health</span>

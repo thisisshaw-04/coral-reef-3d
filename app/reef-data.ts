@@ -51,6 +51,7 @@ export type ReefWorld = {
   name: string;
   region: string;
   reefType: string;
+  menuSummary: string;
   expedition: string;
   objectiveTitle: string;
   objectiveBody: string;
@@ -593,6 +594,7 @@ export const reefWorlds: ReefWorld[] = [
     name: "Great Barrier Reef",
     region: "Australia",
     reefType: "outer shelf reef",
+    menuSummary: "Australia · Open shelf · plate corals · clear water · 22 m",
     expedition: "Outer Shelf Transect",
     objectiveTitle: "Map heat-sensitive shelf colonies",
     objectiveBody:
@@ -611,6 +613,7 @@ export const reefWorlds: ReefWorld[] = [
     name: "Sisters' Islands",
     region: "Singapore",
     reefType: "turbid tropical reef",
+    menuSummary: "Singapore · Turbid urban reef · boulders · soft light · 14 m",
     expedition: "Southern Islands Nursery",
     objectiveTitle: "Read a lower-light urban reef",
     objectiveBody:
@@ -629,6 +632,7 @@ export const reefWorlds: ReefWorld[] = [
     name: "Coral Triangle",
     region: "Indonesia, Philippines, PNG and neighbors",
     reefType: "biodiversity center",
+    menuSummary: "Indonesia · Volcanic slope · bubble vents · dense shoals · 18 m",
     expedition: "Biodiversity Wall",
     objectiveTitle: "Scan the high-diversity engine",
     objectiveBody:
@@ -647,6 +651,7 @@ export const reefWorlds: ReefWorld[] = [
     name: "Caribbean Reef",
     region: "Bahamas, Florida, Puerto Rico and wider Caribbean",
     reefType: "spur-and-groove reef",
+    menuSummary: "Belize · Spur-and-groove · sea fans · sand channels · 16 m",
     expedition: "Acropora Recovery Run",
     objectiveTitle: "Track reef builders and foundations",
     objectiveBody:
@@ -670,7 +675,7 @@ export const getWorldById = (id: ReefBiomeId) =>
 export const moments: ReefMoment[] = [
   {
     year: "1998",
-    title: "First global event",
+    title: "First mass bleaching",
     phase: "heat",
     temp: 0.9,
     dhw: 4.1,
@@ -679,7 +684,7 @@ export const moments: ReefMoment[] = [
   },
   {
     year: "2016",
-    title: "Mass bleaching",
+    title: "Severe reef bleaching",
     phase: "bleaching",
     temp: 1.5,
     dhw: 8.2,
@@ -688,7 +693,7 @@ export const moments: ReefMoment[] = [
   },
   {
     year: "2024",
-    title: "Record ocean heat",
+    title: "Record heat stress",
     phase: "bleaching",
     temp: 1.8,
     dhw: 10.4,
@@ -697,7 +702,7 @@ export const moments: ReefMoment[] = [
   },
   {
     year: "2026",
-    title: "Recovery watch",
+    title: "Recovery monitored",
     phase: "heat",
     temp: 0.8,
     dhw: 3.8,
@@ -706,7 +711,7 @@ export const moments: ReefMoment[] = [
   },
   {
     year: "2035",
-    title: "Low-stress scenario",
+    title: "Lower-stress future",
     phase: "recovery",
     temp: 0.4,
     dhw: 1.1,

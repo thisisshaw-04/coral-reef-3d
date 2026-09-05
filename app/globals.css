@@ -8040,10 +8040,8 @@ a:focus-visible,
   }
 }
 
-/* v45 - half-width research tool dock */
+/* v45 - seven-action research tool dock */
 .tool-console {
-  width: min(50vw, 760px);
-  min-width: 560px;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 3px;
   padding: 4px;
@@ -8064,13 +8062,6 @@ a:focus-visible,
 .tool-console span {
   font-size: 8.5px;
   letter-spacing: 0.1em;
-}
-
-@media (max-width: 1180px) {
-  .tool-console {
-    width: min(620px, calc(100vw - 36px));
-    min-width: 0;
-  }
 }
 
 @media (max-width: 760px) {
@@ -8131,11 +8122,18 @@ a:focus-visible,
 
 /* v47 - quiet unified glass system and onboarding reef drift */
 .expedition-v5 {
-  --reef-glass-bg: linear-gradient(145deg, rgb(255 255 255 / 0.105), rgb(255 255 255 / 0.045) 52%, rgb(255 255 255 / 0.03)), rgb(5 27 35 / 0.46);
-  --reef-glass-bg-active: linear-gradient(145deg, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.058) 52%, rgb(255 255 255 / 0.035)), rgb(6 35 44 / 0.52);
-  --reef-glass-border: rgb(231 255 250 / 0.18);
-  --reef-glass-shadow: 0 18px 52px rgb(0 14 22 / 0.28), inset 0 1px 0 rgb(255 255 255 / 0.12);
-  --reef-glass-blur: blur(22px) saturate(1.06);
+  --reef-glass-bg:
+    radial-gradient(circle at 18% -18%, rgb(255 255 255 / 0.3), transparent 31%),
+    radial-gradient(circle at 84% 4%, rgb(255 255 255 / 0.14), transparent 34%),
+    linear-gradient(145deg, rgb(255 255 255 / 0.19), rgb(255 255 255 / 0.08) 54%, rgb(255 255 255 / 0.04)),
+    rgb(242 255 253 / 0.055);
+  --reef-glass-bg-active:
+    radial-gradient(circle at 24% 0%, rgb(255 255 255 / 0.38), transparent 36%),
+    linear-gradient(145deg, rgb(255 255 255 / 0.25), rgb(255 255 255 / 0.105) 58%, rgb(255 255 255 / 0.05)),
+    rgb(247 255 254 / 0.07);
+  --reef-glass-border: rgb(250 255 254 / 0.28);
+  --reef-glass-shadow: 0 18px 52px rgb(0 14 22 / 0.18), inset 0 1px 0 rgb(255 255 255 / 0.42);
+  --reef-glass-blur: blur(30px) saturate(1.2) brightness(1.06);
 }
 
 .mission-bar {
@@ -8256,7 +8254,7 @@ a:focus-visible,
 }
 
 .mission-briefing {
-  background: linear-gradient(145deg, rgb(255 255 255 / 0.115), rgb(255 255 255 / 0.045) 56%, rgb(255 255 255 / 0.032)), rgb(4 24 31 / 0.42);
+  background: var(--reef-glass-bg);
 }
 
 .mission-briefing h2,
@@ -8364,21 +8362,20 @@ a:focus-visible,
   }
 }
 
-/* v50 - aligned compact lower HUD edges */
+/* v50 - aligned compact lower HUD */
 .expedition-v5 {
-  --bottom-hud-width: min(35vw, 532px);
-  --bottom-hud-min: 420px;
-  --bottom-hud-left: clamp(248px, 25vw, 485px);
-  --bottom-hud-bottom: clamp(118px, 13.6vh, 148px);
-  --bottom-hud-right: calc(100vw - (var(--bottom-hud-left) + max(var(--bottom-hud-width), var(--bottom-hud-min))));
+  --bottom-hud-edge: clamp(16px, 2.4vw, 34px);
+  --bottom-dock-width: min(52vw, 820px);
+  --bottom-hud-bottom: 86px;
 }
 
 .tool-console {
-  left: var(--bottom-hud-left);
+  left: 50%;
   right: auto;
   bottom: var(--bottom-hud-bottom);
-  width: var(--bottom-hud-width);
-  min-width: var(--bottom-hud-min);
+  width: var(--bottom-dock-width);
+  min-width: 0;
+  translate: -50% 0;
   transform: none;
 }
 
@@ -8398,69 +8395,85 @@ a:focus-visible,
 }
 
 .stress-trigger {
-  right: max(18px, var(--bottom-hud-right));
-  bottom: var(--bottom-hud-bottom);
+  right: calc((100vw - var(--bottom-dock-width)) / 2);
+  bottom: calc(var(--bottom-hud-bottom) + 50px);
 }
 
 .time-current {
-  left: max(18px, calc(var(--bottom-hud-left) - 230px));
-  right: max(18px, var(--bottom-hud-right));
+  left: var(--bottom-hud-edge);
+  right: var(--bottom-hud-edge);
+  bottom: 14px;
   width: auto;
+  grid-template-columns: minmax(126px, 0.55fr) minmax(116px, 0.5fr) minmax(0, 3fr) minmax(176px, 0.8fr);
+  gap: clamp(8px, 1.2vw, 16px);
+  padding-inline: clamp(10px, 1.4vw, 18px);
+  overflow: hidden;
 }
 
 @media (max-width: 1180px) {
   .expedition-v5 {
-    --bottom-hud-width: min(54vw, 520px);
-    --bottom-hud-min: 0px;
-    --bottom-hud-left: clamp(18px, 4vw, 42px);
-    --bottom-hud-bottom: 94px;
+    --bottom-hud-edge: clamp(14px, 2vw, 24px);
+    --bottom-dock-width: min(62vw, 760px);
+    --bottom-hud-bottom: 84px;
   }
 
-  .tool-console {
-    width: var(--bottom-hud-width);
-    min-width: 0;
+  .time-current {
+    grid-template-columns: minmax(112px, 0.55fr) minmax(96px, 0.48fr) minmax(0, 2.8fr);
   }
+}
 
-  .stress-trigger {
-    bottom: var(--bottom-hud-bottom);
+/* v60 - viewport-centered masthead and shared HUD edges */
+.mission-bar {
+  left: var(--bottom-hud-edge) !important;
+  right: var(--bottom-hud-edge) !important;
+  width: auto !important;
+  transform: none !important;
+}
+
+.sub-title {
+  left: 50% !important;
+  right: auto !important;
+  translate: 0 !important;
+  transform: translateX(-50%) !important;
+}
+
+@media (max-width: 900px) {
+  .expedition-v5 {
+    --bottom-dock-width: calc(100vw - 28px);
   }
 }
 
 @media (max-width: 760px) {
   .expedition-v5 {
-    --bottom-hud-width: calc(100vw - 28px);
-    --bottom-hud-left: 14px;
+    --bottom-hud-edge: 14px;
     --bottom-hud-bottom: 86px;
-    --bottom-hud-right: 14px;
-  }
-
-  .tool-console {
-    width: var(--bottom-hud-width);
   }
 
   .stress-trigger {
-    right: 14px;
     bottom: calc(var(--bottom-hud-bottom) + 48px);
-  }
-
-  .time-current {
-    left: 14px;
-    right: 14px;
   }
 }
 
-/* v51 - editorial live masthead lockup */
+@media (max-width: 860px) {
+  .time-current {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* v51 - centered compact mission lockup */
 .sub-title {
-  top: clamp(56px, 6.3vh, 76px);
+  top: clamp(14px, 2vh, 22px);
   left: 50%;
-  width: min(760px, calc(100vw - 520px));
+  width: min(240px, 12.5vw);
+  max-width: 12.5vw;
   transform: translateX(-50%);
   display: grid;
-  grid-template-columns: auto minmax(170px, 1fr);
+  grid-template-columns: 1fr;
   align-items: center;
+  justify-items: center;
   justify-content: center;
-  gap: clamp(20px, 2.4vw, 34px);
-  text-align: left;
+  gap: 4px;
+  text-align: center;
 }
 
 .sub-title::before,
@@ -8471,29 +8484,32 @@ a:focus-visible,
 .sub-title__brand {
   display: inline-flex;
   align-items: center;
-  gap: clamp(10px, 1vw, 14px);
+  justify-content: center;
+  gap: 6px;
   color: rgb(255 255 255 / 0.96);
   white-space: nowrap;
 }
 
 .sub-title__brand svg {
-  width: clamp(22px, 2.2vw, 34px);
-  height: clamp(22px, 2.2vw, 34px);
-  stroke-width: 2.05;
+  width: 13px;
+  height: 13px;
+  stroke-width: 1.8;
 }
 
 .sub-title__brand strong {
-  font-size: clamp(34px, 4.4vw, 70px);
-  font-weight: 320;
-  line-height: 0.92;
-  letter-spacing: 0.18em;
+  font-size: clamp(11px, 0.9vw, 15px);
+  font-weight: 520;
+  line-height: 1;
+  letter-spacing: 0.16em;
 }
 
 .sub-title__stack {
   display: grid;
-  gap: 5px;
-  padding-left: clamp(18px, 2vw, 32px);
-  border-left: 1px solid rgb(255 255 255 / 0.2);
+  justify-items: center;
+  gap: 2px;
+  width: 100%;
+  padding-top: 4px;
+  border-top: 1px solid rgb(255 255 255 / 0.2);
   color: rgb(230 246 243 / 0.72);
 }
 
@@ -8505,81 +8521,40 @@ a:focus-visible,
 }
 
 .sub-title__stack span {
-  font-size: clamp(9px, 0.72vw, 12px);
+  font-size: 7px;
   font-weight: 650;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
 }
 
 .sub-title__stack b {
   color: rgb(255 255 255 / 0.86);
-  font-size: clamp(11px, 0.92vw, 15px);
+  font-size: 8px;
   font-weight: 520;
-  letter-spacing: 0.16em;
-  line-height: 1.2;
+  letter-spacing: 0.13em;
+  line-height: 1.15;
 }
 
 .sub-title__stack small {
   color: rgb(232 250 246 / 0.56);
-  font-size: clamp(8px, 0.64vw, 10px);
+  font-size: 7px;
   font-weight: 540;
-  letter-spacing: 0.12em;
-  line-height: 1.2;
-}
-
-@media (max-width: 1180px) {
-  .sub-title {
-    width: min(650px, calc(100vw - 340px));
-  }
-}
-
-@media (max-width: 760px) {
-  .sub-title {
-    top: 64px;
-    width: calc(100vw - 28px);
-    grid-template-columns: 1fr;
-    gap: 8px;
-    justify-items: center;
-    text-align: center;
-  }
-
-  .sub-title__brand strong {
-    font-size: clamp(24px, 8vw, 38px);
-  }
-
-  .sub-title__stack {
-    padding-left: 0;
-    border-left: 0;
-    justify-items: center;
-  }
+  letter-spacing: 0.1em;
+  line-height: 1.15;
 }
 
 @media (max-width: 900px) {
-  .mission-brand {
-    display: flex;
-  }
-
-  .mission-bar {
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  }
-
   .sub-title {
-    width: min(560px, calc(100vw - 28px));
+    top: 12px;
+    width: min(180px, 34vw);
+    max-width: 34vw;
+  }
+
+  .sub-title__brand strong {
+    font-size: 11px;
   }
 }
 
-@media (max-width: 620px) {
-  .mission-brand span {
-    font-size: 12px;
-    letter-spacing: 0.18em;
-  }
-
-  .mission-brand > svg {
-    width: 15px;
-    height: 15px;
-  }
-}
-
-/* v52 - truly half-size intro modal */
+/* v52 - truly half-size entry and briefing modals */
 .expedition-entry {
   width: min(480px, 46vw) !important;
   max-height: min(560px, calc(100vh - 72px)) !important;
@@ -8648,20 +8623,89 @@ a:focus-visible,
   letter-spacing: 0.18em !important;
 }
 
+.mission-briefing {
+  width: min(480px, 46vw) !important;
+  max-height: min(560px, calc(100vh - 72px)) !important;
+  padding: clamp(20px, 2.1vw, 28px) !important;
+  overflow-y: auto !important;
+}
+
+.mission-briefing > span {
+  font-size: clamp(7px, 0.52vw, 9px) !important;
+  letter-spacing: 0.2em !important;
+}
+
+.mission-briefing h2 {
+  margin: clamp(12px, 1.4vw, 18px) 0 8px !important;
+  font-size: 30px !important;
+  line-height: 1.06 !important;
+}
+
+.mission-briefing p {
+  font-size: clamp(11px, 0.88vw, 14px) !important;
+  line-height: 1.42 !important;
+}
+
+.briefing-points {
+  gap: 8px !important;
+  margin: clamp(14px, 1.5vw, 18px) 0 !important;
+}
+
+.briefing-points strong {
+  min-height: 84px !important;
+  gap: 6px !important;
+  padding: 10px 8px !important;
+  border-radius: 14px !important;
+  font-size: clamp(9px, 0.72vw, 11px) !important;
+  line-height: 1.28 !important;
+}
+
+.briefing-points i {
+  width: 36px !important;
+  height: 36px !important;
+  margin-bottom: 3px !important;
+}
+
+.mission-briefing footer {
+  grid-template-columns: 90px 1fr 90px !important;
+  gap: 8px !important;
+  padding-top: 0 !important;
+}
+
+.mission-briefing footer > button {
+  min-height: 38px !important;
+  height: 38px !important;
+  padding-inline: 10px !important;
+  border-radius: 18px !important;
+  font-size: 11px !important;
+}
+
+.mission-briefing nav {
+  gap: 8px !important;
+}
+
+.mission-briefing nav button {
+  width: 7px !important;
+  height: 7px !important;
+}
+
 @media (max-width: 980px) {
-  .expedition-entry {
+  .expedition-entry,
+  .mission-briefing {
     width: min(420px, calc(100vw - 32px)) !important;
   }
 }
 
 @media (max-width: 620px) {
-  .expedition-entry {
+  .expedition-entry,
+  .mission-briefing {
     width: min(360px, calc(100vw - 28px)) !important;
     padding: 18px !important;
   }
 
-  .expedition-entry h1 {
-    font-size: clamp(27px, 8vw, 34px) !important;
+  .expedition-entry h1,
+  .mission-briefing h2 {
+    font-size: 22px !important;
   }
 
   .entry-actions {
@@ -8672,25 +8716,31 @@ a:focus-visible,
 /* v53 - cleaner living-city drawer copy and spacing */
 .world-drawer {
   top: clamp(82px, 10vh, 104px) !important;
-  width: min(520px, calc(100vw - 72px)) !important;
+  width: min(460px, calc(100vw - 72px)) !important;
   max-height: min(560px, calc(100vh - 132px)) !important;
-  padding: 12px 12px 18px !important;
+  padding: 13px !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   border-radius: 18px !important;
 }
 
 .world-drawer > span {
-  margin: 2px 8px 10px !important;
+  margin: 3px 9px 11px !important;
   font-size: clamp(8px, 0.58vw, 9px) !important;
   letter-spacing: 0.18em !important;
 }
 
 .world-drawer > button {
-  gap: 4px !important;
-  padding: 11px 14px 12px !important;
+  gap: 7px !important;
+  padding: 14px 15px !important;
+  border: 1px solid rgb(245 255 253 / 0.13) !important;
   border-radius: 14px !important;
-  font-size: clamp(18px, 1.22vw, 21px) !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgb(255 255 255 / 0.15), transparent 36%),
+    linear-gradient(145deg, rgb(255 255 255 / 0.075), rgb(255 255 255 / 0.025)) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12) !important;
+  font-size: clamp(17px, 1.12vw, 20px) !important;
+  font-weight: 620 !important;
   line-height: 1.04 !important;
 }
 
@@ -8700,16 +8750,22 @@ a:focus-visible,
 
 .world-drawer > button small {
   max-width: none !important;
-  font-size: clamp(9px, 0.62vw, 11px) !important;
-  line-height: 1.16 !important;
+  color: rgb(240 255 252 / 0.62) !important;
+  font-size: clamp(9px, 0.64vw, 11px) !important;
+  line-height: 1.3 !important;
 }
 
-.world-drawer > button em {
-  display: block !important;
-  width: 100% !important;
-  max-width: none !important;
-  font-size: clamp(8.5px, 0.56vw, 10px) !important;
-  line-height: 1.18 !important;
+.world-drawer > button:hover,
+.world-drawer > button.is-active {
+  background: var(--reef-glass-bg-active) !important;
+  border-color: rgb(255 255 255 / 0.28) !important;
+}
+
+.world-drawer__note {
+  margin: 12px 10px 3px !important;
+  color: rgb(240 255 252 / 0.52) !important;
+  font-size: 10px !important;
+  line-height: 1.45 !important;
 }
 
 @media (max-width: 620px) {
@@ -8723,10 +8779,18 @@ a:focus-visible,
   .world-drawer > button {
     padding: 10px 12px !important;
   }
+
+  .world-drawer__note {
+    margin-inline: 6px !important;
+  }
 }
 
 /* v54 - remove duplicate story masthead and timeline clutter */
 .mission-bar {
+  left: 50% !important;
+  right: auto !important;
+  width: min(1180px, calc(100vw - 48px)) !important;
+  transform: translateX(-50%) !important;
   grid-template-columns: minmax(220px, 0.82fr) minmax(220px, 0.82fr) !important;
 }
 
@@ -8744,6 +8808,7 @@ a:focus-visible,
 
 @media (max-width: 900px) {
   .mission-bar {
+    width: calc(100vw - 24px) !important;
     grid-template-columns: minmax(0, 1fr) auto !important;
   }
 }
@@ -8757,14 +8822,12 @@ a:focus-visible,
 .tool-console,
 .time-current {
   border: 1px solid rgb(214 244 238 / 0.18) !important;
-  background:
-    linear-gradient(145deg, rgb(7 32 39 / 0.72), rgb(7 24 31 / 0.58) 58%, rgb(4 18 24 / 0.5)),
-    rgb(5 22 28 / 0.55) !important;
+  background: var(--reef-glass-bg) !important;
   box-shadow:
-    0 18px 48px rgb(0 8 13 / 0.28),
-    inset 0 1px 0 rgb(255 255 255 / 0.14) !important;
-  backdrop-filter: blur(22px) saturate(1.08) !important;
-  -webkit-backdrop-filter: blur(22px) saturate(1.08) !important;
+    0 18px 48px rgb(0 8 13 / 0.2),
+    inset 0 1px 0 rgb(255 255 255 / 0.34) !important;
+  backdrop-filter: var(--reef-glass-blur) !important;
+  -webkit-backdrop-filter: var(--reef-glass-blur) !important;
 }
 
 .specimen-monitor {
@@ -9104,5 +9167,1659 @@ a:focus-visible,
 @media (max-width: 620px) {
   .expedition-entry h1 {
     font-size: 22px !important;
+  }
+}
+
+/* v59 - playable labeled timeline in frosted glass */
+.time-current {
+  height: 78px !important;
+  display: grid !important;
+  grid-template-columns: 112px minmax(0, 1fr) auto !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  padding: 9px 12px !important;
+  border: 1px solid var(--reef-glass-border) !important;
+  border-radius: 18px !important;
+  background: var(--reef-glass-bg) !important;
+  box-shadow: var(--reef-glass-shadow) !important;
+  backdrop-filter: var(--reef-glass-blur) !important;
+  -webkit-backdrop-filter: var(--reef-glass-blur) !important;
+  overflow: hidden !important;
+}
+
+.time-current::before,
+.time-current::after {
+  display: none !important;
+}
+
+.time-current .timeline-play {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 0 12px !important;
+  border: 1px solid rgb(255 255 255 / 0.24) !important;
+  border-radius: 12px !important;
+  background: rgb(255 255 255 / 0.07) !important;
+  color: rgb(247 255 253 / 0.9) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16) !important;
+  font: 650 9px var(--reef-ui-font) !important;
+  letter-spacing: 0.12em !important;
+}
+
+.time-current .timeline-play:hover,
+.time-current .timeline-play[aria-pressed="true"] {
+  background: var(--reef-glass-bg-active) !important;
+  color: white !important;
+}
+
+.time-current .timeline-play svg {
+  width: 15px !important;
+  height: 15px !important;
+}
+
+.time-current nav {
+  position: relative !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  padding: 0 !important;
+}
+
+.time-current nav::before {
+  content: "" !important;
+  position: absolute !important;
+  z-index: 0 !important;
+  left: 3% !important;
+  right: 3% !important;
+  top: 26px !important;
+  height: 1px !important;
+  display: block !important;
+  background: rgb(224 255 249 / 0.22) !important;
+}
+
+.time-current nav::after {
+  content: "" !important;
+  position: absolute !important;
+  z-index: 0 !important;
+  left: 3% !important;
+  top: 26px !important;
+  width: calc(var(--timeline-progress) * 0.94) !important;
+  max-width: 94% !important;
+  height: 1px !important;
+  display: block !important;
+  background: rgb(180 255 226 / 0.82) !important;
+  box-shadow: 0 0 12px rgb(151 255 215 / 0.3) !important;
+  animation: none !important;
+}
+
+.time-current nav button {
+  position: relative !important;
+  z-index: 1 !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-columns: 12px minmax(0, 1fr) !important;
+  align-content: center !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 0 8px !important;
+  border: 0 !important;
+  border-radius: 9px !important;
+  background: transparent !important;
+  color: rgb(237 250 247 / 0.52) !important;
+  text-align: left !important;
+}
+
+.time-current nav button::before {
+  display: none !important;
+}
+
+.time-current nav button:hover {
+  background: rgb(255 255 255 / 0.055) !important;
+}
+
+.time-current nav button i {
+  width: 9px !important;
+  height: 9px !important;
+  margin: 0 !important;
+  border: 1px solid rgb(224 255 249 / 0.48) !important;
+  border-radius: 999px !important;
+  background: rgb(15 47 52 / 0.74) !important;
+  box-shadow: 0 0 0 4px rgb(10 37 42 / 0.3) !important;
+}
+
+.time-current nav button > span {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 2px !important;
+}
+
+.time-current nav button b,
+.time-current nav button small {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  letter-spacing: 0 !important;
+}
+
+.time-current nav button b {
+  color: rgb(247 255 253 / 0.84) !important;
+  font: 650 9px var(--reef-ui-font) !important;
+}
+
+.time-current nav button small {
+  color: rgb(235 249 246 / 0.5) !important;
+  font: 500 8px var(--reef-ui-font) !important;
+}
+
+.time-current nav button.is-past i,
+.time-current nav button.is-active i {
+  border-color: rgb(190 255 231 / 0.9) !important;
+  background: rgb(177 255 225 / 0.92) !important;
+}
+
+.time-current nav button.is-active {
+  background: rgb(255 255 255 / 0.075) !important;
+}
+
+.time-current nav button.is-active i {
+  box-shadow: 0 0 0 4px rgb(183 255 228 / 0.12), 0 0 14px rgb(166 255 220 / 0.58) !important;
+}
+
+.time-current .timeline-metrics {
+  min-width: 146px !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, auto) !important;
+  align-content: center !important;
+  justify-content: end !important;
+  gap: 5px !important;
+}
+
+.time-current .timeline-metrics span {
+  padding: 5px 7px !important;
+  border: 1px solid rgb(255 255 255 / 0.14) !important;
+  border-radius: 9px !important;
+  background: rgb(255 255 255 / 0.055) !important;
+  color: rgb(235 249 246 / 0.48) !important;
+  font: 550 7px var(--reef-ui-font) !important;
+  letter-spacing: 0.03em !important;
+  white-space: nowrap !important;
+}
+
+.time-current .timeline-metrics b {
+  color: rgb(248 255 253 / 0.86) !important;
+  font-weight: 650 !important;
+}
+
+@media (max-width: 1180px) {
+  .time-current {
+    grid-template-columns: 94px minmax(0, 1fr) !important;
+  }
+
+  .time-current .timeline-metrics {
+    display: none !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .time-current {
+    height: 72px !important;
+    grid-template-columns: 46px minmax(0, 1fr) !important;
+    gap: 6px !important;
+    padding: 7px !important;
+    border-radius: 15px !important;
+  }
+
+  .time-current .timeline-play {
+    padding: 0 !important;
+  }
+
+  .time-current .timeline-play span,
+  .time-current nav button small {
+    display: none !important;
+  }
+
+  .time-current nav button {
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+    gap: 5px !important;
+    padding: 0 2px !important;
+    text-align: center !important;
+  }
+
+  .time-current nav::before,
+  .time-current nav::after {
+    top: 20px !important;
+  }
+
+  .time-current nav button b {
+    font-size: 7.5px !important;
+  }
+}
+
+/* v61 - final viewport edges and dock-row stress action */
+.mission-bar {
+  left: var(--bottom-hud-edge) !important;
+  right: var(--bottom-hud-edge) !important;
+  width: auto !important;
+  transform: none !important;
+}
+
+.sub-title {
+  left: 50% !important;
+  right: auto !important;
+  translate: 0 !important;
+  transform: translateX(-50%) !important;
+}
+
+.stress-trigger {
+  right: var(--bottom-hud-edge) !important;
+  bottom: var(--bottom-hud-bottom) !important;
+  min-height: 36px !important;
+  height: 36px !important;
+  padding: 0 14px !important;
+}
+
+.stress-menu {
+  right: var(--bottom-hud-edge) !important;
+  bottom: calc(var(--bottom-hud-bottom) + 44px) !important;
+}
+
+@media (max-width: 900px) {
+  .stress-trigger {
+    bottom: calc(var(--bottom-hud-bottom) + 46px) !important;
+  }
+
+  .stress-menu {
+    bottom: calc(var(--bottom-hud-bottom) + 90px) !important;
+  }
+}
+
+/* v62 - collision-proof timeline navigation */
+.time-current {
+  height: 82px !important;
+  display: flex !important;
+  align-items: stretch !important;
+  gap: 10px !important;
+  padding: 9px 11px !important;
+}
+
+.time-current .timeline-play {
+  flex: 0 0 108px !important;
+  width: 108px !important;
+  min-width: 108px !important;
+}
+
+.time-current nav {
+  flex: 1 1 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: stretch !important;
+  overflow: hidden !important;
+}
+
+.time-current nav::before,
+.time-current nav::after {
+  left: 2% !important;
+  top: 19px !important;
+}
+
+.time-current nav::before {
+  right: 2% !important;
+}
+
+.time-current nav::after {
+  width: calc(var(--timeline-progress) * 0.96) !important;
+  max-width: 96% !important;
+}
+
+.time-current nav button {
+  flex: 1 1 0 !important;
+  width: 20% !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-columns: 12px minmax(0, 1fr) !important;
+  align-items: center !important;
+  align-content: center !important;
+  gap: 7px !important;
+  padding: 0 clamp(4px, 0.65vw, 10px) !important;
+  overflow: hidden !important;
+}
+
+.time-current nav button > span {
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.time-current nav button b,
+.time-current nav button small {
+  display: block !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.time-current nav button b {
+  font-size: clamp(8px, 0.58vw, 10px) !important;
+}
+
+.time-current nav button small {
+  color: rgb(237 251 248 / 0.58) !important;
+  font-size: clamp(7px, 0.5vw, 9px) !important;
+  line-height: 1.15 !important;
+}
+
+.time-current .timeline-metrics {
+  display: none !important;
+}
+
+@media (max-width: 760px) {
+  .time-current {
+    height: 78px !important;
+    gap: 5px !important;
+    padding: 7px !important;
+  }
+
+  .time-current .timeline-play {
+    flex-basis: 42px !important;
+    width: 42px !important;
+    min-width: 42px !important;
+  }
+
+  .time-current nav button {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 12px auto !important;
+    justify-items: center !important;
+    align-content: center !important;
+    gap: 3px !important;
+    padding: 0 2px !important;
+    text-align: center !important;
+  }
+
+  .time-current nav button > span {
+    display: grid !important;
+    justify-items: center !important;
+    gap: 1px !important;
+  }
+
+  .time-current nav button b {
+    font-size: clamp(6px, 2vw, 8px) !important;
+  }
+
+  .time-current nav button small {
+    display: -webkit-box !important;
+    max-height: 2.3em !important;
+    font-size: clamp(5.5px, 1.55vw, 7px) !important;
+    line-height: 1.12 !important;
+    white-space: normal !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+  }
+
+  .time-current nav::before,
+  .time-current nav::after {
+    top: 17px !important;
+  }
+}
+
+/* v63 - stacked collision-free bottom HUD */
+.bottom-hud {
+  position: absolute;
+  z-index: 16;
+  left: var(--bottom-hud-edge);
+  right: var(--bottom-hud-edge);
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.bottom-hud > * {
+  pointer-events: auto;
+}
+
+.bottom-hud__tools {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+
+.bottom-hud .tool-console,
+.bottom-hud .stress-trigger,
+.bottom-hud .time-current,
+.bottom-hud .timeline-reopen {
+  position: relative !important;
+  inset: auto !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  translate: none !important;
+  transform: none !important;
+}
+
+.bottom-hud .tool-console {
+  grid-column: 2;
+  width: min(720px, 100%) !important;
+  max-width: 100%;
+  display: grid !important;
+  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+}
+
+.bottom-hud .stress-trigger {
+  grid-column: 3;
+  justify-self: end;
+  width: max-content;
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 14px !important;
+  white-space: nowrap;
+}
+
+.bottom-hud .stress-menu {
+  position: absolute !important;
+  right: 0 !important;
+  bottom: calc(100% + 8px) !important;
+  left: auto !important;
+  z-index: 18;
+}
+
+.bottom-hud .timeline-reopen {
+  align-self: start;
+  width: max-content;
+  height: 40px !important;
+  min-height: 40px !important;
+}
+
+.bottom-hud .time-current {
+  width: 100% !important;
+  height: 84px !important;
+  display: flex !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  padding: 8px 10px !important;
+  overflow: hidden !important;
+}
+
+.bottom-hud .time-current .timeline-play {
+  flex: 0 0 92px !important;
+  width: 92px !important;
+  min-width: 92px !important;
+  height: auto !important;
+  align-self: stretch !important;
+}
+
+.bottom-hud .time-current nav {
+  flex: 1 1 0 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  padding: 0 4px !important;
+}
+
+.bottom-hud .time-current nav::before,
+.bottom-hud .time-current nav::after {
+  left: 10% !important;
+  top: 14px !important;
+  height: 2px !important;
+}
+
+.bottom-hud .time-current nav::before {
+  right: 10% !important;
+}
+
+.bottom-hud .time-current nav::after {
+  width: calc(var(--timeline-progress) * 0.8) !important;
+  max-width: 80% !important;
+}
+
+.bottom-hud .time-current nav button {
+  width: auto !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  justify-self: stretch !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  grid-template-rows: 28px minmax(0, 1fr) !important;
+  justify-items: center !important;
+  align-content: start !important;
+  gap: 0 !important;
+  padding: 0 6px !important;
+  background: transparent !important;
+  text-align: center !important;
+}
+
+.bottom-hud .time-current nav button:hover,
+.bottom-hud .time-current nav button.is-active {
+  background: transparent !important;
+}
+
+.bottom-hud .time-current nav button i,
+.bottom-hud .time-current nav button.is-past i,
+.bottom-hud .time-current nav button.is-active i {
+  width: 12px !important;
+  height: 12px !important;
+  margin: 8px 0 0 !important;
+}
+
+.bottom-hud .time-current nav button > span {
+  display: grid !important;
+  justify-items: center !important;
+  gap: 1px !important;
+  width: 100% !important;
+}
+
+.bottom-hud .time-current nav button b {
+  color: rgb(247 255 253 / 0.9) !important;
+  font: 650 11px var(--reef-ui-font) !important;
+}
+
+.bottom-hud .time-current nav button small {
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: normal !important;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  color: rgb(235 249 246 / 0.62) !important;
+  font: 500 9px var(--reef-ui-font) !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+}
+
+.bottom-hud .time-current .timeline-metrics {
+  display: none !important;
+}
+
+.field-lesson,
+.ai-guide {
+  bottom: clamp(168px, 21vh, 214px) !important;
+}
+
+@media (max-width: 900px) {
+  .bottom-hud__tools {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .bottom-hud .tool-console {
+    grid-column: 1;
+    width: 100% !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  }
+
+  .bottom-hud .stress-trigger {
+    grid-column: 2;
+  }
+
+  .specimen-monitor,
+  .coral-library {
+    bottom: 188px !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .bottom-hud {
+    gap: 8px;
+  }
+
+  .bottom-hud__tools {
+    grid-template-columns: 1fr;
+  }
+
+  .bottom-hud .tool-console,
+  .bottom-hud .stress-trigger {
+    grid-column: 1;
+  }
+
+  .bottom-hud .stress-trigger {
+    justify-self: end;
+  }
+
+  .bottom-hud .time-current {
+    height: 80px !important;
+    gap: 6px !important;
+    padding: 6px !important;
+  }
+
+  .bottom-hud .time-current .timeline-play {
+    flex-basis: 42px !important;
+    width: 42px !important;
+    min-width: 42px !important;
+  }
+
+  .bottom-hud .time-current .timeline-play span {
+    display: none !important;
+  }
+
+  .bottom-hud .time-current nav button small {
+    display: -webkit-box !important;
+    max-height: 2.4em !important;
+    font-size: 7px !important;
+    white-space: normal !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+  }
+}
+
+/* v64 - story panel uses the shared frosted glass system */
+.story-panel {
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid var(--reef-glass-border) !important;
+  border-radius: 18px !important;
+  background: var(--reef-glass-bg) !important;
+  box-shadow:
+    0 18px 48px rgb(0 8 13 / 0.2),
+    inset 0 1px 0 rgb(255 255 255 / 0.34) !important;
+  backdrop-filter: var(--reef-glass-blur) !important;
+  -webkit-backdrop-filter: var(--reef-glass-blur) !important;
+}
+
+.story-panel > span {
+  color: rgb(231 248 244 / 0.68) !important;
+  font-size: 9px !important;
+  font-weight: 620 !important;
+  letter-spacing: 0.16em !important;
+}
+
+.story-panel__anchor {
+  border: 1px solid rgb(214 244 238 / 0.14) !important;
+  border-radius: 14px !important;
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.04)),
+    rgb(255 255 255 / 0.045) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22) !important;
+}
+
+.story-panel > strong {
+  border-top-color: rgb(255 255 255 / 0.16) !important;
+}
+
+.story-panel footer button {
+  border: 1px solid var(--reef-glass-border) !important;
+  border-radius: 14px !important;
+  background: rgb(255 255 255 / 0.06) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22) !important;
+  color: rgb(255 255 255 / 0.88) !important;
+  backdrop-filter: blur(16px) saturate(1.12);
+  -webkit-backdrop-filter: blur(16px) saturate(1.12);
+}
+
+.story-panel footer button:last-child {
+  background: var(--reef-glass-bg-active) !important;
+  color: #ffffff !important;
+}
+
+.story-panel footer button:hover:not(:disabled) {
+  background: var(--reef-glass-bg-active) !important;
+}
+
+.story-panel footer button:disabled {
+  opacity: 0.38 !important;
+}
+
+/* v65 - timeline year + caption sit beside each marker */
+.bottom-hud .time-current {
+  height: 64px !important;
+  padding: 8px 10px !important;
+}
+
+.bottom-hud .time-current nav::before,
+.bottom-hud .time-current nav::after {
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  height: 1px !important;
+  left: 4% !important;
+}
+
+.bottom-hud .time-current nav::before {
+  right: 4% !important;
+}
+
+.bottom-hud .time-current nav::after {
+  width: calc(var(--timeline-progress) * 0.92) !important;
+  max-width: 92% !important;
+}
+
+.bottom-hud .time-current nav button {
+  grid-template-columns: 12px minmax(0, 1fr) !important;
+  grid-template-rows: 1fr !important;
+  align-items: center !important;
+  align-content: center !important;
+  justify-items: start !important;
+  gap: 8px !important;
+  padding: 0 8px !important;
+  text-align: left !important;
+}
+
+.bottom-hud .time-current nav button i,
+.bottom-hud .time-current nav button.is-past i,
+.bottom-hud .time-current nav button.is-active i {
+  width: 11px !important;
+  height: 11px !important;
+  margin: 0 !important;
+}
+
+.bottom-hud .time-current nav button > span {
+  display: grid !important;
+  justify-items: start !important;
+  gap: 1px !important;
+  min-width: 0 !important;
+  text-align: left !important;
+}
+
+.bottom-hud .time-current nav button b {
+  color: rgb(255 255 255 / 0.96) !important;
+  font: 700 13px / 1.05 var(--reef-ui-font) !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+}
+
+.bottom-hud .time-current nav button small {
+  display: block !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  color: rgb(236 250 247 / 0.58) !important;
+  font: 400 11px / 1.2 var(--reef-ui-font) !important;
+  letter-spacing: 0 !important;
+  text-align: left !important;
+  text-transform: none !important;
+}
+
+@media (max-width: 760px) {
+  .bottom-hud .time-current {
+    height: 58px !important;
+  }
+
+  .bottom-hud .time-current nav button {
+    grid-template-columns: 10px minmax(0, 1fr) !important;
+    grid-template-rows: 1fr !important;
+    gap: 6px !important;
+    padding: 0 4px !important;
+    text-align: left !important;
+  }
+
+  .bottom-hud .time-current nav button > span {
+    justify-items: start !important;
+  }
+
+  .bottom-hud .time-current nav button b {
+    font-size: 11px !important;
+  }
+
+  .bottom-hud .time-current nav button small {
+    display: block !important;
+    font-size: 8px !important;
+    white-space: nowrap !important;
+    -webkit-line-clamp: unset !important;
+  }
+}
+
+/* v66 - reef map dropdown matches the trigger edge */
+.world-picker {
+  position: relative;
+  z-index: 24;
+  justify-self: start;
+  width: min(272px, calc(100vw - 32px));
+  pointer-events: auto;
+}
+
+.mission-bar {
+  z-index: 24 !important;
+}
+
+.world-picker .world-button {
+  width: 100%;
+  max-width: none;
+}
+
+.world-picker .world-drawer {
+  left: 0 !important;
+  right: auto !important;
+  top: calc(100% + 8px) !important;
+  width: 100% !important;
+  max-height: min(520px, calc(100vh - 96px)) !important;
+}
+
+.world-picker .world-drawer > button {
+  font-size: clamp(15px, 1.05vw, 17px) !important;
+}
+
+.world-picker .world-drawer > button small {
+  white-space: normal !important;
+}
+
+@media (max-width: 620px) {
+  .world-picker {
+    width: min(260px, calc(100vw - 28px));
+  }
+}
+
+/* v67 - compact story card docked with the bottom HUD */
+.bottom-hud__main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  width: 100%;
+}
+
+.bottom-hud.is-story {
+  display: grid;
+  grid-template-columns: minmax(220px, 268px) minmax(0, 1fr);
+  align-items: end;
+  gap: 10px;
+}
+
+.bottom-hud.is-story .bottom-hud__side {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  align-content: end;
+}
+
+.bottom-hud.is-story .bottom-hud__main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.bottom-hud.is-story .bottom-hud__tools {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.bottom-hud.is-story .tool-console {
+  grid-column: 1;
+  width: 100% !important;
+  justify-self: stretch;
+}
+
+.bottom-hud.is-story .stress-trigger {
+  grid-column: auto;
+  justify-self: stretch;
+  width: 100% !important;
+}
+
+.bottom-hud.is-story .stress-menu {
+  right: auto !important;
+  left: 0 !important;
+  bottom: calc(100% + 8px) !important;
+}
+
+.bottom-hud.is-story .story-panel {
+  position: relative !important;
+  inset: auto !important;
+  left: auto !important;
+  top: auto !important;
+  width: auto !important;
+  max-width: none !important;
+  padding: 10px 12px 9px !important;
+  border-radius: 16px !important;
+}
+
+.bottom-hud.is-story .story-panel > span {
+  font-size: 8px !important;
+  letter-spacing: 0.14em !important;
+}
+
+.bottom-hud.is-story .story-panel__anchor {
+  margin-top: 6px !important;
+  padding: 6px 8px !important;
+  border-radius: 10px !important;
+}
+
+.bottom-hud.is-story .story-panel__anchor b {
+  font-size: 10px !important;
+}
+
+.bottom-hud.is-story .story-panel__anchor small {
+  font-size: 9px !important;
+}
+
+.bottom-hud.is-story .story-panel h2 {
+  max-width: none !important;
+  margin: 7px 0 5px !important;
+  font-size: 16px !important;
+  line-height: 1.12 !important;
+}
+
+.bottom-hud.is-story .story-panel p {
+  max-width: none !important;
+  font-size: 11px !important;
+  line-height: 1.32 !important;
+}
+
+.bottom-hud.is-story .story-panel > strong {
+  margin-top: 7px !important;
+  padding-top: 7px !important;
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+}
+
+.bottom-hud.is-story .story-panel footer {
+  margin-top: 8px !important;
+  gap: 6px !important;
+}
+
+.bottom-hud.is-story .story-panel footer button {
+  min-height: 30px !important;
+  border-radius: 11px !important;
+  font-size: 11px !important;
+}
+
+@media (max-width: 900px) {
+  .bottom-hud.is-story {
+    grid-template-columns: 1fr;
+  }
+
+  .bottom-hud.is-story .bottom-hud__side {
+    order: 2;
+  }
+
+  .bottom-hud.is-story .bottom-hud__main {
+    order: 1;
+  }
+}
+
+/* v68 - blend species health header and grow the card for the signals graph */
+.specimen-monitor {
+  padding: 12px !important;
+  height: auto !important;
+}
+
+.specimen-monitor__header {
+  position: relative !important;
+  top: auto !important;
+  z-index: auto !important;
+  margin: 0 !important;
+  padding: 0 0 2px !important;
+  border: 0 !important;
+  border-bottom: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.specimen-monitor.is-signals {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  overflow-x: visible !important;
+  overflow-y: visible !important;
+  padding-bottom: 16px !important;
+}
+
+.specimen-monitor.is-signals .signal-chart {
+  display: grid !important;
+  grid-template-rows: 118px auto !important;
+  align-content: start !important;
+  height: auto !important;
+  min-height: 168px !important;
+  overflow: visible !important;
+}
+
+.specimen-monitor.is-signals .signal-chart > div,
+.specimen-monitor.is-signals .signal-chart .recharts-responsive-container {
+  width: 100% !important;
+  height: 118px !important;
+  min-height: 118px !important;
+  overflow: visible !important;
+}
+
+.specimen-monitor.is-signals .signal-chart .recharts-wrapper,
+.specimen-monitor.is-signals .signal-chart .recharts-surface {
+  overflow: visible !important;
+}
+
+.specimen-monitor.is-signals .signal-chart > p {
+  height: auto !important;
+  min-height: 2.6em !important;
+}
+
+@media (max-width: 900px) {
+  .specimen-monitor.is-signals {
+    max-height: none !important;
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+  }
+}
+
+/* v69 - darker teal frosted glass HUD */
+.expedition-v5 {
+  --reef-glass-bg:
+    radial-gradient(circle at 18% -18%, rgb(186 232 226 / 0.12), transparent 31%),
+    radial-gradient(circle at 84% 4%, rgb(64 140 156 / 0.1), transparent 34%),
+    linear-gradient(145deg, rgb(18 52 62 / 0.36), rgb(8 34 44 / 0.26) 54%, rgb(4 22 30 / 0.18)),
+    rgb(6 28 36 / 0.24);
+  --reef-glass-bg-active:
+    radial-gradient(circle at 24% 0%, rgb(198 238 232 / 0.16), transparent 36%),
+    linear-gradient(145deg, rgb(24 64 74 / 0.42), rgb(10 40 50 / 0.3) 58%, rgb(6 28 38 / 0.22)),
+    rgb(8 36 46 / 0.28);
+}
+
+/* v70 - remove leftover submarine HUD column guides */
+.submarine-frame::before,
+.submarine-frame::after {
+  content: none !important;
+  display: none !important;
+  width: 0 !important;
+  background: none !important;
+  opacity: 0 !important;
+}
+
+/* v71 - full-width timeline, half-width tools, story left, stress right */
+.bottom-hud {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 50vw) auto;
+  grid-template-rows: auto auto;
+  align-items: end;
+  column-gap: 10px;
+  row-gap: 10px;
+}
+
+.bottom-hud.is-story {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 50vw) auto;
+  align-items: end;
+}
+
+.bottom-hud .story-panel,
+.bottom-hud.is-story .story-panel {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  align-self: end;
+  width: min(268px, 100%) !important;
+  max-width: 100% !important;
+}
+
+.bottom-hud__tools {
+  grid-column: 2;
+  grid-row: 1;
+  display: block;
+  min-width: 0;
+  width: 100%;
+}
+
+.bottom-hud.is-story .bottom-hud__tools {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.bottom-hud .tool-console,
+.bottom-hud.is-story .tool-console {
+  grid-column: auto;
+  width: 100% !important;
+  max-width: none;
+  justify-self: stretch;
+}
+
+.bottom-hud__stress {
+  position: relative;
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+  align-self: end;
+}
+
+.bottom-hud .stress-trigger,
+.bottom-hud.is-story .stress-trigger {
+  grid-column: auto;
+  justify-self: end;
+  width: max-content !important;
+}
+
+.bottom-hud .stress-menu,
+.bottom-hud.is-story .stress-menu {
+  position: absolute !important;
+  right: 0 !important;
+  left: auto !important;
+  bottom: calc(100% + 8px) !important;
+}
+
+.bottom-hud .time-current,
+.bottom-hud .timeline-reopen {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  width: 100% !important;
+}
+
+@media (max-width: 900px) {
+  .bottom-hud,
+  .bottom-hud.is-story {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .bottom-hud .story-panel,
+  .bottom-hud.is-story .story-panel {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    width: 100% !important;
+  }
+
+  .bottom-hud__tools {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .bottom-hud__stress {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .bottom-hud .time-current,
+  .bottom-hud .timeline-reopen {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+}
+
+/* v72 - lighter white-leaning frosted glass HUD */
+.expedition-v5 {
+  --reef-glass-bg:
+    radial-gradient(circle at 18% -18%, rgb(255 255 255 / 0.38), transparent 31%),
+    radial-gradient(circle at 84% 4%, rgb(255 255 255 / 0.18), transparent 34%),
+    linear-gradient(145deg, rgb(255 255 255 / 0.28), rgb(246 252 250 / 0.16) 54%, rgb(236 246 246 / 0.10)),
+    rgb(255 255 255 / 0.16);
+  --reef-glass-bg-active:
+    radial-gradient(circle at 24% 0%, rgb(255 255 255 / 0.44), transparent 36%),
+    linear-gradient(145deg, rgb(255 255 255 / 0.34), rgb(248 254 252 / 0.18) 58%, rgb(240 250 248 / 0.11)),
+    rgb(255 255 255 / 0.18);
+}
+
+/* v73 - center tool icons with tighter gaps */
+.bottom-hud .tool-console,
+.bottom-hud.is-story .tool-console {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 2px !important;
+  grid-template-columns: none !important;
+  padding-inline: 10px !important;
+}
+
+.bottom-hud .tool-console button,
+.bottom-hud.is-story .tool-console button {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 48px !important;
+  max-width: none !important;
+  padding: 3px 7px 2px !important;
+}
+
+@media (max-width: 900px) {
+  .bottom-hud .tool-console,
+  .bottom-hud.is-story .tool-console {
+    display: flex !important;
+    justify-content: center;
+    gap: 1px !important;
+    grid-template-columns: none !important;
+  }
+
+  .bottom-hud .tool-console button,
+  .bottom-hud.is-story .tool-console button {
+    min-width: 40px !important;
+    padding: 3px 4px 2px !important;
+  }
+}
+
+/* v74 - slightly darker blue frost on the glass HUD */
+.expedition-v5 {
+  --reef-glass-bg:
+    radial-gradient(circle at 18% -18%, rgb(255 255 255 / 0.3), transparent 31%),
+    radial-gradient(circle at 84% 4%, rgb(186 220 242 / 0.14), transparent 34%),
+    linear-gradient(145deg, rgb(224 238 250 / 0.2), rgb(186 214 236 / 0.14) 54%, rgb(154 190 220 / 0.1)),
+    rgb(168 202 226 / 0.13);
+  --reef-glass-bg-active:
+    radial-gradient(circle at 24% 0%, rgb(255 255 255 / 0.36), transparent 36%),
+    linear-gradient(145deg, rgb(228 242 252 / 0.26), rgb(194 222 242 / 0.16) 58%, rgb(166 204 230 / 0.11)),
+    rgb(176 210 232 / 0.15);
+}
+
+/* v75 - equal-width story panel footer buttons */
+.story-panel footer,
+.bottom-hud.is-story .story-panel footer {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+}
+
+.story-panel footer button,
+.bottom-hud.is-story .story-panel footer button {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* v76 - page-centered shrink-wrapped tool dock */
+.bottom-hud,
+.bottom-hud.is-story {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.bottom-hud .story-panel,
+.bottom-hud.is-story .story-panel {
+  z-index: 3;
+}
+
+.bottom-hud__tools {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  width: auto;
+  min-width: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.bottom-hud .tool-console,
+.bottom-hud.is-story .tool-console {
+  width: max-content !important;
+  max-width: 100%;
+  pointer-events: auto;
+  gap: 8px !important;
+  padding-inline: 12px !important;
+}
+
+.bottom-hud__stress {
+  z-index: 3;
+}
+
+@media (max-width: 900px) {
+  .bottom-hud__tools {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .bottom-hud__stress {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: end;
+  }
+}
+
+/* v77 - timeline rail meets the first marker, thin Google Sans, years sit a bit higher */
+.bottom-hud .time-current nav {
+  padding-inline: 0 !important;
+}
+
+.bottom-hud .time-current nav::before,
+.bottom-hud .time-current nav::after {
+  left: 13px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+.bottom-hud .time-current nav::before {
+  right: calc(20% - 13px) !important;
+}
+
+.bottom-hud .time-current nav::after {
+  width: calc(var(--timeline-progress) * 0.8) !important;
+  max-width: calc(80% + 13px) !important;
+}
+
+.bottom-hud .time-current nav button > span {
+  gap: 3px !important;
+}
+
+.bottom-hud .time-current nav button b {
+  transform: translateY(-3px);
+  font-family: "Google Sans Thin", "Google Sans", "Google Sans Text", var(--reef-ui-font) !important;
+  font-weight: 200 !important;
+  font-size: 14px !important;
+  letter-spacing: 0.08em !important;
+}
+
+.bottom-hud .time-current nav button small {
+  font-family: "Google Sans Thin", "Google Sans", "Google Sans Text", var(--reef-ui-font) !important;
+  font-weight: 300 !important;
+}
+
+/* v78 - always-visible compact species signals graph */
+.specimen-monitor .signal-button {
+  display: none !important;
+}
+
+.specimen-monitor.is-signals .signal-chart,
+.specimen-monitor .signal-chart {
+  display: grid !important;
+  grid-template-rows: 72px auto !important;
+  min-height: 104px !important;
+  height: auto !important;
+}
+
+.specimen-monitor.is-signals .signal-chart > div,
+.specimen-monitor.is-signals .signal-chart .recharts-responsive-container,
+.specimen-monitor .signal-chart .recharts-responsive-container {
+  height: 72px !important;
+  min-height: 72px !important;
+}
+
+.specimen-monitor.is-signals .signal-chart > p,
+.specimen-monitor .signal-chart > p {
+  min-height: 0 !important;
+}
+
+/* v79 - slightly darker frosted glass HUD */
+.expedition-v5 {
+  --reef-glass-bg:
+    radial-gradient(circle at 18% -18%, rgb(255 255 255 / 0.18), transparent 31%),
+    radial-gradient(circle at 84% 4%, rgb(96 152 188 / 0.12), transparent 34%),
+    linear-gradient(145deg, rgb(72 118 150 / 0.32), rgb(36 74 104 / 0.24) 54%, rgb(18 44 68 / 0.18)),
+    rgb(22 48 72 / 0.22);
+  --reef-glass-bg-active:
+    radial-gradient(circle at 24% 0%, rgb(255 255 255 / 0.24), transparent 36%),
+    linear-gradient(145deg, rgb(86 132 164 / 0.36), rgb(44 86 118 / 0.26) 58%, rgb(24 54 80 / 0.2)),
+    rgb(28 58 84 / 0.24);
+}
+
+/* v80 - one glass radius everywhere, teal HUD icons */
+.expedition-v5 {
+  --reef-glass-radius: 18px;
+  --reef-icon: #5de9cd;
+}
+
+.expedition-v5[data-phase="heat"],
+.expedition-v5[data-phase="bleaching"],
+.expedition-v5[data-phase="recovery"] {
+  --hud: #ffffff;
+}
+
+.expedition-entry,
+.mission-briefing,
+.mission-briefing footer > button,
+.briefing-points strong,
+.world-picker,
+.world-button,
+.world-drawer,
+.world-drawer > button,
+.mission-room button,
+.mission-room > strong,
+.field-lesson,
+.specimen-monitor,
+.specimen-id,
+.specimen-monitor dl div,
+.specimen-status span,
+.evidence-card,
+.tool-card,
+.signal-chart,
+.note-form input,
+.note-form button,
+.coral-library,
+.coral-library__grid > button,
+.stress-menu,
+.stress-menu > button,
+.stress-trigger,
+.timeline-reopen,
+.time-current,
+.time-current > button,
+.time-current .timeline-play,
+.tool-console,
+.tool-console button,
+.tool-console button.is-active,
+.ai-guide,
+.story-panel,
+.story-panel__anchor,
+.story-panel footer button,
+.begin-button,
+.expedition-entry form {
+  border-radius: var(--reef-glass-radius) !important;
+}
+
+.tool-console svg,
+.guide-toggle,
+.guide-toggle svg,
+.stress-trigger svg,
+.timeline-reopen svg,
+.time-current .timeline-play svg,
+.world-button svg,
+.mission-room svg,
+.specimen-monitor svg,
+.story-panel svg,
+.coral-library svg,
+.ai-guide svg {
+  color: var(--reef-icon) !important;
+}
+
+.stress-trigger,
+.timeline-reopen,
+.time-current .timeline-play {
+  border-color: rgb(93 233 205 / 0.38) !important;
+}
+
+/* v81 - lighter flat glass, white HUD labels, edge sheen only */
+.expedition-v5 {
+  --reef-glass-bg: rgb(92 138 162 / 0.4);
+  --reef-glass-bg-active: rgb(110 160 184 / 0.48);
+  --reef-glass-border: rgb(255 255 255 / 0.34);
+  --reef-glass-shadow:
+    0 16px 40px rgb(0 12 20 / 0.16),
+    inset 0 1px 0 rgb(255 255 255 / 0.5),
+    inset 0 -1px 0 rgb(255 255 255 / 0.08);
+}
+
+.expedition-entry,
+.mission-briefing,
+.mission-briefing footer > button,
+.briefing-points strong,
+.world-button,
+.world-drawer,
+.world-drawer > button,
+.mission-room button,
+.mission-room > strong,
+.field-lesson,
+.specimen-monitor,
+.specimen-id,
+.specimen-monitor dl div,
+.specimen-status span,
+.evidence-card,
+.tool-card,
+.signal-chart,
+.note-form input,
+.note-form button,
+.coral-library,
+.coral-library__grid > button,
+.stress-menu,
+.stress-menu > button,
+.stress-trigger,
+.timeline-reopen,
+.time-current,
+.time-current > button,
+.time-current .timeline-play,
+.tool-console,
+.ai-guide,
+.story-panel,
+.story-panel__anchor,
+.story-panel footer button,
+.begin-button,
+.expedition-entry form {
+  background: var(--reef-glass-bg) !important;
+  background-image: none !important;
+  box-shadow: var(--reef-glass-shadow) !important;
+}
+
+.world-button:hover,
+.mission-room button:hover,
+.world-drawer > button:hover,
+.world-drawer > button.is-active,
+.mission-briefing footer > button:hover,
+.stress-menu > button:hover,
+.stress-trigger:hover,
+.time-current .timeline-play:hover,
+.time-current .timeline-play[aria-pressed="true"],
+.tool-console button:hover,
+.tool-console button.is-active,
+.timeline-reopen:hover,
+.note-form button:hover,
+.coral-library__grid > button:hover,
+.coral-library__grid > button.is-active,
+.story-panel footer button:last-child,
+.story-panel footer button:hover:not(:disabled) {
+  background: var(--reef-glass-bg-active) !important;
+  background-image: none !important;
+}
+
+.tool-console button,
+.time-current nav button {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+.tool-console button,
+.tool-console button span,
+.guide-toggle,
+.stress-trigger,
+.timeline-reopen,
+.time-current .timeline-play,
+.time-current .timeline-play span {
+  color: #ffffff !important;
+}
+
+.tool-console svg,
+.guide-toggle svg,
+.stress-trigger svg,
+.timeline-reopen svg,
+.time-current .timeline-play svg,
+.world-button svg,
+.mission-room svg,
+.specimen-monitor svg,
+.story-panel svg,
+.coral-library svg,
+.ai-guide svg {
+  color: var(--reef-icon) !important;
+}
+
+/* v82 - tool dock icons sit on the bar without inner capsules */
+.tool-console button,
+.tool-console button:hover,
+.tool-console button.is-active,
+.tool-console .guide-toggle {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.tool-console button::before,
+.tool-console button::after,
+.tool-console button.is-active::before,
+.tool-console button.is-active::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* v83 - thinner white HUD outline, glass 10% more transparent */
+.expedition-v5 {
+  --reef-glass-bg: rgb(92 138 162 / 0.3);
+  --reef-glass-bg-active: rgb(110 160 184 / 0.38);
+  --reef-glass-border: rgb(255 255 255 / 0.42);
+}
+
+.expedition-entry,
+.mission-briefing,
+.mission-briefing footer > button,
+.briefing-points strong,
+.world-picker,
+.world-button,
+.world-drawer,
+.world-drawer > button,
+.mission-room button,
+.mission-room > strong,
+.field-lesson,
+.specimen-monitor,
+.specimen-id,
+.specimen-monitor dl div,
+.specimen-status span,
+.evidence-card,
+.tool-card,
+.signal-chart,
+.note-form input,
+.note-form button,
+.coral-library,
+.coral-library__grid > button,
+.stress-menu,
+.stress-menu > button,
+.stress-trigger,
+.timeline-reopen,
+.time-current,
+.time-current > button,
+.time-current .timeline-play,
+.tool-console,
+.ai-guide,
+.story-panel,
+.story-panel__anchor,
+.story-panel footer button,
+.begin-button,
+.expedition-entry form {
+  border-width: 0.5px !important;
+  border-style: solid !important;
+  border-color: var(--reef-glass-border) !important;
+}
+
+.tool-console button,
+.tool-console button:hover,
+.tool-console button.is-active,
+.tool-console .guide-toggle {
+  border: 0 !important;
+}
+
+/* v84 - keep timeline years fully visible at the top */
+.bottom-hud .time-current nav button,
+.bottom-hud .time-current nav button > span {
+  overflow: visible !important;
+}
+
+.bottom-hud .time-current nav button b {
+  transform: none;
+  overflow: visible !important;
+  line-height: 1.3 !important;
+  padding-top: 2px !important;
+}
+
+/* v85 - lift timeline years with room above them */
+.bottom-hud .time-current {
+  height: 72px !important;
+  padding-top: 14px !important;
+  padding-bottom: 8px !important;
+}
+
+.bottom-hud .time-current nav button b {
+  transform: translateY(-6px);
+  padding-top: 0 !important;
+  overflow: visible !important;
+  line-height: 1.3 !important;
+}
+
+@media (max-width: 760px) {
+  .bottom-hud .time-current {
+    height: 66px !important;
+    padding-top: 12px !important;
   }
 }

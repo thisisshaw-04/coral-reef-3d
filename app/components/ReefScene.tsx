@@ -1195,17 +1195,17 @@ export default function ReefScene({
           map: surfaceReflectionTexture,
           color: 0xe8fffb,
           transparent: true,
-          opacity: lowPower ? 0.16 : 0.24,
+          opacity: lowPower ? 0.12 : 0.18,
           blending: THREE.AdditiveBlending,
           depthWrite: false,
-          side: THREE.DoubleSide,
+          side: THREE.BackSide,
         });
         const surfaceReflections = new THREE.Mesh(
           new THREE.PlaneGeometry(FLOOR_WIDTH * 1.34, FLOOR_DEPTH * 1.08),
           surfaceReflectionMaterial,
         );
         surfaceReflections.rotation.x = -Math.PI / 2;
-        surfaceReflections.position.set(0, biomeConfig.waterY - 0.16, FLOOR_CENTER_Z + 20);
+        surfaceReflections.position.set(0, biomeConfig.waterY - 0.08, FLOOR_CENTER_Z + 20);
         surfaceReflections.renderOrder = 2;
         world.add(surfaceReflections);
 

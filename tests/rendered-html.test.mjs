@@ -383,6 +383,16 @@ test("keeps water ambience free of straight line overlays", async () => {
   assert.doesNotMatch(scene, /new THREE\.LineBasicMaterial/);
 });
 
+test("renders surface reflection effects on the underside of the water", async () => {
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
+  assert.match(scene, /const surfaceReflectionMaterial = new THREE\.MeshBasicMaterial/);
+  assert.match(scene, /side: THREE\.BackSide/);
+  assert.match(scene, /opacity: lowPower \? 0\.12 : 0\.18/);
+  assert.match(scene, /surfaceReflections\.position\.set\(0, biomeConfig\.waterY - 0\.08, FLOOR_CENTER_Z \+ 20\)/);
+  assert.doesNotMatch(scene, /side: THREE\.DoubleSide,[\s\S]*?\}\);\s*const surfaceReflections = new THREE\.Mesh/);
+});
+
 test("keeps colony reticles steady without the green glow state", async () => {
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 

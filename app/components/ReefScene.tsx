@@ -15,6 +15,7 @@ export type ScanAssetKey =
   | "acro-compact"
   | "massive-star"
   | "acropora-palmata"
+  | "acropora-cervicornis"
   | "diploria-brain"
   | "porites-mound"
   | "goniopora-column"
@@ -66,6 +67,7 @@ const SCANS: Record<
     size: number;
     tint: number;
     preserveColor?: boolean;
+    filterDarkBase?: boolean;
     sensitivity: number;
     recovery: number;
   }
@@ -100,8 +102,19 @@ const SCANS: Record<
     size: 7.4,
     tint: 0xf0a271,
     preserveColor: true,
+    filterDarkBase: true,
     sensitivity: 0.95,
     recovery: 0.46,
+  },
+  "acropora-cervicornis": {
+    desktop: "/models/smithsonian-acropora-cervicornis.glb",
+    mobile: "/models/smithsonian-acropora-cervicornis.glb",
+    size: 7.1,
+    tint: 0xe8a07b,
+    preserveColor: true,
+    filterDarkBase: true,
+    sensitivity: 0.95,
+    recovery: 0.48,
   },
   "diploria-brain": {
     desktop: "/models/smithsonian-diploria-labyrinthiformis.glb",
@@ -212,7 +225,7 @@ const FALLBACK_POSITIONS: Record<string, { left: string; top: string }> = {
 };
 
 const AMBIENT_SCAN_COLONIES: ReefSceneHotspot[] = [
-  { id: "nursery-scan-01", label: "Nursery scan", scan: "acropora-palmata", position: [-82, 2.25, -24], size: 4.9, tint: 0xf0a879, yaw: -0.55 },
+  { id: "nursery-scan-01", label: "Nursery scan", scan: "acropora-cervicornis", position: [-82, 2.25, -24], size: 4.9, tint: 0xf0a879, yaw: -0.55 },
   { id: "nursery-scan-02", label: "Nursery scan", scan: "diploria-brain", position: [-48, 2.1, -42], size: 4.4, tint: 0xd8c082, yaw: 0.72 },
   { id: "nursery-scan-03", label: "Nursery scan", scan: "porites-mound", position: [36, 2.35, -27], size: 4.8, tint: 0xdcc17c, yaw: -0.18 },
   { id: "nursery-scan-04", label: "Nursery scan", scan: "pocillopora-cauliflower", position: [72, 2.5, -45], size: 4.6, tint: 0xe18b77, yaw: 0.48 },
@@ -225,7 +238,7 @@ const AMBIENT_SCAN_COLONIES: ReefSceneHotspot[] = [
   { id: "nursery-scan-11", label: "Nursery scan", scan: "acro-compact", position: [48, 2.85, -124], size: 4.9, tint: 0xdb7c72, yaw: -0.2 },
   { id: "nursery-scan-12", label: "Nursery scan", scan: "pavona-lettuce", position: [104, 3, -144], size: 5.4, tint: 0xd8bc78, yaw: 0.34 },
   { id: "nursery-scan-13", label: "Nursery scan", scan: "massive-star", position: [-76, 3.15, -152], size: 5.9, tint: 0xddc58b, yaw: -0.68 },
-  { id: "nursery-scan-14", label: "Nursery scan", scan: "acropora-palmata", position: [-10, 3.05, -164], size: 5.8, tint: 0xf0a06f, yaw: 1.02 },
+  { id: "nursery-scan-14", label: "Nursery scan", scan: "acropora-cervicornis", position: [-10, 3.05, -164], size: 5.8, tint: 0xf0a06f, yaw: 1.02 },
   { id: "nursery-scan-15", label: "Nursery scan", scan: "diploria-brain", position: [62, 3.25, -176], size: 5.7, tint: 0xd8c189, yaw: -0.48 },
   { id: "nursery-scan-16", label: "Nursery scan", scan: "porites-mound", position: [116, 3.35, -194], size: 5.6, tint: 0xd5bf79, yaw: 0.95 },
   { id: "nursery-scan-17", label: "Nursery scan", scan: "goniopora-column", position: [-122, 3.45, -202], size: 5.5, tint: 0xd09070, yaw: 0.28 },
@@ -236,7 +249,7 @@ const AMBIENT_SCAN_COLONIES: ReefSceneHotspot[] = [
   { id: "nursery-scan-22", label: "Nursery scan", scan: "agaricia-plate", position: [-22, 3.82, -274], size: 5.7, tint: 0xd8ad76, yaw: -1.2 },
   { id: "nursery-scan-23", label: "Nursery scan", scan: "pavona-lettuce", position: [54, 3.9, -286], size: 5.9, tint: 0xd6ba78, yaw: 0.2 },
   { id: "nursery-scan-24", label: "Nursery scan", scan: "acro-table", position: [126, 4, -306], size: 6.1, tint: 0xefa978, yaw: 0.95 },
-  { id: "nursery-scan-25", label: "Nursery scan", scan: "acropora-palmata", position: [-132, 4.1, -314], size: 6, tint: 0xf1a675, yaw: -0.35 },
+  { id: "nursery-scan-25", label: "Nursery scan", scan: "acropora-cervicornis", position: [-132, 4.1, -314], size: 6, tint: 0xf1a675, yaw: -0.35 },
   { id: "nursery-scan-26", label: "Nursery scan", scan: "diploria-brain", position: [-68, 4.05, -330], size: 5.8, tint: 0xd5bf87, yaw: 0.8 },
   { id: "nursery-scan-27", label: "Nursery scan", scan: "porites-mound", position: [8, 4.15, -342], size: 5.9, tint: 0xd9c278, yaw: -0.45 },
   { id: "nursery-scan-28", label: "Nursery scan", scan: "pocillopora-cauliflower", position: [96, 4.2, -356], size: 5.7, tint: 0xe18b77, yaw: 1.15 },
@@ -347,7 +360,7 @@ export const BIOME_AMBIENT_SCAN_COLONIES: Record<ReefBiomeId, ReefSceneHotspot[]
     ["fungia-disc", 124, -514, 5.2, 0xe7a970, 0.2],
   ]),
   "caribbean-reef": makeAmbientScanColonies("caribbean", [
-    ["acropora-palmata", -142, -28, 6.2, 0xf0a271, -0.5],
+    ["acropora-cervicornis", -142, -28, 6.2, 0xf0a271, -0.5],
     ["diploria-brain", -68, -46, 5.6, 0xd7bf82, 0.4],
     ["agaricia-plate", 12, -64, 5.1, 0xd7ad76, -0.3],
     ["porites-mound", 92, -92, 5.3, 0xd9c278, 0.8],
@@ -355,12 +368,12 @@ export const BIOME_AMBIENT_SCAN_COLONIES: Record<ReefBiomeId, ReefSceneHotspot[]
     ["diploria-brain", -126, -156, 5.9, 0xd5bd82, -0.75],
     ["massive-star", -48, -186, 5.8, 0xe1c58c, 0.28],
     ["agaricia-plate", 44, -214, 5.4, 0xd2a974, -0.95],
-    ["acropora-palmata", 128, -242, 5.9, 0xeda06f, 0.58],
+    ["acropora-cervicornis", 128, -242, 5.9, 0xeda06f, 0.58],
     ["porites-mound", -158, -278, 5.5, 0xd7c079, -0.18],
     ["diploria-brain", -82, -316, 5.8, 0xd6bf83, 0.74],
     ["agaricia-plate", 8, -352, 5.6, 0xd5ad75, -0.52],
     ["acro-compact", 88, -384, 5.6, 0xe6a17b, 0.22],
-    ["acropora-palmata", 156, -418, 6.1, 0xeea271, -0.4],
+    ["acropora-cervicornis", 156, -418, 6.1, 0xeea271, -0.4],
     ["massive-star", -118, -456, 6.3, 0xdfc68d, 0.36],
     ["diploria-brain", -22, -488, 5.9, 0xd8c187, -0.72],
     ["porites-mound", 78, -518, 5.8, 0xd8c27b, 0.62],
@@ -662,6 +675,30 @@ function disposeMaterial(material: Material | Material[]) {
     }
     item.dispose();
   }
+}
+
+function filterDarkDisplayBase(material: Material) {
+  const filtered = material as Material & {
+    alphaTest?: number;
+    transparent?: boolean;
+    onBeforeCompile?: (shader: { fragmentShader: string }) => void;
+    customProgramCacheKey?: () => string;
+  };
+
+  filtered.alphaTest = Math.max(filtered.alphaTest ?? 0, 0.04);
+  filtered.transparent = true;
+  filtered.onBeforeCompile = (shader) => {
+    shader.fragmentShader = shader.fragmentShader.replace(
+      "#include <dithering_fragment>",
+      [
+        "float displayBaseLuma = dot(gl_FragColor.rgb, vec3(0.299, 0.587, 0.114));",
+        "if (displayBaseLuma < 0.045 && diffuseColor.a > 0.72) discard;",
+        "#include <dithering_fragment>",
+      ].join("\n"),
+    );
+  };
+  filtered.customProgramCacheKey = () => "reef-dark-display-base-filter-v1";
+  filtered.needsUpdate = true;
 }
 
 export default function ReefScene({
@@ -1512,6 +1549,7 @@ export default function ReefScene({
               if (living.emissive) living.emissive.setHex(0x231008);
               if (typeof living.roughness === "number") living.roughness = Math.max(0.5, living.roughness);
               if (typeof living.metalness === "number") living.metalness = 0;
+              if (asset.filterDarkBase) filterDarkDisplayBase(material);
               livingMaterials.push({ material: living, base: living.color.clone(), hotspotId: hotspot.id, scanKey });
             }
           });

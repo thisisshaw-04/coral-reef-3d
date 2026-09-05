@@ -7,6 +7,7 @@ test("builds the Reef Relay production worker and client", async () => {
   await access(new URL("../dist/client/reef-entry-v4.webp", import.meta.url));
   await access(new URL("../dist/client/models/acropora-hyacinthus.glb", import.meta.url));
   await access(new URL("../dist/client/models/smithsonian-acropora-palmata.glb", import.meta.url));
+  await access(new URL("../dist/client/models/smithsonian-acropora-cervicornis.glb", import.meta.url));
   await access(new URL("../dist/client/models/smithsonian-linckia-laevigata.glb", import.meta.url));
   await access(new URL("../dist/client/models/smithsonian-tubipora-musica.glb", import.meta.url));
   await access(new URL("../dist/client/models/smithsonian-tridacna-squamosa.glb", import.meta.url));
@@ -38,6 +39,7 @@ test("uses a broader scan-based coral survey without cone light meshes", async (
   assert.match(data, /scan: "acro-compact"/);
   assert.match(data, /scan: "massive-star"/);
   assert.match(data, /scan: "acropora-palmata"/);
+  assert.match(data, /scan: "acropora-cervicornis"/);
   assert.match(data, /scan: "pavona-lettuce"/);
   assert.match(scene, /AMBIENT_SCAN_COLONIES/);
   assert.match(scene, /smithsonian-diodon-hystrix\.glb/);
@@ -229,6 +231,9 @@ test("replaces fake reef-floor blobs with modeled rubble and benthic life", asyn
 test("anchors scan colonies to the seabed instead of fixed floating heights", async () => {
   const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
 
+  assert.match(scene, /filterDarkDisplayBase/);
+  assert.match(scene, /displayBaseLuma/);
+  assert.match(scene, /discard/);
   assert.match(scene, /const groundedBounds = new THREE\.Box3\(\)\.setFromObject\(model\)/);
   assert.match(scene, /model\.position\.y -= visibleBottom/);
   assert.match(scene, /pedestal\.position\.set\(\s*hotspot\.position\[0\],\s*seabedHeight\(hotspot\.position\[0\], hotspot\.position\[2\]\) \+ 0\.02,\s*hotspot\.position\[2\],\s*\)/);

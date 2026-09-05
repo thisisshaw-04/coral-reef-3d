@@ -4,6 +4,7 @@ These GLB and thumbnail assets were downloaded from the Smithsonian 3D API / 3D 
 
 Coral scans:
 - Acropora palmata, USNM 3968: https://3d.si.edu/object/3d/acropora-palmata%3A6fd30c79-3345-4d06-b27c-99d5b320ce5f
+- Acropora cervicornis: https://3d-api.si.edu/content/document/3d_package:8e3e67d1-591a-4488-b437-dee35e796d9e
 - Diploria labyrinthiformis, USNM 74947: https://3d.si.edu/object/3d/diploria-labyrinthiformis%3A87738412-3acd-45d1-bff4-3ab67093470e
 - Porites andrewsi: https://3d-api.si.edu/content/document/3d_package:be997b55-dd01-484f-9cdf-ed70082e9685
 - Goniopora columna, USNM 5781: https://3d-api.si.edu/content/document/3d_package:d85d7078-a2fd-4872-8a81-9d87ba2045cc

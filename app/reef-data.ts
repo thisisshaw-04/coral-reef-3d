@@ -119,6 +119,18 @@ export const coralProfiles = {
       scientistCheck: "A field team would pair the scan with close photos of branch tips and living tissue margins.",
     },
   },
+  "acropora-cervicornis": {
+    scan: "acropora-cervicornis",
+    species: "Acropora cervicornis",
+    common: "Staghorn coral",
+    image: "/specimens/acropora-palmata.jpg",
+    tint: 0xe8a07b,
+    lesson: {
+      form: "Branching staghorn colonies grow as antler-like thickets instead of flat plates.",
+      habitat: "Those branches historically formed Caribbean nursery structure for reef fish and mobile invertebrates.",
+      scientistCheck: "A field team would pair the scan with close tissue photos, disease checks, and local restoration records.",
+    },
+  },
   "diploria-brain": {
     scan: "diploria-brain",
     species: "Diploria labyrinthiformis",
@@ -503,13 +515,13 @@ const coralTriangleColonies: Colony[] = [
 ];
 
 const caribbeanColonies: Colony[] = [
-  makeColony("acropora-palmata", {
-    id: "car-elkhorn",
+  makeColony("acropora-cervicornis", {
+    id: "car-staghorn",
     label: "Colony C1",
     position: [-34, 2.55, -36],
-    size: 7.8,
+    size: 7.2,
     yaw: -0.62,
-    zone: "Elkhorn reef crest",
+    zone: "Staghorn reef crest",
   }),
   makeColony("acro-compact", {
     id: "car-staghorn-analog",
@@ -523,7 +535,7 @@ const caribbeanColonies: Colony[] = [
     lesson: {
       form: "NOAA describes staghorn as dense antler-like thickets that historically structured Caribbean reef zones.",
       habitat: "Branching thickets create nursery shelter for reef fish, but they are vulnerable to disease and heat stress.",
-      scientistCheck: "The app uses a scanned Acropora branch as a form analogue because the exact staghorn scan is not in this local model set.",
+      scientistCheck: "This comparison keeps the compact Acropora form as a nearby analogue while the reef crest uses the dedicated staghorn scan.",
     },
   }),
   makeColony("diploria-brain", {

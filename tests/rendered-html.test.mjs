@@ -384,7 +384,7 @@ test("keeps the live mission masthead compact and aligned", async () => {
   assert.match(page, /<span>REEF RELAY<\/span>/);
   assert.doesNotMatch(page, /REEF RELAY<small>Living Reef Lab<\/small>/);
   assert.match(page, /EXPEDITION 01 · \{selected \? selected\.zone : activeWorld\.expedition\}/);
-  assert.match(page, /MOVE FREELY · SELECT A RESEARCH-BASED COLONY/);
+  assert.match(page, /SCAN · SELECT ANY COLONY TO OPEN ITS EVIDENCE CARD/);
   assert.match(css, /v28 - compact aligned mission masthead/);
   assert.match(css, /\.mission-brand span\s*{[\s\S]*?font-weight: 360/);
   assert.match(css, /\.sub-title\s*{[\s\S]*?top: clamp\(76px, 8vh, 98px\)/);
@@ -431,4 +431,29 @@ test("turns every scanned coral into a clickable evolving library entry", async 
   assert.match(library, /Discovered/);
   assert.match(css, /v29 - evolving coral library/);
   assert.match(css, /\.coral-library\s*{/);
+});
+
+test("provides a full scan mark note restore user flow", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const monitor = await readFile(new URL("../app/components/SpecimenMonitor.tsx", import.meta.url), "utf8");
+  const library = await readFile(new URL("../app/components/CoralLibrary.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(page, /type FieldRecord =/);
+  assert.match(page, /const toolDirections: Record<Tool, string>/);
+  assert.match(page, /const \[fieldRecords, setFieldRecords\]/);
+  assert.match(page, /const markColony = \(colony: Colony\) =>/);
+  assert.match(page, /const restoreColony = \(colony: Colony\) =>/);
+  assert.match(page, /if \(activeTool === "mark"\)/);
+  assert.match(page, /if \(activeTool === "note"\)/);
+  assert.match(page, /if \(activeTool === "restore"\)/);
+  assert.match(page, /Observation saved to the coral library/);
+  assert.match(monitor, /specimen-status/);
+  assert.match(monitor, /tool-card/);
+  assert.match(monitor, /Mark health/);
+  assert.match(monitor, /Restore preview/);
+  assert.match(monitor, /saved-note/);
+  assert.match(library, /coral-library__summary/);
+  assert.match(library, /Noted/);
+  assert.match(css, /v39 - actionable field workflow/);
 });

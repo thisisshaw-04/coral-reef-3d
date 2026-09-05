@@ -41,6 +41,16 @@ import {
   type Tool,
 } from "./reef-data";
 
+type FieldRecord = {
+  scanned: boolean;
+  marked?: boolean;
+  restored?: boolean;
+  note?: string;
+  condition?: string;
+  health?: string;
+  updatedAt: number;
+};
+
 const briefingSteps = [
   {
     label: "MISSION BRIEFING 01",
@@ -80,6 +90,14 @@ const briefingPointIcons = [
   ],
 ];
 
+const toolDirections: Record<Tool, string> = {
+  scan: "SCAN · SELECT ANY COLONY TO OPEN ITS EVIDENCE CARD",
+  mark: "MARK · SELECT A COLONY TO SCORE ITS CURRENT HEALTH",
+  note: "NOTE · SELECT A COLONY TO SAVE AN OBSERVATION",
+  restore: "RESTORE · SELECT A COLONY TO PREVIEW LOCAL RECOVERY",
+  library: "LIBRARY · REVIEW YOUR EVOLVING CORAL NOTEBOOK",
+};
+
 export default function Home() {
   const [entered, setEntered] = useState(false);
   const [selected, setSelected] = useState<Colony | null>(null);
@@ -97,7 +115,7 @@ export default function Home() {
   const [joinCode, setJoinCode] = useState("");
   const [note, setNote] = useState("");
   const [restored, setRestored] = useState<string[]>([]);
-  const [discoveredIds, setDiscoveredIds] = useState<string[]>([]);
+  const [fieldRecords, setFieldRecords] = useState<Record<string, FieldRecord>>({});
   const [sceneReady, setSceneReady] = useState(false);
   const [engine, setEngine] = useState("Reef engine");
   const [copied, setCopied] = useState(false);
@@ -117,10 +135,18 @@ export default function Home() {
     }
     return Array.from(colonies.values());
   }, [activeWorld]);
+  const discoveredIds = useMemo(
+    () =>
+      Object.entries(fieldRecords)
+        .filter(([, record]) => record.scanned)
+        .map(([id]) => id),
+    [fieldRecords],
+  );
   const sceneMappedIds = useMemo(
     () => Array.from(new Set([...mappedIds, ...discoveredIds, ...restored])),
     [mappedIds, discoveredIds, restored],
   );
+  const selectedRecord = selected ? fieldRecords[selected.id] : undefined;
   const timelineProgress = (momentIndex / Math.max(1, moments.length - 1)) * 100;
   const timelineStyle = {
     "--timeline-progress": `${timelineProgress}%`,
@@ -157,44 +183,145 @@ export default function Home() {
 
   const inspect = (id: string) => {
     const colony = activeColonies.find((item) => item.id === id) || null;
+    const activeTool = tool;
     setSelected(colony);
-    setTool("scan");
     if (!colony) return;
-    setDiscoveredIds((items) =>
-      items.includes(colony.id) ? items : [...items, colony.id],
-    );
+
+    setFieldRecords((records) => ({
+      ...records,
+      [colony.id]: {
+        ...records[colony.id],
+        scanned: true,
+        updatedAt: Date.now(),
+      },
+    }));
+
+    if (activeTool === "mark") {
+      markColony(colony);
+      return;
+    }
+
+    if (activeTool === "note") {
+      guide.announce(`Note mode ready for ${colony.common}. Save one clear field observation.`);
+      return;
+    }
+
+    if (activeTool === "restore") {
+      restoreColony(colony);
+      return;
+    }
+
+    if (activeTool === "library") setTool("scan");
 
     guide.announce(
       `Scanning ${colony.common}. Form is evidence: inspect the colony before you name its condition.`,
     );
   };
 
-  const markSelected = () => {
-    if (!selected) return;
+  const conditionFor = (isRestored = false) => {
+    if (isRestored) return "Restoration preview";
+    if (activeMoment.dhw >= 8) return "Severe heat stress";
+    if (activeMoment.dhw >= 4) return "Bleaching watch";
+    if (activeMoment.phase === "recovery") return "Recovering";
+    return "Stable survey";
+  };
+
+  const healthFor = (isRestored = false) =>
+    `${isRestored ? 92 : activeMoment.health}% living cover`;
+
+  const markColony = (colony: Colony) => {
+    const health = healthFor(restored.includes(colony.id));
+    const condition = conditionFor(restored.includes(colony.id));
+
+    setFieldRecords((records) => ({
+      ...records,
+      [colony.id]: {
+        ...records[colony.id],
+        scanned: true,
+        marked: true,
+        condition,
+        health,
+        updatedAt: Date.now(),
+      },
+    }));
 
     void sync({
       type: "annotate",
       id: playerId,
       name: diverName,
-      hotspotId: selected.id,
-      label: selected.species,
-      health: `${activeMoment.health}% living cover`,
+      hotspotId: colony.id,
+      label: colony.species,
+      health: `${condition} · ${health}`,
     });
+
+    guide.announce(`${colony.common} marked as ${condition.toLowerCase()} with ${health}.`);
+  };
+
+  const markSelected = () => {
+    if (!selected) {
+      guide.announce("Mark tool armed. Select a coral colony to score its current health.");
+      return;
+    }
+
+    markColony(selected);
+  };
+
+  const restoreColony = (colony: Colony) => {
+    setRestored((items) =>
+      items.includes(colony.id) ? items : [...items, colony.id],
+    );
+    setFieldRecords((records) => ({
+      ...records,
+      [colony.id]: {
+        ...records[colony.id],
+        scanned: true,
+        marked: true,
+        restored: true,
+        condition: "Restoration preview",
+        health: healthFor(true),
+        updatedAt: Date.now(),
+      },
+    }));
+    setPhase("recovery");
+    void sync({
+      type: "annotate",
+      id: playerId,
+      name: diverName,
+      hotspotId: colony.id,
+      label: colony.species,
+      health: `Restoration preview · ${healthFor(true)}`,
+    });
+    guide.announce(
+      "Restoration preview placed. This can help local recovery, but it cannot replace clean water and climate action.",
+    );
+  };
+
+  const restoreSelected = () => {
+    if (!selected) {
+      guide.announce("Restore tool armed. Select a colony to preview local recovery.");
+      return;
+    }
+
+    restoreColony(selected);
   };
 
   const applyTool = (next: Tool) => {
     setTool(next);
-    if (!selected) return;
+    if (next === "library") return;
 
     if (next === "mark") markSelected();
     if (next === "restore") {
-      setRestored((items) =>
-        items.includes(selected.id) ? items : [...items, selected.id],
-      );
-      setPhase("recovery");
-      guide.announce(
-        "Restoration preview placed. This can help local recovery, but it cannot replace clean water and climate action.",
-      );
+      restoreSelected();
+    }
+    if (next === "scan" && selected) {
+      guide.announce(`${selected.common} evidence card reopened. Compare form, signals, and timeline.`);
+    }
+    if (next === "note") {
+      if (selected) {
+        guide.announce(`Note tool ready for ${selected.common}. Add one observation from the evidence card.`);
+      } else {
+        guide.announce("Note tool armed. Select a coral colony, then save your observation.");
+      }
     }
   };
 
@@ -207,6 +334,7 @@ export default function Home() {
     setWorldId(nextWorld.id);
     setSelected(null);
     setRestored([]);
+    setFieldRecords({});
     setSceneReady(false);
     setTool("scan");
     setShowWorlds(false);
@@ -218,9 +346,29 @@ export default function Home() {
   const saveNote = () => {
     if (!selected || !note.trim()) return;
 
-    markSelected();
-    void sync({ type: "note", hotspotId: selected.id, note: note.trim() });
+    const savedNote = note.trim();
+    markColony(selected);
+    setFieldRecords((records) => ({
+      ...records,
+      [selected.id]: {
+        ...records[selected.id],
+        scanned: true,
+        marked: true,
+        note: savedNote,
+        updatedAt: Date.now(),
+      },
+    }));
+    void sync({
+      type: "note",
+      id: playerId,
+      name: diverName,
+      hotspotId: selected.id,
+      label: selected.species,
+      health: selectedRecord?.health ?? healthFor(restored.includes(selected.id)),
+      note: savedNote,
+    });
     setNote("");
+    guide.announce(`Observation saved to the coral library for ${selected.common}.`);
   };
 
   const chooseMoment = (index: number) => {
@@ -424,7 +572,7 @@ export default function Home() {
             <strong>
               {selected
                 ? selected.species
-                : "MOVE FREELY · SELECT A RESEARCH-BASED COLONY"}
+                : toolDirections[tool]}
             </strong>
           </div>
           <div className="diver-cursors" aria-hidden="true">
@@ -464,13 +612,17 @@ export default function Home() {
               activeMoment={activeMoment}
               graph={graph}
               note={note}
+              record={selectedRecord}
+              roomNote={room.annotations[selected.id]?.note}
               restored={restored}
               selected={selected}
               showSignals={showSignals}
               stressor={stressor}
               tool={tool}
               onClose={() => setSelected(null)}
+              onMark={markSelected}
               onNoteChange={setNote}
+              onRestore={restoreSelected}
               onSaveNote={saveNote}
               onToggleSignals={() => setShowSignals(!showSignals)}
             />
@@ -480,7 +632,9 @@ export default function Home() {
             <CoralLibrary
               colonies={activeColonies}
               discoveredIds={discoveredIds}
+              records={fieldRecords}
               mappedIds={mappedIds}
+              annotations={room.annotations}
               restoredIds={restored}
               selectedId={selected?.id}
               onClose={() => setTool("scan")}

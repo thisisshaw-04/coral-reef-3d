@@ -1,22 +1,35 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { Activity, FlaskConical, MessageCircle, X } from "lucide-react";
+import { Activity, CheckCircle2, FlaskConical, MapPinned, MessageCircle, Sprout, X } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { Colony, ReefMoment, Stressor, Tool } from "../reef-data";
 import { stressCopy } from "../reef-data";
+
+type SpecimenRecord = {
+  scanned: boolean;
+  marked?: boolean;
+  restored?: boolean;
+  note?: string;
+  condition?: string;
+  health?: string;
+};
 
 type SpecimenMonitorProps = {
   activeMoment: ReefMoment;
   graph: Array<{ year: string; health: number }>;
   note: string;
+  record?: SpecimenRecord;
+  roomNote?: string;
   restored: string[];
   selected: Colony;
   showSignals: boolean;
   stressor: Stressor | null;
   tool: Tool;
   onClose: () => void;
+  onMark: () => void;
   onNoteChange: (note: string) => void;
+  onRestore: () => void;
   onSaveNote: () => void;
   onToggleSignals: () => void;
 };
@@ -25,16 +38,30 @@ export function SpecimenMonitor({
   activeMoment,
   graph,
   note,
+  record,
+  roomNote,
   restored,
   selected,
   showSignals,
   stressor,
   tool,
   onClose,
+  onMark,
   onNoteChange,
+  onRestore,
   onSaveNote,
   onToggleSignals,
 }: SpecimenMonitorProps) {
+  const isRestored = restored.includes(selected.id) || record?.restored;
+  const savedNote = record?.note || roomNote || "";
+  const currentHealth = isRestored ? 92 : activeMoment.health;
+  const statusItems = [
+    ["Scanned", true],
+    ["Marked", Boolean(record?.marked)],
+    ["Noted", Boolean(savedNote)],
+    ["Restored", Boolean(isRestored)],
+  ] as const;
+
   return (
     <aside className="specimen-monitor">
       <button type="button" onClick={onClose} aria-label="Close specimen">
@@ -51,7 +78,7 @@ export function SpecimenMonitor({
       <dl>
         <div>
           <dt>Living cover</dt>
-          <dd>{restored.includes(selected.id) ? 92 : activeMoment.health}%</dd>
+          <dd>{currentHealth}%</dd>
         </div>
         <div>
           <dt>Heat stress</dt>
@@ -66,6 +93,14 @@ export function SpecimenMonitor({
           </dd>
         </div>
       </dl>
+      <div className="specimen-status" aria-label="Colony workflow status">
+        {statusItems.map(([label, complete]) => (
+          <span key={label} className={complete ? "is-complete" : ""}>
+            {complete && <CheckCircle2 />}
+            {label}
+          </span>
+        ))}
+      </div>
       <section className="evidence-card" aria-label="Observation evidence">
         <span>OBSERVE BEFORE NAMING</span>
         <p>{selected.lesson.form}</p>
@@ -112,6 +147,19 @@ export function SpecimenMonitor({
           </p>
         </div>
       )}
+      {tool === "mark" && (
+        <section className="tool-card" aria-label="Mark colony health">
+          <span><MapPinned /> Mark health</span>
+          <p>
+            {record?.marked
+              ? `${record.condition ?? "Survey score"} saved at ${record.health ?? `${currentHealth}% living cover`}.`
+              : `Score this colony against the ${activeMoment.year} reef conditions.`}
+          </p>
+          <button type="button" onClick={onMark}>
+            {record?.marked ? "Update mark" : "Mark colony"}
+          </button>
+        </section>
+      )}
       {tool === "note" && (
         <form
           className="note-form"
@@ -130,6 +178,24 @@ export function SpecimenMonitor({
             <MessageCircle /> Save
           </button>
         </form>
+      )}
+      {savedNote && tool !== "note" && (
+        <p className="saved-note">
+          <MessageCircle /> {savedNote}
+        </p>
+      )}
+      {tool === "restore" && (
+        <section className="tool-card" aria-label="Restore colony preview">
+          <span><Sprout /> Restore preview</span>
+          <p>
+            {isRestored
+              ? "Recovery preview is active for this colony and reflected in the library."
+              : "Apply a local recovery preview to compare protected cover against the same stress timeline."}
+          </p>
+          <button type="button" onClick={onRestore}>
+            {isRestored ? "Refresh preview" : "Apply restore"}
+          </button>
+        </section>
       )}
       {stressor && (
         <p className="effect-note">

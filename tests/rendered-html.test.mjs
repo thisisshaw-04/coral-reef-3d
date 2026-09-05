@@ -393,6 +393,17 @@ test("keeps colony reticles steady without the green glow state", async () => {
   assert.match(css, /\.reef-scene__marker\.is-mapped \.reef-scene__reticle i svg\s*{[\s\S]*?display: none/);
 });
 
+test("uses a small transparent plus reticle for coral targets", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v46 - compact transparent colony plus reticle/);
+  assert.match(css, /\.reef-scene__reticle,[\s\S]*?\.reef-scene__marker\.is-mapped \.reef-scene__reticle\s*{[\s\S]*?width: 34px/);
+  assert.match(css, /\.reef-scene__reticle,[\s\S]*?\.reef-scene__marker\.is-mapped \.reef-scene__reticle\s*{[\s\S]*?background: rgb\(255 255 255 \/ 0\.055\)/);
+  assert.match(css, /\.reef-scene__reticle::before\s*{[\s\S]*?width: 22px/);
+  assert.match(css, /\.reef-scene__reticle::after\s*{[\s\S]*?height: 22px/);
+  assert.match(css, /\.reef-scene__reticle i,[\s\S]*?\.reef-scene__marker\.is-mapped \.reef-scene__reticle i\s*{[\s\S]*?width: 0/);
+});
+
 test("scopes scanned coral and animal models to researched reef regions", async () => {
   const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
 

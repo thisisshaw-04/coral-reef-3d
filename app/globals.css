@@ -8079,3 +8079,52 @@ a:focus-visible,
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 }
+
+/* v46 - compact transparent colony plus reticle */
+.reef-scene__reticle,
+.reef-scene__marker.is-mapped .reef-scene__reticle {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgb(255 255 255 / 0.36);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.055);
+  box-shadow: none;
+  animation: none !important;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.reef-scene__reticle::before,
+.reef-scene__reticle::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: rgb(255 255 255 / 0.58);
+  border-radius: 999px;
+  box-shadow: none;
+  transform: translate(-50%, -50%);
+}
+
+.reef-scene__reticle::before {
+  width: 22px;
+  height: 1px;
+}
+
+.reef-scene__reticle::after {
+  width: 1px;
+  height: 22px;
+}
+
+.reef-scene__reticle i,
+.reef-scene__marker.is-mapped .reef-scene__reticle i {
+  width: 0;
+  height: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.reef-scene__marker-label {
+  margin-top: 6px;
+}

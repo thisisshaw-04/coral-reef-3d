@@ -8668,3 +8668,59 @@ a:focus-visible,
     grid-template-columns: 1fr !important;
   }
 }
+
+/* v53 - cleaner living-city drawer copy and spacing */
+.world-drawer {
+  top: clamp(82px, 10vh, 104px) !important;
+  width: min(520px, calc(100vw - 72px)) !important;
+  max-height: min(560px, calc(100vh - 132px)) !important;
+  padding: 12px 12px 18px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  border-radius: 18px !important;
+}
+
+.world-drawer > span {
+  margin: 2px 8px 10px !important;
+  font-size: clamp(8px, 0.58vw, 9px) !important;
+  letter-spacing: 0.18em !important;
+}
+
+.world-drawer > button {
+  gap: 4px !important;
+  padding: 11px 14px 12px !important;
+  border-radius: 14px !important;
+  font-size: clamp(18px, 1.22vw, 21px) !important;
+  line-height: 1.04 !important;
+}
+
+.world-drawer > button + button {
+  margin-top: 7px !important;
+}
+
+.world-drawer > button small {
+  max-width: none !important;
+  font-size: clamp(9px, 0.62vw, 11px) !important;
+  line-height: 1.16 !important;
+}
+
+.world-drawer > button em {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  font-size: clamp(8.5px, 0.56vw, 10px) !important;
+  line-height: 1.18 !important;
+}
+
+@media (max-width: 620px) {
+  .world-drawer {
+    top: 78px !important;
+    width: calc(100vw - 24px) !important;
+    max-height: min(500px, calc(100vh - 124px)) !important;
+    padding: 10px 10px 16px !important;
+  }
+
+  .world-drawer > button {
+    padding: 10px 12px !important;
+  }
+}

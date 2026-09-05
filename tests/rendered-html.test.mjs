@@ -576,6 +576,20 @@ test("keeps the living city selector compact and less white", async () => {
   assert.match(css, /\.world-drawer > button em\s*{[\s\S]*?max-width: 34ch/);
 });
 
+test("keeps the living-city drawer readable without clipped edges", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v53 - cleaner living-city drawer copy and spacing/);
+  assert.match(css, /\.world-drawer\s*{[\s\S]*?top: clamp\(82px, 10vh, 104px\) !important/);
+  assert.match(css, /\.world-drawer\s*{[\s\S]*?width: min\(520px, calc\(100vw - 72px\)\) !important/);
+  assert.match(css, /\.world-drawer\s*{[\s\S]*?max-height: min\(560px, calc\(100vh - 132px\)\) !important/);
+  assert.match(css, /\.world-drawer\s*{[\s\S]*?padding: 12px 12px 18px !important/);
+  assert.match(css, /\.world-drawer > button\s*{[\s\S]*?font-size: clamp\(18px, 1\.22vw, 21px\) !important/);
+  assert.match(css, /\.world-drawer > button small\s*{[\s\S]*?font-size: clamp\(9px, 0\.62vw, 11px\) !important/);
+  assert.match(css, /\.world-drawer > button em\s*{[\s\S]*?max-width: none !important/);
+  assert.match(css, /\.world-drawer > button em\s*{[\s\S]*?font-size: clamp\(8\.5px, 0\.56vw, 10px\) !important/);
+});
+
 test("turns every scanned coral into a clickable evolving library entry", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const data = await readFile(new URL("../app/reef-data.ts", import.meta.url), "utf8");

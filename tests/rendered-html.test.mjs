@@ -485,7 +485,7 @@ test("turns every scanned coral into a clickable evolving library entry", async 
   const library = await readFile(new URL("../app/components/CoralLibrary.tsx", import.meta.url), "utf8");
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
-  assert.match(data, /export type Tool = "scan" \| "mark" \| "note" \| "restore" \| "library"/);
+  assert.match(data, /export type Tool = "scan" \| "mark" \| "note" \| "restore" \| "library" \| "story"/);
   assert.match(data, /export const createLibraryColonyFromHotspot/);
   assert.match(scene, /export const BIOME_AMBIENT_SCAN_COLONIES/);
   assert.match(scene, /interactiveHotspotIds/);
@@ -527,4 +527,25 @@ test("provides a full scan mark note restore user flow", async () => {
   assert.match(library, /coral-library__summary/);
   assert.match(library, /Noted/);
   assert.match(css, /v39 - actionable field workflow/);
+});
+
+test("adds an educational storytelling mode with free exploration exit", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const data = await readFile(new URL("../app/reef-data.ts", import.meta.url), "utf8");
+
+  assert.match(data, /"story"/);
+  assert.match(page, /const storySteps = \[/);
+  assert.match(page, /STORY · FOLLOW THE REEF THROUGH TIME/);
+  assert.match(page, /const \[storyStep, setStoryStep\]/);
+  assert.match(page, /setTool\("story"\)/);
+  assert.match(page, /const chooseStoryStep = \(index: number\) =>/);
+  assert.match(page, /const exitStory = \(\) =>/);
+  assert.match(page, /Explore freely/);
+  assert.match(page, /className="story-panel"/);
+  assert.match(page, /\["story", Route, "Story"\]/);
+  assert.match(css, /v44 - educational story mode with free exploration exit/);
+  assert.match(css, /\.story-panel\s*{/);
+  assert.match(css, /\.story-panel__rail\s*{[\s\S]*?grid-template-columns: repeat\(5, minmax\(0, 1fr\)\)/);
+  assert.match(css, /\.tool-console\s*{[\s\S]*?grid-template-columns: repeat\(7, minmax\(0, 1fr\)\)/);
 });

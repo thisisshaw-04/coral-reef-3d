@@ -5,7 +5,7 @@ import type {
   ScanAssetKey,
 } from "./components/ReefScene";
 
-export type Tool = "scan" | "mark" | "note" | "restore" | "library";
+export type Tool = "scan" | "mark" | "note" | "restore" | "library" | "story";
 export type Stressor = "heat" | "co2" | "plastic" | "runoff";
 export type Explorer = {
   id: string;

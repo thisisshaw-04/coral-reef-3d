@@ -12,6 +12,7 @@ import {
   Map,
   MessageCircle,
   MousePointer2,
+  Route,
   ScanLine,
   Share2,
   Sparkles,
@@ -96,7 +97,46 @@ const toolDirections: Record<Tool, string> = {
   note: "NOTE · SELECT A COLONY TO SAVE AN OBSERVATION",
   restore: "RESTORE · SELECT A COLONY TO PREVIEW LOCAL RECOVERY",
   library: "LIBRARY · REVIEW YOUR EVOLVING CORAL NOTEBOOK",
+  story: "STORY · FOLLOW THE REEF THROUGH TIME",
 };
+
+const storySteps = [
+  {
+    label: "STORY 01",
+    momentIndex: 0,
+    title: "Start with a baseline, not a guess.",
+    body: "A reef record begins by noticing what is alive, what shape it takes, and which colonies form the habitat.",
+    takeaway: "Scan first. The colony shape is the evidence you carry into every later comparison.",
+  },
+  {
+    label: "STORY 02",
+    momentIndex: 1,
+    title: "Recovery can be real, but uneven.",
+    body: "Fast-growing branching and plate corals can return cover quickly, while slower massive forms hold long-term structure.",
+    takeaway: "Compare growth form before deciding whether the whole reef is recovering.",
+  },
+  {
+    label: "STORY 03",
+    momentIndex: 2,
+    title: "Heat stress changes the color story.",
+    body: "Degree heating weeks track accumulated thermal stress. As stress rises, sensitive corals can pale before structure is lost.",
+    takeaway: "Use the time current to watch living cover, DHW, pH, and species sensitivity together.",
+  },
+  {
+    label: "STORY 04",
+    momentIndex: 3,
+    title: "Today is an intervention point.",
+    body: "A field team would mark colonies, save notes, and decide which sites need close monitoring or local restoration.",
+    takeaway: "Leave story mode any time to explore freely, scan colonies, and build the coral library.",
+  },
+  {
+    label: "STORY 05",
+    momentIndex: 4,
+    title: "The future is a scenario, not a promise.",
+    body: "A restored patch can improve local condition, but bleaching risk still depends on heat, water quality, and repeated disturbance.",
+    takeaway: "Test stress carefully, then return to the reef and look for what actually changed.",
+  },
+];
 
 export default function Home() {
   const [entered, setEntered] = useState(false);
@@ -108,6 +148,7 @@ export default function Home() {
   const [showTimeline, setShowTimeline] = useState(true);
   const [showBriefing, setShowBriefing] = useState(false);
   const [briefingStep, setBriefingStep] = useState(0);
+  const [storyStep, setStoryStep] = useState(0);
   const [showStress, setShowStress] = useState(false);
   const [showWorlds, setShowWorlds] = useState(false);
   const [showSignals, setShowSignals] = useState(false);
@@ -153,6 +194,7 @@ export default function Home() {
     "--timeline-fill": `${timelineProgress * 0.88}%`,
     "--timeline-active-x": `${6 + timelineProgress * 0.88}%`,
   } as CSSProperties;
+  const activeStory = storySteps[storyStep];
   const graph = useMemo(
     () => moments.map((moment) => ({ year: moment.year, health: moment.health })),
     [],
@@ -176,9 +218,28 @@ export default function Home() {
 
   const finishBriefing = () => {
     setShowBriefing(false);
+    setSelected(null);
+    setTool("story");
+    setStoryStep(0);
+    chooseMoment(storySteps[0].momentIndex);
     guide.announce(
-      `Mission started. Scan ${activeColonies.length} research-based colonies, mark their health, then compare the reef through time.`,
+      `Story mode started. Follow the reef through time, or leave story mode to explore freely.`,
     );
+  };
+
+  const chooseStoryStep = (index: number) => {
+    const nextIndex = Math.max(0, Math.min(storySteps.length - 1, index));
+    const nextStory = storySteps[nextIndex];
+    setStoryStep(nextIndex);
+    setSelected(null);
+    setTool("story");
+    chooseMoment(nextStory.momentIndex);
+  };
+
+  const exitStory = () => {
+    setTool("scan");
+    setSelected(null);
+    guide.announce(`Free exploration ready. Scan any of the ${activeColonies.length} colonies in this reef.`);
   };
 
   const inspect = (id: string) => {
@@ -307,6 +368,13 @@ export default function Home() {
 
   const applyTool = (next: Tool) => {
     setTool(next);
+    if (next === "story") {
+      setSelected(null);
+      setShowTimeline(true);
+      setShowStress(false);
+      guide.announce("Story mode reopened. Step through the reef timeline, then return to free exploration when ready.");
+      return;
+    }
     if (next === "library") return;
 
     if (next === "mark") markSelected();
@@ -337,6 +405,7 @@ export default function Home() {
     setFieldRecords({});
     setSceneReady(false);
     setTool("scan");
+    setStoryStep(0);
     setShowWorlds(false);
     guide.announce(
       `${nextWorld.name} terrain loaded. ${nextWorld.objectiveTitle}.`,
@@ -593,7 +662,7 @@ export default function Home() {
             ))}
           </div>
 
-          {!selected && (
+          {!selected && tool !== "story" && (
             <aside className="field-lesson">
               <span>FIELD OBJECTIVE</span>
               <strong>{activeWorld.objectiveTitle}</strong>
@@ -604,6 +673,47 @@ export default function Home() {
                 ))}
               </ol>
               <small>{activeWorld.researchBasis}</small>
+            </aside>
+          )}
+
+          {!selected && tool === "story" && (
+            <aside className="story-panel" aria-live="polite">
+              <span>{activeStory.label} · REEF TIME</span>
+              <h2>{activeStory.title}</h2>
+              <p>{activeStory.body}</p>
+              <strong>{activeStory.takeaway}</strong>
+              <div className="story-panel__rail" aria-label="Story progress">
+                {storySteps.map((step, index) => (
+                  <button
+                    type="button"
+                    key={step.label}
+                    className={index === storyStep ? "is-active" : ""}
+                    onClick={() => chooseStoryStep(index)}
+                    aria-label={`Open ${step.label}`}
+                  >
+                    <i />
+                    <span>{moments[step.momentIndex].year}</span>
+                  </button>
+                ))}
+              </div>
+              <footer>
+                <button
+                  type="button"
+                  onClick={() => chooseStoryStep(storyStep - 1)}
+                  disabled={storyStep === 0}
+                >
+                  Back
+                </button>
+                {storyStep === storySteps.length - 1 ? (
+                  <button type="button" onClick={exitStory}>
+                    Explore freely
+                  </button>
+                ) : (
+                  <button type="button" onClick={() => chooseStoryStep(storyStep + 1)}>
+                    Next
+                  </button>
+                )}
+              </footer>
             </aside>
           )}
 
@@ -660,6 +770,7 @@ export default function Home() {
                 ["note", MessageCircle, "Note"],
                 ["restore", Sprout, "Restore"],
                 ["library", BookOpen, "Library"],
+                ["story", Route, "Story"],
               ] as const
             ).map(([id, Icon, label]) => (
               <button

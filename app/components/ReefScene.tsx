@@ -40,6 +40,7 @@ type ReefSceneProps = {
   active?: boolean;
   biome?: ReefBiomeId;
   focusId?: string | null;
+  guidedFocus?: boolean;
   hotspots?: ReefSceneHotspot[];
   mappedIds?: string[];
   fallbackSrc?: string;
@@ -721,6 +722,7 @@ export default function ReefScene({
   active = false,
   biome = "great-barrier",
   focusId = null,
+  guidedFocus = false,
   hotspots = DEFAULT_HOTSPOTS,
   mappedIds = [],
   fallbackSrc = "/reef-entry-v4.webp",
@@ -740,6 +742,7 @@ export default function ReefScene({
   const markerRefs = useRef(new Map<string, HTMLButtonElement>());
   const activeRef = useRef(active);
   const focusRef = useRef(focusId);
+  const guidedFocusRef = useRef(guidedFocus);
   const phaseRef = useRef(phase);
   const stressorRef = useRef(stressor);
   const restoredRef = useRef(restoredIds);
@@ -762,6 +765,10 @@ export default function ReefScene({
   useEffect(() => {
     focusRef.current = focusId;
   }, [focusId]);
+
+  useEffect(() => {
+    guidedFocusRef.current = guidedFocus;
+  }, [guidedFocus]);
 
   useEffect(() => {
     phaseRef.current = phase;
@@ -1843,6 +1850,7 @@ export default function ReefScene({
           zone: "",
           depth: "",
           lastFocus: "" as string | null,
+          focusTransit: 0,
         };
         const raycaster = new THREE.Raycaster();
         const pointer = new THREE.Vector2();
@@ -2056,10 +2064,25 @@ export default function ReefScene({
           const focused = focusRef.current ? hotspotsRef.current.find((item) => item.id === focusRef.current) : undefined;
           if (focused) {
             const focusSize = focused.size ?? (focused.scan ? SCANS[focused.scan].size : 6.5);
-            desired.set(focused.position[0] + 1.8, focused.position[1] + 2.3, focused.position[2] + Math.max(9.6, focusSize * 1.55));
-            camera.position.lerp(desired, 1 - Math.exp(-delta * 2.8));
-            spotVector.set(...focused.position);
-            look.lerp(spotVector, 1 - Math.exp(-delta * 3.4));
+            const focusIndex = Math.max(0, hotspotsRef.current.findIndex((item) => item.id === focused.id));
+            const isGuidedFocus = guidedFocusRef.current;
+            if (nav.lastFocus !== focused.id) nav.focusTransit = 1;
+            nav.focusTransit = Math.max(0, nav.focusTransit - delta * 0.42);
+            const travelArc = isGuidedFocus ? Math.sin(nav.focusTransit * Math.PI) : 0;
+            const orbit = isGuidedFocus ? Math.sin(elapsed * 0.17 + focusIndex * 0.9) * 2.8 : 1.8;
+            const reefHeight = seabedHeight(focused.position[0], focused.position[2]);
+            desired.set(
+              focused.position[0] + orbit,
+              reefHeight + (isGuidedFocus ? 4.2 + travelArc * 2.6 : 2.3),
+              focused.position[2] + Math.max(isGuidedFocus ? 12.8 : 9.6, focusSize * (isGuidedFocus ? 1.95 : 1.55)),
+            );
+            camera.position.lerp(desired, 1 - Math.exp(-delta * (isGuidedFocus ? 1.65 : 2.8)));
+            spotVector.set(
+              focused.position[0],
+              reefHeight + (isGuidedFocus ? 1.05 : 0.35),
+              focused.position[2],
+            );
+            look.lerp(spotVector, 1 - Math.exp(-delta * (isGuidedFocus ? 2.05 : 3.4)));
             camera.lookAt(look);
             nav.lastFocus = focused.id;
           } else {
@@ -2202,7 +2225,7 @@ export default function ReefScene({
                 if (element) markerRefs.current.set(hotspot.id, element);
                 else markerRefs.current.delete(hotspot.id);
               }}
-              className={`reef-scene__marker${mappedHotspot ? " is-mapped" : ""}`}
+              className={`reef-scene__marker${mappedHotspot ? " is-mapped" : ""}${focusId === hotspot.id ? " is-focused" : ""}`}
               style={position}
               onClick={() => callbacksRef.current.onHotspotSelect?.(hotspot.id)}
               aria-label={`${mappedHotspot ? "Mapped" : "Inspect"} ${hotspot.label}`}

@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import ReefScene, {
   BIOME_AMBIENT_SCAN_COLONIES,
+  type ScanAssetKey,
   type ReefPhase,
 } from "./components/ReefScene";
 import { CoralLibrary } from "./components/CoralLibrary";
@@ -100,10 +101,20 @@ const toolDirections: Record<Tool, string> = {
   story: "STORY · FOLLOW THE REEF THROUGH TIME",
 };
 
-const storySteps = [
+type StoryStep = {
+  label: string;
+  momentIndex: number;
+  anchorScans: ScanAssetKey[];
+  title: string;
+  body: string;
+  takeaway: string;
+};
+
+const storySteps: StoryStep[] = [
   {
     label: "STORY 01",
     momentIndex: 0,
+    anchorScans: ["acro-table", "agaricia-plate", "pavona-lettuce"],
     title: "Start with a baseline, not a guess.",
     body: "A reef record begins by noticing what is alive, what shape it takes, and which colonies form the habitat.",
     takeaway: "Scan first. The colony shape is the evidence you carry into every later comparison.",
@@ -111,6 +122,7 @@ const storySteps = [
   {
     label: "STORY 02",
     momentIndex: 1,
+    anchorScans: ["acro-compact", "acropora-cervicornis", "acropora-palmata"],
     title: "Recovery can be real, but uneven.",
     body: "Fast-growing branching and plate corals can return cover quickly, while slower massive forms hold long-term structure.",
     takeaway: "Compare growth form before deciding whether the whole reef is recovering.",
@@ -118,6 +130,7 @@ const storySteps = [
   {
     label: "STORY 03",
     momentIndex: 2,
+    anchorScans: ["pocillopora-cauliflower", "seriatopora-birdsnest", "goniopora-column"],
     title: "Heat stress changes the color story.",
     body: "Degree heating weeks track accumulated thermal stress. As stress rises, sensitive corals can pale before structure is lost.",
     takeaway: "Use the time current to watch living cover, DHW, pH, and species sensitivity together.",
@@ -125,6 +138,7 @@ const storySteps = [
   {
     label: "STORY 04",
     momentIndex: 3,
+    anchorScans: ["porites-mound", "diploria-brain", "massive-star"],
     title: "Today is an intervention point.",
     body: "A field team would mark colonies, save notes, and decide which sites need close monitoring or local restoration.",
     takeaway: "Leave story mode any time to explore freely, scan colonies, and build the coral library.",
@@ -132,6 +146,7 @@ const storySteps = [
   {
     label: "STORY 05",
     momentIndex: 4,
+    anchorScans: ["massive-star", "diploria-brain", "porites-mound", "heliopora-blue"],
     title: "The future is a scenario, not a promise.",
     body: "A restored patch can improve local condition, but bleaching risk still depends on heat, water quality, and repeated disturbance.",
     takeaway: "Test stress carefully, then return to the reef and look for what actually changed.",
@@ -195,7 +210,19 @@ export default function Home() {
     "--timeline-fill": `${timelineProgress * 0.88}%`,
     "--timeline-active-x": `${6 + timelineProgress * 0.88}%`,
   } as CSSProperties;
+  const storyColonyFor = (index: number) => {
+    const story = storySteps[Math.max(0, Math.min(storySteps.length - 1, index))];
+    return (
+      story.anchorScans
+        .map((scan) => activeColonies.find((colony) => colony.scan === scan))
+        .find(Boolean) ??
+      activeColonies[index % Math.max(1, activeColonies.length)] ??
+      null
+    );
+  };
   const activeStory = storySteps[storyStep];
+  const activeStoryColony = storyColonyFor(storyStep);
+  const storyFocusId = tool === "story" && !showBriefing ? activeStoryColony?.id ?? null : null;
   const graph = useMemo(
     () => moments.map((moment) => ({ year: moment.year, health: moment.health })),
     [],
@@ -223,8 +250,9 @@ export default function Home() {
     setTool("story");
     setStoryStep(0);
     chooseMoment(storySteps[0].momentIndex);
+    const colony = storyColonyFor(0);
     guide.announce(
-      `Story mode started. Follow the reef through time, or leave story mode to explore freely.`,
+      `Story mode started. Drifting to ${colony?.common ?? "the first coral"} for the opening reef record.`,
     );
   };
 
@@ -235,6 +263,10 @@ export default function Home() {
     setSelected(null);
     setTool("story");
     chooseMoment(nextStory.momentIndex);
+    const nextColony = storyColonyFor(nextIndex);
+    guide.announce(
+      `${nextStory.label}. Moving through the reef to ${nextColony?.common ?? "the next colony"}.`,
+    );
   };
 
   const exitStory = () => {
@@ -480,7 +512,8 @@ export default function Home() {
       <ReefScene
         active={entered}
         biome={activeWorld.id}
-        focusId={selected?.id || null}
+        focusId={selected?.id || storyFocusId}
+        guidedFocus={Boolean(storyFocusId)}
         hotspots={activeColonies}
         mappedIds={sceneMappedIds}
         fallbackSrc="/reef-cockpit.webp"
@@ -682,6 +715,12 @@ export default function Home() {
           {!selected && tool === "story" && (
             <aside className="story-panel" aria-live="polite">
               <span>{activeStory.label} · REEF TIME</span>
+              {activeStoryColony && (
+                <div className="story-panel__anchor">
+                  <b>{activeStoryColony.label}</b>
+                  <small>{activeStoryColony.common} · {activeStoryColony.zone}</small>
+                </div>
+              )}
               <h2>{activeStory.title}</h2>
               <p>{activeStory.body}</p>
               <strong>{activeStory.takeaway}</strong>

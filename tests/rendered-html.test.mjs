@@ -581,21 +581,37 @@ test("provides a full scan mark note restore user flow", async () => {
 
 test("adds an educational storytelling mode with free exploration exit", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
   const data = await readFile(new URL("../app/reef-data.ts", import.meta.url), "utf8");
 
   assert.match(data, /"story"/);
-  assert.match(page, /const storySteps = \[/);
+  assert.match(page, /const storySteps: StoryStep\[\] = \[/);
+  assert.match(page, /anchorScans: \["acro-table", "agaricia-plate", "pavona-lettuce"\]/);
   assert.match(page, /STORY · FOLLOW THE REEF THROUGH TIME/);
   assert.match(page, /const \[storyStep, setStoryStep\]/);
+  assert.match(page, /const storyColonyFor = \(index: number\) =>/);
+  assert.match(page, /const activeStoryColony = storyColonyFor\(storyStep\)/);
+  assert.match(page, /const storyFocusId = tool === "story" && !showBriefing/);
   assert.match(page, /setTool\("story"\)/);
   assert.match(page, /const chooseStoryStep = \(index: number\) =>/);
+  assert.match(page, /Moving through the reef to/);
   assert.match(page, /const exitStory = \(\) =>/);
   assert.match(page, /Explore freely/);
+  assert.match(page, /focusId=\{selected\?\.id \|\| storyFocusId\}/);
+  assert.match(page, /guidedFocus=\{Boolean\(storyFocusId\)\}/);
   assert.match(page, /className="story-panel"/);
+  assert.match(page, /className="story-panel__anchor"/);
   assert.match(page, /\["story", Route, "Story"\]/);
+  assert.match(scene, /guidedFocus\?: boolean/);
+  assert.match(scene, /guidedFocusRef/);
+  assert.match(scene, /nav\.focusTransit = 1/);
+  assert.match(scene, /const travelArc = isGuidedFocus \? Math\.sin\(nav\.focusTransit \* Math\.PI\) : 0/);
   assert.match(css, /v44 - educational story mode with free exploration exit/);
+  assert.match(css, /v49 - coral-anchored story tour/);
   assert.match(css, /\.story-panel\s*{/);
+  assert.match(css, /\.story-panel__anchor\s*{/);
+  assert.match(css, /\.reef-scene__marker\.is-focused \.reef-scene__reticle::before/);
   assert.match(css, /\.story-panel__rail\s*{[\s\S]*?grid-template-columns: repeat\(5, minmax\(0, 1fr\)\)/);
   assert.match(css, /\.tool-console\s*{[\s\S]*?grid-template-columns: repeat\(7, minmax\(0, 1fr\)\)/);
 });

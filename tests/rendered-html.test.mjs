@@ -268,6 +268,15 @@ test("keeps the time current dots distributed across the full rail", async () =>
   assert.match(css, /@media \(max-width: 860px\)[\s\S]*?\.time-current\s*{[\s\S]*?grid-template-columns: 1fr/);
 });
 
+test("keeps the selected time current dot steady without a growing outer ring", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v33 - steady timeline orbs without pulsing outer rings/);
+  assert.match(css, /\.time-current nav button i,[\s\S]*?\.time-current nav button\.is-active i\s*{[\s\S]*?animation: none !important/);
+  assert.doesNotMatch(css.match(/v33 - steady timeline orbs[\s\S]*$/)?.[0] ?? "", /0 0 0 10px/);
+  assert.match(css, /\.time-current nav button i::before,[\s\S]*?\.time-current nav button i::after\s*{[\s\S]*?content: none !important/);
+});
+
 test("uses disciplined HUD spacing with softer corners", async () => {
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 

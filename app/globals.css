@@ -7173,3 +7173,24 @@ a:focus-visible,
   object-fit: contain;
   filter: none;
 }
+
+/* v33 - steady timeline orbs without pulsing outer rings */
+.time-current nav button i,
+.time-current nav button.is-past i,
+.time-current nav button.is-active i {
+  animation: none !important;
+  box-shadow:
+    0 5px 14px rgb(0 12 20 / 0.16),
+    inset 0 2px 4px rgb(255 255 255 / 0.78),
+    inset -3px -5px 9px rgb(42 190 163 / 0.2);
+}
+
+.time-current nav button i::before,
+.time-current nav button i::after {
+  content: none !important;
+  display: none !important;
+}
+
+.time-current nav button.is-active i {
+  transform: translateY(1px) scale(1.12);
+}

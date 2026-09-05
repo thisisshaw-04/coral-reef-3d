@@ -337,6 +337,18 @@ test("keeps the selected time current dot steady without a growing outer ring", 
   assert.match(css, /\.time-current nav button i::before,[\s\S]*?\.time-current nav button i::after\s*{[\s\S]*?content: none !important/);
 });
 
+test("uses balanced normal timeline dots without shine reflections", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v41 - balanced quiet timeline markers/);
+  assert.match(css, /\.time-current nav\s*{[\s\S]*?padding-inline: var\(--timeline-edge\)/);
+  assert.match(css, /\.time-current nav::before,[\s\S]*?\.time-current nav::after\s*{[\s\S]*?left: var\(--timeline-edge\)/);
+  assert.match(css, /\.time-current nav::after\s*{[\s\S]*?animation: none !important/);
+  assert.match(css, /\.time-current nav button\s*{[\s\S]*?grid-template-rows: 30px 1fr/);
+  assert.match(css, /\.time-current nav button i,[\s\S]*?\.time-current nav button\.is-active i\s*{[\s\S]*?transform: none !important/);
+  assert.match(css, /\.time-current nav button i::before,[\s\S]*?\.time-current nav button i::after\s*{[\s\S]*?display: none !important/);
+});
+
 test("uses disciplined HUD spacing with softer corners", async () => {
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 

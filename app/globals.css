@@ -7642,3 +7642,102 @@ a:focus-visible,
   font-size: clamp(10px, 0.78vw, 14px);
   letter-spacing: 0.18em;
 }
+
+/* v41 - balanced quiet timeline markers */
+.time-current nav {
+  --timeline-edge: clamp(22px, 5.2%, 44px);
+  position: relative;
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: start;
+  width: 100%;
+  min-width: 0;
+  padding-inline: var(--timeline-edge);
+}
+
+.time-current nav::before,
+.time-current nav::after {
+  top: 15px;
+  left: var(--timeline-edge);
+  right: var(--timeline-edge);
+  height: 2px;
+  border-radius: 999px;
+}
+
+.time-current nav::before {
+  background: rgb(255 255 255 / 0.2);
+  box-shadow: none;
+}
+
+.time-current nav::after {
+  width: calc(var(--timeline-progress) * (100% - (var(--timeline-edge) * 2)));
+  background: linear-gradient(90deg, rgb(242 255 251 / 0.96), rgb(136 236 215 / 0.78));
+  box-shadow: none;
+  animation: none !important;
+}
+
+.time-current nav button {
+  position: relative;
+  display: grid;
+  grid-template-rows: 30px 1fr;
+  place-items: start center;
+  min-width: 0;
+  height: 48px;
+  padding: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.time-current nav button::before,
+.time-current nav button::after,
+.time-current nav button.is-active::after {
+  content: none !important;
+  display: none !important;
+}
+
+.time-current nav button i,
+.time-current nav button.is-past i,
+.time-current nav button.is-active i {
+  width: 13px;
+  height: 13px;
+  margin-top: 9px;
+  border: 2px solid rgb(235 255 249 / 0.86);
+  border-radius: 999px;
+  background: rgb(224 251 244 / 0.96);
+  box-shadow: 0 2px 6px rgb(0 14 20 / 0.2) !important;
+  transform: none !important;
+  animation: none !important;
+}
+
+.time-current nav button.is-past i {
+  background: rgb(154 230 212 / 0.9);
+  border-color: rgb(215 255 246 / 0.78);
+}
+
+.time-current nav button.is-active i {
+  width: 15px;
+  height: 15px;
+  margin-top: 8px;
+  background: rgb(255 255 255 / 0.98);
+  border-color: rgb(169 244 226 / 0.96);
+}
+
+.time-current nav button i::before,
+.time-current nav button i::after {
+  content: none !important;
+  display: none !important;
+}
+
+.time-current nav button span {
+  margin-top: 2px;
+  font-family: var(--reef-ui-font);
+  font-size: clamp(10px, 0.78vw, 12px);
+  font-weight: 650;
+  letter-spacing: 0;
+  color: rgb(232 244 241 / 0.58);
+}
+
+.time-current nav button.is-past span,
+.time-current nav button.is-active span {
+  color: rgb(255 255 255 / 0.92);
+}

@@ -3,7 +3,6 @@
 import { useMemo, useState, type CSSProperties } from "react";
 import {
   AudioLines,
-  BadgeCheck,
   BookOpen,
   Check,
   ChevronDown,
@@ -13,9 +12,7 @@ import {
   Map,
   MessageCircle,
   MousePointer2,
-  ScanSearch,
   ScanLine,
-  Shapes,
   Share2,
   Sparkles,
   Sprout,
@@ -66,9 +63,21 @@ const briefingSteps = [
 ];
 
 const briefingPointIcons = [
-  [ScanSearch, Shapes, BadgeCheck],
-  [ScanLine, Map, MessageCircle],
-  [Clock3, ThermometerSun, Sprout],
+  [
+    "/icons/reef-find-colonies.svg",
+    "/icons/reef-shape-first.svg",
+    "/icons/reef-evidence-id.svg",
+  ],
+  [
+    "/icons/reef-scan-colony.svg",
+    "/icons/reef-mark-health.svg",
+    "/icons/reef-note-observation.svg",
+  ],
+  [
+    "/icons/reef-time-compare.svg",
+    "/icons/reef-bleaching-risk.svg",
+    "/icons/reef-restore-caution.svg",
+  ],
 ];
 
 export default function Home() {
@@ -359,12 +368,12 @@ export default function Home() {
           <p>{briefingSteps[briefingStep].body}</p>
           <div className="briefing-points">
             {briefingSteps[briefingStep].points.map((point, index) => {
-              const PointIcon = briefingPointIcons[briefingStep][index];
+              const iconSrc = briefingPointIcons[briefingStep][index];
 
               return (
                 <strong key={point}>
                   <i aria-hidden="true">
-                    <PointIcon />
+                    <img src={iconSrc} alt="" />
                   </i>
                   {point}
                 </strong>

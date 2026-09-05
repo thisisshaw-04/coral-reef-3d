@@ -176,12 +176,13 @@ test("uses icon lenses for briefing points instead of numeric dots", async () =>
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
   assert.match(page, /const briefingPointIcons =/);
-  assert.match(page, /ScanSearch/);
-  assert.match(page, /Shapes/);
-  assert.match(page, /BadgeCheck/);
-  assert.match(page, /<PointIcon \/>/);
+  assert.match(page, /\/icons\/reef-find-colonies\.svg/);
+  assert.match(page, /\/icons\/reef-shape-first\.svg/);
+  assert.match(page, /\/icons\/reef-evidence-id\.svg/);
+  assert.match(page, /<img src=\{iconSrc\} alt="" \/>/);
   assert.match(css, /v20 - briefing point icons/);
-  assert.match(css, /\.briefing-points i svg\s*{[\s\S]*?stroke-width: 1\.85/);
+  assert.match(css, /v30 - polished briefing image icons/);
+  assert.match(css, /\.briefing-points i img\s*{[\s\S]*?object-fit: contain/);
 });
 
 test("separates the bottom tool dock from the timeline", async () => {

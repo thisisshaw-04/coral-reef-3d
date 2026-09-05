@@ -7031,3 +7031,33 @@ a:focus-visible,
     max-height: min(390px, 44vh);
   }
 }
+
+/* v30 - polished briefing image icons */
+.briefing-points i {
+  width: clamp(58px, 5vw, 72px);
+  height: clamp(58px, 5vw, 72px);
+  margin-bottom: 16px;
+  background:
+    radial-gradient(circle at 31% 23%, rgb(255 255 255 / 0.54) 0 12%, transparent 13%),
+    linear-gradient(145deg, rgb(255 255 255 / 0.27), rgb(255 255 255 / 0.07)),
+    rgb(255 255 255 / 0.09);
+  box-shadow:
+    0 0 0 12px rgb(255 255 255 / 0.045),
+    0 16px 34px rgb(0 12 20 / 0.22),
+    inset 0 2px 3px rgb(255 255 255 / 0.48),
+    inset -4px -7px 16px rgb(255 255 255 / 0.055);
+}
+
+.briefing-points i img {
+  width: 70%;
+  height: 70%;
+  display: block;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 8px rgb(255 255 255 / 0.42))
+    drop-shadow(0 7px 12px rgb(0 13 22 / 0.24));
+}
+
+.briefing-points i svg {
+  display: none;
+}

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
+  <title id="title">Compare reef time</title>
+  <desc id="desc">A time current dial comparing reef years.</desc>
+  <defs>
+    <linearGradient id="a" x1="17" x2="80" y1="16" y2="81" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff"/>
+      <stop offset=".5" stop-color="#f2fcff"/>
+      <stop offset="1" stop-color="#baffee"/>
+    </linearGradient>
+    <filter id="b" width="150%" height="150%" x="-25%" y="-25%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="5" flood-color="#001923" flood-opacity=".34" stdDeviation="4"/>
+      <feDropShadow dx="0" dy="0" flood-color="#e2fff8" flood-opacity=".5" stdDeviation="3"/>
+    </filter>
+  </defs>
+  <g fill="none" stroke="url(#a)" stroke-linecap="round" stroke-linejoin="round" filter="url(#b)">
+    <circle cx="48" cy="48" r="30" stroke-width="5"/>
+    <path stroke-width="5" d="M48 30v20l14 8"/>
+    <path stroke-width="4" d="M23 78c16-8 34-8 50 0"/>
+    <path stroke-width="4" d="M20 19h12m-6-6v12"/>
+  </g>
+  <circle cx="74" cy="23" r="7" fill="#fff" opacity=".88"/>
+</svg>

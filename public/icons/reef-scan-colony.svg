@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
+  <title id="title">Scan a colony</title>
+  <desc id="desc">A research scanner passing over a coral colony.</desc>
+  <defs>
+    <linearGradient id="a" x1="20" x2="78" y1="14" y2="82" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff"/>
+      <stop offset=".5" stop-color="#edfaff"/>
+      <stop offset="1" stop-color="#bcfff0"/>
+    </linearGradient>
+    <filter id="b" width="150%" height="150%" x="-25%" y="-25%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="5" flood-color="#001923" flood-opacity=".35" stdDeviation="4"/>
+      <feDropShadow dx="0" dy="0" flood-color="#e2fff8" flood-opacity=".52" stdDeviation="3"/>
+    </filter>
+  </defs>
+  <g fill="none" stroke="url(#a)" stroke-linecap="round" stroke-linejoin="round" filter="url(#b)">
+    <path stroke-width="5" d="M21 68c9-15 18-19 27-19s18 4 27 19"/>
+    <path stroke-width="4" d="M35 53V34m13 15V25m13 28V35"/>
+    <path stroke-width="5" d="M22 22h52"/>
+    <path stroke-width="4" d="M27 30h42"/>
+    <path stroke-width="4" d="M18 79h60"/>
+  </g>
+  <circle cx="48" cy="25" r="6" fill="#fff" opacity=".95"/>
+</svg>

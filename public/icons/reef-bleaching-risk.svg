@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
+  <title id="title">Watch bleaching risk</title>
+  <desc id="desc">A coral branch beside a heat signal.</desc>
+  <defs>
+    <linearGradient id="a" x1="18" x2="80" y1="14" y2="82" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff"/>
+      <stop offset=".45" stop-color="#fff8f0"/>
+      <stop offset="1" stop-color="#baffef"/>
+    </linearGradient>
+    <filter id="b" width="150%" height="150%" x="-25%" y="-25%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="5" flood-color="#001923" flood-opacity=".34" stdDeviation="4"/>
+      <feDropShadow dx="0" dy="0" flood-color="#eafffa" flood-opacity=".45" stdDeviation="3"/>
+    </filter>
+  </defs>
+  <g fill="none" stroke="url(#a)" stroke-linecap="round" stroke-linejoin="round" filter="url(#b)">
+    <path stroke-width="5" d="M32 74V48m0 0-11-12m11 12 12-15m-12 15 16 9"/>
+    <path stroke-width="5" d="M55 63V28a9 9 0 0 1 18 0v35a18 18 0 1 1-18 0Z"/>
+    <path stroke-width="4" d="M64 36v31"/>
+    <path stroke-width="4" d="M25 74h47"/>
+  </g>
+  <circle cx="64" cy="75" r="7" fill="#fff" opacity=".9"/>
+</svg>

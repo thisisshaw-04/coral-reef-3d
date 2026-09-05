@@ -461,8 +461,6 @@ const WORLD_BOUNDS = {
   zMin: -548,
   zMax: 72,
 };
-const MIN_DIVE_DEPTH_METERS = 10;
-const DEPTH_METERS_PER_WORLD_UNIT = 0.65;
 const FREE_SWIM_SPEED = 9.6;
 const FREE_SWIM_SHIFT_SPEED = 17.2;
 const VERTICAL_SWIM_SPEED = 5.4;
@@ -609,7 +607,7 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
       [122, 0, -448, 42],
     ],
     zones: [
-      { minZ: -85, name: "Bendera Bay reef flat", depth: "10 m" },
+      { minZ: -85, name: "Bendera Bay reef flat", depth: "7 m" },
       { minZ: -205, name: "Turbid coral slope", depth: "12 m" },
       { minZ: -350, name: "Seagrass and sponge mosaic", depth: "16 m" },
       { minZ: -999, name: "Nursery research zone", depth: "19 m" },
@@ -732,7 +730,7 @@ const BIOME_CONFIG: Record<ReefBiomeId, ReefBiomeConfig> = {
       [124, 0, -500, 36],
     ],
     zones: [
-      { minZ: -90, name: "Elkhorn reef crest", depth: "10 m" },
+      { minZ: -90, name: "Elkhorn reef crest", depth: "9 m" },
       { minZ: -220, name: "Staghorn nursery lane", depth: "15 m" },
       { minZ: -365, name: "Spur-and-groove terrace", depth: "20 m" },
       { minZ: -999, name: "Limestone hardbottom", depth: "25 m" },
@@ -2231,35 +2229,20 @@ export default function ReefScene({
             if (!activeRef.current) nav.velocity.multiplyScalar(Math.exp(-delta * 8));
             camera.position.addScaledVector(nav.velocity, delta);
             camera.position.x = THREE.MathUtils.clamp(camera.position.x, -WORLD_BOUNDS.x, WORLD_BOUNDS.x);
+            camera.position.y = THREE.MathUtils.clamp(camera.position.y, WORLD_BOUNDS.yMin, WORLD_BOUNDS.yMax);
             camera.position.z = THREE.MathUtils.clamp(camera.position.z, WORLD_BOUNDS.zMin, WORLD_BOUNDS.zMax);
             camera.rotation.set(nav.pitch + (reduced ? 0 : Math.sin(elapsed * 0.56) * 0.004), nav.yaw, 0);
           }
 
-          camera.position.x = THREE.MathUtils.clamp(camera.position.x, -WORLD_BOUNDS.x, WORLD_BOUNDS.x);
-          camera.position.z = THREE.MathUtils.clamp(camera.position.z, WORLD_BOUNDS.zMin, WORLD_BOUNDS.zMax);
           const nextZone =
             biomeConfig.zones.find((zone) => camera.position.z > zone.minZ) ??
             biomeConfig.zones[biomeConfig.zones.length - 1];
-          const nominalDepth = Math.max(
-            MIN_DIVE_DEPTH_METERS,
-            Number.parseFloat(nextZone.depth) || 18,
-          );
+          const nominalDepth = Number.parseFloat(nextZone.depth) || 18;
           const terrainY = seabedHeight(camera.position.x, camera.position.z);
-          const maxHeightAboveSeabed =
-            (nominalDepth - MIN_DIVE_DEPTH_METERS) / DEPTH_METERS_PER_WORLD_UNIT;
-          const surfaceLimitedY = Math.min(
-            WORLD_BOUNDS.yMax,
-            terrainY + Math.max(0, maxHeightAboveSeabed),
-          );
-          camera.position.y = THREE.MathUtils.clamp(
-            camera.position.y,
-            WORLD_BOUNDS.yMin,
-            Math.max(WORLD_BOUNDS.yMin, surfaceLimitedY),
-          );
           const heightAboveSeabed = Math.max(0, camera.position.y - terrainY);
           const liveDepth = THREE.MathUtils.clamp(
-            Math.round(nominalDepth - heightAboveSeabed * DEPTH_METERS_PER_WORLD_UNIT),
-            MIN_DIVE_DEPTH_METERS,
+            Math.round(nominalDepth - heightAboveSeabed * 0.65),
+            2,
             36,
           );
           const liveDepthLabel = `${liveDepth} m`;

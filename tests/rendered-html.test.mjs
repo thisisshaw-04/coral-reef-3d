@@ -116,18 +116,15 @@ test("updates the visible depth readout from live vertical movement", async () =
   assert.match(page, /const \[diveDepth, setDiveDepth\] = useState\("22 m"\)/);
   assert.match(page, /onZoneChange=\{\(_, depth\) => setDiveDepth\(depth\)\}/);
   assert.match(page, /<strong>\{diveDepth\}<\/strong>/);
-  assert.match(scene, /const MIN_DIVE_DEPTH_METERS = 10/);
-  assert.match(scene, /const DEPTH_METERS_PER_WORLD_UNIT = 0\.65/);
   assert.match(scene, /depth: ""/);
-  assert.match(scene, /const nominalDepth = Math\.max\(\s*MIN_DIVE_DEPTH_METERS,\s*Number\.parseFloat\(nextZone\.depth\) \|\| 18,\s*\)/);
-  assert.match(scene, /const maxHeightAboveSeabed =\s*\(nominalDepth - MIN_DIVE_DEPTH_METERS\) \/ DEPTH_METERS_PER_WORLD_UNIT/);
-  assert.match(scene, /const surfaceLimitedY = Math\.min\(\s*WORLD_BOUNDS\.yMax,\s*terrainY \+ Math\.max\(0, maxHeightAboveSeabed\),\s*\)/);
-  assert.match(scene, /Math\.max\(WORLD_BOUNDS\.yMin, surfaceLimitedY\)/);
+  assert.doesNotMatch(scene, /MIN_DIVE_DEPTH_METERS/);
+  assert.doesNotMatch(scene, /maxHeightAboveSeabed/);
+  assert.match(scene, /camera\.position\.y = THREE\.MathUtils\.clamp\(camera\.position\.y, WORLD_BOUNDS\.yMin, WORLD_BOUNDS\.yMax\)/);
   assert.match(scene, /const heightAboveSeabed = Math\.max\(0, camera\.position\.y - terrainY\)/);
-  assert.match(scene, /Math\.round\(nominalDepth - heightAboveSeabed \* DEPTH_METERS_PER_WORLD_UNIT\)/);
-  assert.match(scene, /MIN_DIVE_DEPTH_METERS,\s*36/);
-  assert.match(scene, /Bendera Bay reef flat", depth: "10 m"/);
-  assert.match(scene, /Elkhorn reef crest", depth: "10 m"/);
+  assert.match(scene, /Math\.round\(nominalDepth - heightAboveSeabed \* 0\.65\)/);
+  assert.match(scene, /Math\.round\(nominalDepth - heightAboveSeabed \* 0\.65\),\s*2,\s*36/);
+  assert.match(scene, /Bendera Bay reef flat", depth: "7 m"/);
+  assert.match(scene, /Elkhorn reef crest", depth: "9 m"/);
   assert.match(scene, /callbacksRef\.current\.onZoneChange\?\.\(nextZone\.name, liveDepthLabel\)/);
 });
 

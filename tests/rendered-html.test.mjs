@@ -84,6 +84,10 @@ test("uses distinct procedural seabed textures and faster movement", async () =>
   assert.match(scene, /map: floorTexture/);
   assert.match(scene, /-event\.deltaY \* 0\.0027/);
   assert.match(scene, /nav\.keys\.has\("shift"\) \? 12\.4 : 6\.8/);
+  assert.match(scene, /event\.code === "Space"/);
+  assert.match(scene, /event\.code === "AltLeft" \|\| event\.code === "AltRight"/);
+  assert.match(scene, /nav\.keys\.has\("e"\) \|\| nav\.keys\.has\("space"\)/);
+  assert.match(scene, /nav\.keys\.has\("q"\) \|\| nav\.keys\.has\("alt"\)/);
   assert.match(scene, /vertical \* 3\.6/);
 });
 

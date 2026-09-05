@@ -1813,15 +1813,39 @@ export default function ReefScene({
             if (id) callbacksRef.current.onHotspotSelect?.(id);
           }
         };
+        const navigationKeyFromEvent = (event: KeyboardEvent) => {
+          if (event.code === "Space") return "space";
+          if (event.code === "AltLeft" || event.code === "AltRight") return "alt";
+          return event.key.toLowerCase();
+        };
+        const navigationKeys = new Set([
+          "w",
+          "a",
+          "s",
+          "d",
+          "q",
+          "e",
+          "space",
+          "alt",
+          "arrowup",
+          "arrowdown",
+          "arrowleft",
+          "arrowright",
+          "shift",
+        ]);
         const keyDown = (event: KeyboardEvent) => {
           if (!activeRef.current) return;
-          const key = event.key.toLowerCase();
-          if (["w", "a", "s", "d", "q", "e", "arrowup", "arrowdown", "arrowleft", "arrowright", "shift"].includes(key)) {
+          const key = navigationKeyFromEvent(event);
+          if (navigationKeys.has(key)) {
             event.preventDefault();
             nav.keys.add(key);
           }
         };
-        const keyUp = (event: KeyboardEvent) => nav.keys.delete(event.key.toLowerCase());
+        const keyUp = (event: KeyboardEvent) => {
+          const key = navigationKeyFromEvent(event);
+          if (navigationKeys.has(key)) event.preventDefault();
+          nav.keys.delete(key);
+        };
         const wheel = (event: WheelEvent) => {
           if (!activeRef.current || focusRef.current) return;
           event.preventDefault();
@@ -1963,7 +1987,9 @@ export default function ReefScene({
             const wantsBack = nav.keys.has("s") || nav.keys.has("arrowdown");
             const wantsLeft = nav.keys.has("a") || nav.keys.has("arrowleft");
             const wantsRight = nav.keys.has("d") || nav.keys.has("arrowright");
-            const vertical = (nav.keys.has("e") ? 1 : 0) - (nav.keys.has("q") ? 1 : 0);
+            const vertical =
+              (nav.keys.has("e") || nav.keys.has("space") ? 1 : 0) -
+              (nav.keys.has("q") || nav.keys.has("alt") ? 1 : 0);
             direction.set(-Math.sin(nav.yaw), 0, -Math.cos(nav.yaw));
             right.set(Math.cos(nav.yaw), 0, -Math.sin(nav.yaw));
             const boost = nav.keys.has("shift") ? 12.4 : 6.8;

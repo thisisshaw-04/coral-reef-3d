@@ -159,6 +159,7 @@ export default function Home() {
   const [fieldRecords, setFieldRecords] = useState<Record<string, FieldRecord>>({});
   const [sceneReady, setSceneReady] = useState(false);
   const [engine, setEngine] = useState("Reef engine");
+  const [diveDepth, setDiveDepth] = useState("22 m");
   const [copied, setCopied] = useState(false);
   const { chooseRoomCode, diverName, mappedIds, playerId, room, roomCode, sync } =
     useRoomSync({ entered, restoredIds: restored });
@@ -489,6 +490,7 @@ export default function Home() {
         onHotspotSelect={inspect}
         onReady={() => setSceneReady(true)}
         onEngineChange={setEngine}
+        onZoneChange={(_, depth) => setDiveDepth(depth)}
       />
       <div className="submarine-frame" aria-hidden="true" />
 
@@ -517,7 +519,7 @@ export default function Home() {
           <button type="button" onClick={share}>
             {copied ? <Check /> : <Share2 />} {roomCode}
           </button>
-          <strong>22 m</strong>
+          <strong>{diveDepth}</strong>
         </div>
       </header>
 

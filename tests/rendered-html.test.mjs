@@ -93,6 +93,20 @@ test("uses distinct procedural seabed textures and faster movement", async () =>
   assert.match(scene, /vertical \* 3\.6/);
 });
 
+test("updates the visible depth readout from live vertical movement", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
+  assert.match(page, /const \[diveDepth, setDiveDepth\] = useState\("22 m"\)/);
+  assert.match(page, /onZoneChange=\{\(_, depth\) => setDiveDepth\(depth\)\}/);
+  assert.match(page, /<strong>\{diveDepth\}<\/strong>/);
+  assert.match(scene, /depth: ""/);
+  assert.match(scene, /const nominalDepth = Number\.parseFloat\(nextZone\.depth\) \|\| 18/);
+  assert.match(scene, /const heightAboveSeabed = Math\.max\(0, camera\.position\.y - terrainY\)/);
+  assert.match(scene, /Math\.round\(nominalDepth - heightAboveSeabed \* 0\.65\)/);
+  assert.match(scene, /callbacksRef\.current\.onZoneChange\?\.\(nextZone\.name, liveDepthLabel\)/);
+});
+
 test("starts every reef dive inside the coral field", async () => {
   const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
 

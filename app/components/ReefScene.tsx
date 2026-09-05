@@ -1837,6 +1837,7 @@ export default function ReefScene({
           lastY: 0,
           mobileForward: false,
           zone: "",
+          depth: "",
           lastFocus: "" as string | null,
         };
         const raycaster = new THREE.Raycaster();
@@ -2089,9 +2090,19 @@ export default function ReefScene({
           const nextZone =
             biomeConfig.zones.find((zone) => camera.position.z > zone.minZ) ??
             biomeConfig.zones[biomeConfig.zones.length - 1];
-          if (nextZone.name !== nav.zone) {
+          const nominalDepth = Number.parseFloat(nextZone.depth) || 18;
+          const terrainY = seabedHeight(camera.position.x, camera.position.z);
+          const heightAboveSeabed = Math.max(0, camera.position.y - terrainY);
+          const liveDepth = THREE.MathUtils.clamp(
+            Math.round(nominalDepth - heightAboveSeabed * 0.65),
+            2,
+            36,
+          );
+          const liveDepthLabel = `${liveDepth} m`;
+          if (nextZone.name !== nav.zone || liveDepthLabel !== nav.depth) {
             nav.zone = nextZone.name;
-            callbacksRef.current.onZoneChange?.(nextZone.name, nextZone.depth);
+            nav.depth = liveDepthLabel;
+            callbacksRef.current.onZoneChange?.(nextZone.name, liveDepthLabel);
           }
 
           const width = host.clientWidth;

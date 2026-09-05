@@ -201,6 +201,33 @@ const SCANS: Record<
   },
 };
 
+const SCAN_MOUNT_PROFILES: Partial<
+  Record<
+    ScanAssetKey,
+    {
+      displayScale: number;
+      settle?: number;
+      markerRatio?: number;
+      markerMin?: number;
+      markerMax?: number;
+    }
+  >
+> = {
+  "acropora-palmata": { displayScale: 0.76, settle: 0.08, markerRatio: 0.82, markerMax: 3.7 },
+  "acropora-cervicornis": { displayScale: 0.68, settle: 0.1, markerRatio: 0.86, markerMax: 3.4 },
+  "heliopora-blue": { displayScale: 0.56, settle: 0.12, markerRatio: 0.92, markerMax: 3.2 },
+  "agaricia-plate": { displayScale: 0.7, settle: 0.08, markerRatio: 0.8, markerMax: 2.8 },
+  "pavona-lettuce": { displayScale: 0.68, settle: 0.08, markerRatio: 0.82, markerMax: 3 },
+  "fungia-disc": { displayScale: 0.72, settle: 0.04, markerRatio: 0.72, markerMax: 2.4 },
+};
+
+const scanDisplaySize = (hotspot: ReefSceneHotspot) => {
+  const scanKey = hotspot.scan ?? (hotspot.id in SCANS ? hotspot.id as ScanAssetKey : undefined);
+  const scanSize = scanKey ? SCANS[scanKey].size : 6.5;
+  const mountScale = scanKey ? SCAN_MOUNT_PROFILES[scanKey]?.displayScale ?? 1 : 1;
+  return (hotspot.size ?? scanSize) * mountScale;
+};
+
 const FALLBACK_POSITIONS: Record<string, { left: string; top: string }> = {
   "acro-table": { left: "35%", top: "59%" },
   "acro-compact": { left: "59%", top: "55%" },
@@ -1606,6 +1633,7 @@ export default function ReefScene({
         const gltfLoader = new GLTFLoader();
         gltfLoader.setDRACOLoader(dracoLoader);
         const scanTemplatePromises = new Map<ScanAssetKey, Promise<Object3D>>();
+        const hotspotMarkerLifts = new Map<string, number>();
 
         const getScanTemplate = (scanKey: ScanAssetKey) => {
           const existing = scanTemplatePromises.get(scanKey);
@@ -1629,6 +1657,7 @@ export default function ReefScene({
         const placeScanColony = async (hotspot: ReefSceneHotspot, interactive: boolean) => {
           const scanKey = hotspot.scan ?? (hotspot.id in SCANS ? hotspot.id as ScanAssetKey : "acro-table");
           const asset = SCANS[scanKey];
+          const mount = SCAN_MOUNT_PROFILES[scanKey];
           const template = await getScanTemplate(scanKey);
           if (!alive) return;
           const model = template.clone(true);
@@ -1673,22 +1702,37 @@ export default function ReefScene({
               livingMaterials.push({ material: living, base: living.color.clone(), hotspotId: hotspot.id, scanKey, transitionLag: 0.62 + random() * 0.72 });
             }
           });
+          if (mount?.displayScale) {
+            model.scale.multiplyScalar(mount.displayScale);
+          }
+          model.updateMatrixWorld(true);
           const groundedBounds = new THREE.Box3().setFromObject(model);
           const visibleBottom = Number.isFinite(groundedBounds.min.y) ? groundedBounds.min.y : -0.5;
           model.position.y -= visibleBottom;
+          model.position.y -= mount?.settle ?? 0;
+          model.updateMatrixWorld(true);
+          const mountedBounds = new THREE.Box3().setFromObject(model);
+          const mountedSize = mountedBounds.getSize(new THREE.Vector3());
           const pedestal = new THREE.Group();
           pedestal.name = hotspot.id;
           pedestal.userData.hotspotId = hotspot.id;
           pedestal.userData.scanKey = scanKey;
           pedestal.userData.baseScale = hotspot.size ?? asset.size;
           pedestal.userData.animOffset = random() * Math.PI * 2;
+          const baseScale = pedestal.userData.baseScale as number;
+          const markerLift = THREE.MathUtils.clamp(
+            mountedSize.y * baseScale * (mount?.markerRatio ?? 0.74) + 0.42,
+            mount?.markerMin ?? 1.15,
+            mount?.markerMax ?? 4.1,
+          );
+          hotspotMarkerLifts.set(hotspot.id, markerLift);
           pedestal.position.set(
             hotspot.position[0],
             seabedHeight(hotspot.position[0], hotspot.position[2]) + 0.02,
             hotspot.position[2],
           );
           pedestal.rotation.y = hotspot.yaw ?? (scanKey === "massive-star" ? -0.7 : 0.35);
-          pedestal.scale.setScalar(pedestal.userData.baseScale as number);
+          pedestal.scale.setScalar(baseScale);
           pedestal.add(model);
           animatedCorals.push(pedestal);
           if (interactive) coralTargets.push(pedestal);
@@ -2130,7 +2174,7 @@ export default function ReefScene({
 
           const focused = focusRef.current ? hotspotsRef.current.find((item) => item.id === focusRef.current) : undefined;
           if (focused) {
-            const focusSize = focused.size ?? (focused.scan ? SCANS[focused.scan].size : 6.5);
+            const focusSize = scanDisplaySize(focused);
             const focusIndex = Math.max(0, hotspotsRef.current.findIndex((item) => item.id === focused.id));
             const isGuidedFocus = guidedFocusRef.current;
             if (nav.lastFocus !== focused.id) nav.focusTransit = 1;
@@ -2144,9 +2188,10 @@ export default function ReefScene({
               focused.position[2] + Math.max(isGuidedFocus ? 12.8 : 9.6, focusSize * (isGuidedFocus ? 1.95 : 1.55)),
             );
             camera.position.lerp(desired, 1 - Math.exp(-delta * (isGuidedFocus ? 1.65 : 2.8)));
+            const focusLift = hotspotMarkerLifts.get(focused.id) ?? Math.max(1.1, focusSize * 0.48);
             spotVector.set(
               focused.position[0],
-              reefHeight + (isGuidedFocus ? 1.05 : 0.35),
+              reefHeight + Math.min(focusLift * (isGuidedFocus ? 0.62 : 0.48), 2.4),
               focused.position[2],
             );
             look.lerp(spotVector, 1 - Math.exp(-delta * (isGuidedFocus ? 2.05 : 3.4)));
@@ -2214,7 +2259,14 @@ export default function ReefScene({
           for (const hotspot of hotspotsRef.current) {
             const marker = markerRefs.current.get(hotspot.id);
             if (!marker) continue;
-            spotVector.set(...hotspot.position);
+            const markerLift =
+              hotspotMarkerLifts.get(hotspot.id) ??
+              Math.max(1.15, scanDisplaySize(hotspot) * 0.52);
+            spotVector.set(
+              hotspot.position[0],
+              seabedHeight(hotspot.position[0], hotspot.position[2]) + markerLift,
+              hotspot.position[2],
+            );
             projected.copy(spotVector).project(camera);
             const distance = camera.position.distanceTo(spotVector);
             const visible = activeRef.current && projected.z > -1 && projected.z < 1 && Math.abs(projected.x) < 1.05 && Math.abs(projected.y) < 1.04 && distance < 76;

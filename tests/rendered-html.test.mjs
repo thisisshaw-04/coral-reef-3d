@@ -295,12 +295,21 @@ test("replaces fake reef-floor blobs with modeled rubble and benthic life", asyn
 test("anchors scan colonies to the seabed instead of fixed floating heights", async () => {
   const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
 
+  assert.match(scene, /SCAN_MOUNT_PROFILES/);
+  assert.match(scene, /"heliopora-blue": \{ displayScale: 0\.56/);
+  assert.match(scene, /const scanDisplaySize = \(hotspot: ReefSceneHotspot\)/);
+  assert.match(scene, /const hotspotMarkerLifts = new Map<string, number>\(\)/);
   assert.match(scene, /filterDarkDisplayBase/);
   assert.match(scene, /displayBaseLuma/);
   assert.match(scene, /discard/);
+  assert.match(scene, /model\.scale\.multiplyScalar\(mount\.displayScale\)/);
   assert.match(scene, /const groundedBounds = new THREE\.Box3\(\)\.setFromObject\(model\)/);
   assert.match(scene, /model\.position\.y -= visibleBottom/);
+  assert.match(scene, /model\.position\.y -= mount\?\.settle \?\? 0/);
+  assert.match(scene, /hotspotMarkerLifts\.set\(hotspot\.id, markerLift\)/);
   assert.match(scene, /pedestal\.position\.set\(\s*hotspot\.position\[0\],\s*seabedHeight\(hotspot\.position\[0\], hotspot\.position\[2\]\) \+ 0\.02,\s*hotspot\.position\[2\],\s*\)/);
+  assert.match(scene, /const focusSize = scanDisplaySize\(focused\)/);
+  assert.match(scene, /hotspotMarkerLifts\.get\(hotspot\.id\) \?\?/);
   assert.match(scene, /const lowFlatDisplayBase =/);
   assert.doesNotMatch(scene, /pedestal\.position\.set\(\.\.\.hotspot\.position\)/);
 });

@@ -92,15 +92,6 @@ const briefingPointIcons = [
   ],
 ];
 
-const toolDirections: Record<Tool, string> = {
-  scan: "SCAN · SELECT ANY COLONY TO OPEN ITS EVIDENCE CARD",
-  mark: "MARK · SELECT A COLONY TO SCORE ITS CURRENT HEALTH",
-  note: "NOTE · SELECT A COLONY TO SAVE AN OBSERVATION",
-  restore: "RESTORE · SELECT A COLONY TO PREVIEW LOCAL RECOVERY",
-  library: "LIBRARY · REVIEW YOUR EVOLVING CORAL NOTEBOOK",
-  story: "STORY · FOLLOW THE REEF THROUGH TIME",
-};
-
 type StoryStep = {
   label: string;
   momentIndex: number;
@@ -671,14 +662,15 @@ export default function Home() {
       {entered && !showBriefing && (
         <>
           <div className="sub-title">
-            <span>
-              EXPEDITION 01 · {selected ? selected.zone : activeWorld.expedition}
-            </span>
-            <strong>
-              {selected
-                ? selected.species
-                : toolDirections[tool]}
-            </strong>
+            <div className="sub-title__brand">
+              <Waves />
+              <strong>REEF RELAY</strong>
+            </div>
+            <div className="sub-title__stack">
+              <span>EXPEDITION 01</span>
+              <b>{selected ? selected.zone : activeWorld.expedition}</b>
+              {selected && <small>{selected.species}</small>}
+            </div>
           </div>
           <div className="diver-cursors" aria-hidden="true">
             {room.explorers.slice(0, 3).map((diver, index) => (

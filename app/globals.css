@@ -8449,6 +8449,110 @@ a:focus-visible,
   }
 }
 
+/* v51 - editorial live masthead lockup */
+.sub-title {
+  top: clamp(56px, 6.3vh, 76px);
+  left: 50%;
+  width: min(760px, calc(100vw - 520px));
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: auto minmax(170px, 1fr);
+  align-items: center;
+  justify-content: center;
+  gap: clamp(20px, 2.4vw, 34px);
+  text-align: left;
+}
+
+.sub-title::before,
+.sub-title::after {
+  content: none !important;
+}
+
+.sub-title__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(10px, 1vw, 14px);
+  color: rgb(255 255 255 / 0.96);
+  white-space: nowrap;
+}
+
+.sub-title__brand svg {
+  width: clamp(22px, 2.2vw, 34px);
+  height: clamp(22px, 2.2vw, 34px);
+  stroke-width: 2.05;
+}
+
+.sub-title__brand strong {
+  font-size: clamp(34px, 4.4vw, 70px);
+  font-weight: 320;
+  line-height: 0.92;
+  letter-spacing: 0.18em;
+}
+
+.sub-title__stack {
+  display: grid;
+  gap: 5px;
+  padding-left: clamp(18px, 2vw, 32px);
+  border-left: 1px solid rgb(255 255 255 / 0.2);
+  color: rgb(230 246 243 / 0.72);
+}
+
+.sub-title__stack span,
+.sub-title__stack b,
+.sub-title__stack small {
+  font-family: var(--reef-ui-font);
+  text-transform: uppercase;
+}
+
+.sub-title__stack span {
+  font-size: clamp(9px, 0.72vw, 12px);
+  font-weight: 650;
+  letter-spacing: 0.18em;
+}
+
+.sub-title__stack b {
+  color: rgb(255 255 255 / 0.86);
+  font-size: clamp(11px, 0.92vw, 15px);
+  font-weight: 520;
+  letter-spacing: 0.16em;
+  line-height: 1.2;
+}
+
+.sub-title__stack small {
+  color: rgb(232 250 246 / 0.56);
+  font-size: clamp(8px, 0.64vw, 10px);
+  font-weight: 540;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+}
+
+@media (max-width: 1180px) {
+  .sub-title {
+    width: min(650px, calc(100vw - 340px));
+  }
+}
+
+@media (max-width: 760px) {
+  .sub-title {
+    top: 64px;
+    width: calc(100vw - 28px);
+    grid-template-columns: 1fr;
+    gap: 8px;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .sub-title__brand strong {
+    font-size: clamp(24px, 8vw, 38px);
+  }
+
+  .sub-title__stack {
+    padding-left: 0;
+    border-left: 0;
+    justify-items: center;
+  }
+}
+
 @media (max-width: 900px) {
   .mission-brand {
     display: flex;

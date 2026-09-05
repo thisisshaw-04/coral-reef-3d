@@ -470,12 +470,16 @@ test("keeps the live mission masthead compact and aligned", async () => {
 
   assert.match(page, /<span>REEF RELAY<\/span>/);
   assert.doesNotMatch(page, /REEF RELAY<small>Living Reef Lab<\/small>/);
-  assert.match(page, /EXPEDITION 01 · \{selected \? selected\.zone : activeWorld\.expedition\}/);
-  assert.match(page, /SCAN · SELECT ANY COLONY TO OPEN ITS EVIDENCE CARD/);
+  assert.match(page, /className="sub-title__brand"/);
+  assert.match(page, /<strong>REEF RELAY<\/strong>/);
+  assert.match(page, /className="sub-title__stack"/);
+  assert.match(page, /<span>EXPEDITION 01<\/span>/);
+  assert.doesNotMatch(page, /SCAN · SELECT ANY COLONY TO OPEN ITS EVIDENCE CARD/);
   assert.match(css, /v28 - compact aligned mission masthead/);
+  assert.match(css, /v51 - editorial live masthead lockup/);
   assert.match(css, /\.mission-brand span\s*{[\s\S]*?font-weight: 360/);
-  assert.match(css, /\.sub-title\s*{[\s\S]*?top: clamp\(76px, 8vh, 98px\)/);
-  assert.match(css, /\.sub-title strong\s*{[\s\S]*?font-weight: 360/);
+  assert.match(css, /\.sub-title\s*{[\s\S]*?grid-template-columns: auto minmax\(170px, 1fr\)/);
+  assert.match(css, /\.sub-title__brand strong\s*{[\s\S]*?font-weight: 320/);
 });
 
 test("keeps the objective card small and the center masthead refined", async () => {
@@ -561,7 +565,6 @@ test("provides a full scan mark note restore user flow", async () => {
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
   assert.match(page, /type FieldRecord =/);
-  assert.match(page, /const toolDirections: Record<Tool, string>/);
   assert.match(page, /const \[fieldRecords, setFieldRecords\]/);
   assert.match(page, /const markColony = \(colony: Colony\) =>/);
   assert.match(page, /const restoreColony = \(colony: Colony\) =>/);
@@ -588,7 +591,7 @@ test("adds an educational storytelling mode with free exploration exit", async (
   assert.match(data, /"story"/);
   assert.match(page, /const storySteps: StoryStep\[\] = \[/);
   assert.match(page, /anchorScans: \["acro-table", "agaricia-plate", "pavona-lettuce"\]/);
-  assert.match(page, /STORY · FOLLOW THE REEF THROUGH TIME/);
+  assert.match(page, /\["story", Route, "Story"\]/);
   assert.match(page, /const \[storyStep, setStoryStep\]/);
   assert.match(page, /const storyColonyFor = \(index: number\) =>/);
   assert.match(page, /const activeStoryColony = storyColonyFor\(storyStep\)/);
@@ -633,6 +636,22 @@ test("keeps onboarding drifting through the reef with a calmer centered masthead
   assert.match(css, /\.mission-brand::after,[\s\S]*?\.mission-brand span::after\s*{[\s\S]*?content: none !important/);
   assert.match(css, /\.world-button,[\s\S]*?\.note-form button\s*{[\s\S]*?background: var\(--reef-glass-bg\)/);
   assert.match(css, /\.mission-briefing\s*{[\s\S]*?rgb\(4 24 31 \/ 0\.42\)/);
+});
+
+test("uses a left-brand live masthead without tool instruction copy", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(page, /className="sub-title__brand"/);
+  assert.match(page, /<strong>REEF RELAY<\/strong>/);
+  assert.match(page, /className="sub-title__stack"/);
+  assert.match(page, /<span>EXPEDITION 01<\/span>/);
+  assert.doesNotMatch(page, /SCAN · SELECT ANY COLONY/);
+  assert.doesNotMatch(page, /toolDirections/);
+  assert.match(css, /v51 - editorial live masthead lockup/);
+  assert.match(css, /\.sub-title\s*{[\s\S]*?grid-template-columns: auto minmax\(170px, 1fr\)/);
+  assert.match(css, /\.sub-title__brand strong\s*{[\s\S]*?font-size: clamp\(34px, 4\.4vw, 70px\)/);
+  assert.match(css, /\.sub-title__stack\s*{[\s\S]*?border-left: 1px solid rgb\(255 255 255 \/ 0\.2\)/);
 });
 
 test("keeps the bottom research dock near half width", async () => {

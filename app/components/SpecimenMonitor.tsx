@@ -64,10 +64,12 @@ export function SpecimenMonitor({
 
   return (
     <aside className="specimen-monitor">
-      <button type="button" onClick={onClose} aria-label="Close specimen">
-        <X />
-      </button>
-      <span>SPECIES HEALTH</span>
+      <header className="specimen-monitor__header">
+        <span>SPECIES HEALTH</span>
+        <button type="button" onClick={onClose} aria-label="Close specimen">
+          <X />
+        </button>
+      </header>
       <div className="specimen-id">
         <img src={selected.image} alt="" />
         <div>

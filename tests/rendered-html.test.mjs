@@ -774,3 +774,16 @@ test("keeps the top-right mission chips slim", async () => {
   assert.match(css, /\.mission-room button\s*{[\s\S]*?min-width: 118px !important/);
   assert.match(css, /\.mission-room > strong\s*{[\s\S]*?min-width: 70px !important/);
 });
+
+test("keeps the specimen header sticky above compact metric boxes", async () => {
+  const monitor = await readFile(new URL("../app/components/SpecimenMonitor.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(monitor, /className="specimen-monitor__header"/);
+  assert.match(css, /v57 - sticky specimen header and compact health metric boxes/);
+  assert.match(css, /\.specimen-monitor__header\s*{[\s\S]*?position: sticky !important/);
+  assert.match(css, /\.specimen-monitor__header\s*{[\s\S]*?top: 0 !important/);
+  assert.match(css, /\.specimen-monitor__header button\s*{[\s\S]*?width: 30px !important/);
+  assert.match(css, /\.specimen-monitor dl\s*{[\s\S]*?grid-template-columns: repeat\(3, minmax\(0, 1fr\)\) !important/);
+  assert.match(css, /\.specimen-monitor dl div\s*{[\s\S]*?align-content: space-between !important/);
+});

@@ -9005,3 +9005,84 @@ a:focus-visible,
   width: 17px !important;
   height: 17px !important;
 }
+
+/* v57 - sticky specimen header and compact health metric boxes */
+.specimen-monitor {
+  padding: 0 12px 12px !important;
+}
+
+.specimen-monitor__header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 3 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  margin: 0 -12px 0 !important;
+  padding: 12px 12px 10px !important;
+  border-radius: 18px 18px 10px 10px !important;
+  background:
+    linear-gradient(145deg, rgb(7 32 39 / 0.86), rgb(7 24 31 / 0.74)),
+    rgb(5 22 28 / 0.72) !important;
+  backdrop-filter: blur(24px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.08) !important;
+}
+
+.specimen-monitor__header span {
+  font-size: 9px !important;
+  font-weight: 620 !important;
+  letter-spacing: 0.16em !important;
+  color: rgb(231 248 244 / 0.68) !important;
+}
+
+.specimen-monitor__header button {
+  width: 30px !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  display: grid !important;
+  place-items: center !important;
+  color: rgb(255 255 255 / 0.9) !important;
+  background: rgb(255 255 255 / 0.06) !important;
+  box-shadow: none !important;
+}
+
+.specimen-monitor__header button svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.specimen-monitor dl {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+}
+
+.specimen-monitor dl div {
+  min-height: 56px !important;
+  display: grid !important;
+  align-content: space-between !important;
+  justify-content: stretch !important;
+  gap: 5px !important;
+  padding: 8px 9px !important;
+  text-align: left !important;
+}
+
+.specimen-monitor dt,
+.specimen-monitor dd {
+  display: block !important;
+}
+
+.specimen-monitor dt {
+  font-size: 8px !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+}
+
+.specimen-monitor dd {
+  font-size: clamp(12px, 0.9vw, 15px) !important;
+  line-height: 1.08 !important;
+  text-align: left !important;
+  white-space: normal !important;
+}

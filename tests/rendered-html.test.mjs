@@ -415,6 +415,17 @@ test("renders surface reflection effects on the underside of the water", async (
   assert.doesNotMatch(scene, /side: THREE\.DoubleSide,[\s\S]*?\}\);\s*const surfaceReflections = new THREE\.Mesh/);
 });
 
+test("flips the water surface and underside ripples upside down", async () => {
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
+  assert.match(scene, /waterNormals\.center\.set\(0\.5, 0\.5\)/);
+  assert.match(scene, /waterNormals\.rotation = Math\.PI/);
+  assert.match(scene, /water\.rotation\.set\(-Math\.PI \/ 2, Math\.PI, 0\)/);
+  assert.match(scene, /surfaceReflectionTexture\.center\.set\(0\.5, 0\.5\)/);
+  assert.match(scene, /surfaceReflectionTexture\.rotation = Math\.PI/);
+  assert.match(scene, /surfaceReflections\.rotation\.set\(-Math\.PI \/ 2, Math\.PI, 0\)/);
+});
+
 test("keeps colony reticles steady without the green glow state", async () => {
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 

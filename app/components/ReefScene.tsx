@@ -1127,6 +1127,8 @@ export default function ReefScene({
         }
         const waterNormals = new THREE.CanvasTexture(normalCanvas);
         waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+        waterNormals.center.set(0.5, 0.5);
+        waterNormals.rotation = Math.PI;
         textures.push(waterNormals);
         const water = new WaterMesh(new THREE.PlaneGeometry(FLOOR_WIDTH * 1.42, FLOOR_DEPTH * 1.18), {
           waterNormals,
@@ -1138,7 +1140,7 @@ export default function ReefScene({
           size: 0.9,
           resolutionScale: lowPower ? 0.28 : 0.56,
         });
-        water.rotation.x = -Math.PI / 2;
+        water.rotation.set(-Math.PI / 2, Math.PI, 0);
         water.position.set(0, biomeConfig.waterY, FLOOR_CENTER_Z + 18);
         water.material.side = THREE.DoubleSide;
         world.add(water);
@@ -1200,6 +1202,8 @@ export default function ReefScene({
         const surfaceReflectionTexture = new THREE.CanvasTexture(reflectionCanvas);
         surfaceReflectionTexture.wrapS = surfaceReflectionTexture.wrapT = THREE.RepeatWrapping;
         surfaceReflectionTexture.repeat.set(3.2, 5.2);
+        surfaceReflectionTexture.center.set(0.5, 0.5);
+        surfaceReflectionTexture.rotation = Math.PI;
         surfaceReflectionTexture.anisotropy = lowPower ? 2 : 8;
         textures.push(surfaceReflectionTexture);
         const surfaceReflectionMaterial = new THREE.MeshBasicMaterial({
@@ -1215,7 +1219,7 @@ export default function ReefScene({
           new THREE.PlaneGeometry(FLOOR_WIDTH * 1.34, FLOOR_DEPTH * 1.08),
           surfaceReflectionMaterial,
         );
-        surfaceReflections.rotation.x = -Math.PI / 2;
+        surfaceReflections.rotation.set(-Math.PI / 2, Math.PI, 0);
         surfaceReflections.position.set(0, biomeConfig.waterY - 0.08, FLOOR_CENTER_Z + 20);
         surfaceReflections.renderOrder = 2;
         world.add(surfaceReflections);

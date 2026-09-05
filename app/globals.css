@@ -6821,6 +6821,40 @@ a:focus-visible,
   }
 }
 
+/* v37 - compact lower stress trigger */
+.stress-trigger {
+  bottom: clamp(86px, 10.5vh, 118px);
+  min-height: 38px;
+  padding-inline: 16px;
+  gap: 7px;
+  border-radius: 18px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+}
+
+.stress-trigger svg {
+  width: 15px;
+  height: 15px;
+}
+
+.stress-menu {
+  bottom: calc(clamp(86px, 10.5vh, 118px) + 46px);
+}
+
+@media (max-width: 900px) {
+  .stress-trigger {
+    right: 14px;
+    bottom: 84px;
+    min-height: 36px;
+    padding-inline: 13px;
+    font-size: 9px;
+  }
+
+  .stress-menu {
+    bottom: 126px;
+  }
+}
+
 /* v28 - compact aligned mission masthead */
 .mission-brand {
   align-items: center;

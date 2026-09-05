@@ -308,6 +308,10 @@ test("uses disciplined HUD spacing with softer corners", async () => {
   assert.match(css, /\.tool-console button\s*{[\s\S]*?height: 40px/);
   assert.match(css, /\.tool-console button\s*{[\s\S]*?padding: 4px 8px 3px/);
   assert.match(css, /\.tool-console button\s*{[\s\S]*?border-radius: 12px/);
+  assert.match(css, /v37 - compact lower stress trigger/);
+  assert.match(css, /\.stress-trigger\s*{[\s\S]*?bottom: clamp\(86px, 10\.5vh, 118px\)/);
+  assert.match(css, /\.stress-trigger\s*{[\s\S]*?min-height: 38px/);
+  assert.match(css, /\.stress-trigger\s*{[\s\S]*?padding-inline: 16px/);
   assert.match(css, /\.time-current\s*{[\s\S]*?height: 58px/);
   assert.match(css, /\.timeline-metrics span\s*{[\s\S]*?border-radius: 12px/);
 });

@@ -451,6 +451,20 @@ test("keeps the objective card small and the center masthead refined", async () 
   assert.match(css, /\.field-lesson strong\s*{[\s\S]*?font-size: clamp\(20px, 1\.55vw, 27px\)/);
 });
 
+test("fits the field objective copy into a compact corner panel", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /v42 - compact corner objective copy fit/);
+  assert.match(css, /\.field-lesson\s*{[\s\S]*?width: min\(270px, 18vw\)/);
+  assert.match(css, /\.field-lesson\s*{[\s\S]*?max-height: min\(388px, calc\(100vh - 250px\)\)/);
+  assert.match(css, /\.field-lesson\s*{[\s\S]*?padding: 14px 15px 13px/);
+  assert.match(css, /\.field-lesson\s*{[\s\S]*?overflow-y: auto/);
+  assert.match(css, /\.field-lesson::-webkit-scrollbar\s*{[\s\S]*?display: none/);
+  assert.match(css, /\.field-lesson strong\s*{[\s\S]*?font-size: clamp\(17px, 1\.18vw, 22px\)/);
+  assert.match(css, /\.field-lesson p\s*{[\s\S]*?font-size: clamp\(10\.5px, 0\.76vw, 13px\)/);
+  assert.match(css, /\.field-lesson li\s*{[\s\S]*?line-height: 1\.28/);
+});
+
 test("turns every scanned coral into a clickable evolving library entry", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const data = await readFile(new URL("../app/reef-data.ts", import.meta.url), "utf8");

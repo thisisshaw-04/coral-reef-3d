@@ -7741,3 +7741,71 @@ a:focus-visible,
 .time-current nav button.is-active span {
   color: rgb(255 255 255 / 0.92);
 }
+
+/* v42 - compact corner objective copy fit */
+.field-lesson {
+  left: clamp(18px, 2.5vw, 42px);
+  bottom: clamp(132px, 15vh, 176px);
+  width: min(270px, 18vw);
+  max-height: min(388px, calc(100vh - 250px));
+  padding: 14px 15px 13px;
+  border-radius: 17px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.field-lesson::-webkit-scrollbar {
+  display: none;
+}
+
+.field-lesson > span {
+  margin-bottom: 7px;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+}
+
+.field-lesson strong {
+  max-width: 16ch;
+  font-size: clamp(17px, 1.18vw, 22px);
+  font-weight: 330;
+  line-height: 1.08;
+}
+
+.field-lesson p {
+  max-width: 28ch;
+  margin-top: 9px;
+  font-size: clamp(10.5px, 0.76vw, 13px);
+  line-height: 1.33;
+}
+
+.field-lesson ol {
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.field-lesson li {
+  font-size: clamp(10.5px, 0.72vw, 12.5px);
+  line-height: 1.28;
+}
+
+.field-lesson > small {
+  max-width: 29ch;
+  margin-top: 10px;
+  padding-top: 9px;
+  font-size: clamp(9px, 0.64vw, 10.5px);
+  line-height: 1.28;
+}
+
+@media (min-width: 1600px) {
+  .field-lesson {
+    width: 258px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .field-lesson {
+    width: min(250px, calc(100vw - 32px));
+    max-height: min(360px, calc(100vh - 220px));
+  }
+}

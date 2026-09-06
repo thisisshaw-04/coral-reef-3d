@@ -233,7 +233,7 @@ export default function Home() {
       setMomentIndex((index) => index + 1);
       setPhase(nextMoment.phase);
       setStressor(null);
-    }, 2200);
+    }, 2600);
 
     return () => window.clearTimeout(timer);
   }, [entered, isTimelinePlaying, momentIndex, showTimeline]);
@@ -500,12 +500,10 @@ export default function Home() {
       return;
     }
 
-    if (momentIndex >= moments.length - 1) {
-      const firstMoment = moments[0];
-      setMomentIndex(0);
-      setPhase(firstMoment.phase);
-      setStressor(null);
-    }
+    const firstMoment = moments[0];
+    setMomentIndex(0);
+    setPhase(firstMoment.phase);
+    setStressor(null);
     setIsTimelinePlaying(true);
   };
 
@@ -544,6 +542,7 @@ export default function Home() {
         mappedIds={sceneMappedIds}
         fallbackSrc="/reef-default-background.png"
         phase={phase}
+        timelineCondition={activeMoment}
         stressor={stressor}
         restoredIds={restored}
         ambientDrift={showBriefing}

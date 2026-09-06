@@ -558,7 +558,7 @@ test("uses DHW-informed timeline and species-specific bleaching response", async
   assert.match(scene, /profile\.recovery \* 0\.16/);
   assert.match(scene, /visiblePhase\.structureLoss \* \(profile\?\.sensitivity/);
   assert.match(scene, /const visiblePhase =/);
-  assert.match(scene, /visiblePhase\.pressure = THREE\.MathUtils\.lerp\(visiblePhase\.pressure, currentPhase\.pressure, phaseEase\)/);
+  assert.match(scene, /visiblePhase\.pressure = THREE\.MathUtils\.lerp\(visiblePhase\.pressure, targetPressure, phaseEase\)/);
   assert.match(scene, /transitionLag: 0\.62 \+ random\(\) \* 0\.72/);
 });
 
@@ -1160,6 +1160,18 @@ test("thins the white HUD outline and makes glass a bit more transparent", async
   assert.doesNotMatch(latest, /linear-gradient/);
   assert.doesNotMatch(latest, /radial-gradient/);
   assert.doesNotMatch(latest, /--reef-glass-blur:/);
+});
+
+test("plays every reef year and maps its condition into gradual coral transitions", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const scene = await readFile(new URL("../app/components/ReefScene.tsx", import.meta.url), "utf8");
+
+  assert.match(page, /const firstMoment = moments\[0\][\s\S]*?setMomentIndex\(0\)[\s\S]*?setIsTimelinePlaying\(true\)/);
+  assert.match(page, /timelineCondition=\{activeMoment\}/);
+  assert.match(scene, /const heatSeverity = [\s\S]*?condition\.dhw/);
+  assert.match(scene, /const temperatureSeverity = [\s\S]*?condition\.temp/);
+  assert.match(scene, /const coverLoss = [\s\S]*?condition\.health/);
+  assert.match(scene, /entry\.material\.color\.lerp\(targetColor/);
 });
 
 test("keeps timeline years fully visible at the top", async () => {

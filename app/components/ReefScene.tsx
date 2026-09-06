@@ -45,6 +45,11 @@ type ReefSceneProps = {
   mappedIds?: string[];
   fallbackSrc?: string;
   phase?: ReefPhase;
+  timelineCondition?: {
+    health: number;
+    dhw: number;
+    temp: number;
+  };
   stressor?: "heat" | "co2" | "plastic" | "runoff" | null;
   restoredIds?: string[];
   ambientDrift?: boolean;
@@ -797,6 +802,7 @@ export default function ReefScene({
   mappedIds = [],
   fallbackSrc = "/reef-default-background.png",
   phase = "healthy",
+  timelineCondition = { health: 72, dhw: 4.1, temp: 0.9 },
   stressor = null,
   restoredIds = [],
   ambientDrift = false,
@@ -814,6 +820,7 @@ export default function ReefScene({
   const focusRef = useRef(focusId);
   const guidedFocusRef = useRef(guidedFocus);
   const phaseRef = useRef(phase);
+  const timelineConditionRef = useRef(timelineCondition);
   const stressorRef = useRef(stressor);
   const restoredRef = useRef(restoredIds);
   const ambientDriftRef = useRef(ambientDrift);
@@ -843,6 +850,10 @@ export default function ReefScene({
   useEffect(() => {
     phaseRef.current = phase;
   }, [phase]);
+
+  useEffect(() => {
+    timelineConditionRef.current = timelineCondition;
+  }, [timelineCondition]);
 
   useEffect(() => { stressorRef.current = stressor; }, [stressor]);
   useEffect(() => { restoredRef.current = restoredIds; }, [restoredIds]);
@@ -2081,21 +2092,37 @@ export default function ReefScene({
           life: phaseColors[phaseRef.current].life,
         };
         const targetColor = new THREE.Color();
+        const phaseFogTarget = new THREE.Color();
+        const phaseWashTarget = new THREE.Color();
+        const stressedFog = new THREE.Color(0xa7aaa1);
+        const bleachedWash = new THREE.Color(0xeee4d5);
         const spotVector = new THREE.Vector3();
 
         renderer.setAnimationLoop(() => {
           if (!alive) return;
           const delta = Math.min(clock.getDelta(), 0.05);
           const elapsed = clock.elapsedTime;
-          const currentPhase = phaseColors[phaseRef.current];
-          const phaseEase = 1 - Math.exp(-delta * 0.36);
-          visiblePhase.fog.lerp(currentPhase.fog, phaseEase);
-          visiblePhase.wash.lerp(currentPhase.wash, phaseEase);
-          visiblePhase.density = THREE.MathUtils.lerp(visiblePhase.density, currentPhase.density, phaseEase);
-          visiblePhase.blend = THREE.MathUtils.lerp(visiblePhase.blend, currentPhase.blend, phaseEase);
-          visiblePhase.pressure = THREE.MathUtils.lerp(visiblePhase.pressure, currentPhase.pressure, phaseEase);
-          visiblePhase.structureLoss = THREE.MathUtils.lerp(visiblePhase.structureLoss, currentPhase.structureLoss, phaseEase);
-          visiblePhase.life = THREE.MathUtils.lerp(visiblePhase.life, currentPhase.life, phaseEase);
+          const phasePreset = phaseColors[phaseRef.current];
+          const condition = timelineConditionRef.current;
+          const heatSeverity = THREE.MathUtils.clamp(condition.dhw / 10.4, 0, 1);
+          const temperatureSeverity = THREE.MathUtils.clamp(condition.temp / 1.8, 0, 1);
+          const coverLoss = THREE.MathUtils.clamp((92 - condition.health) / 61, 0, 1);
+          const yearSeverity = Math.max(heatSeverity, temperatureSeverity, coverLoss);
+          phaseFogTarget.copy(phasePreset.fog).lerp(stressedFog, yearSeverity * 0.16);
+          phaseWashTarget.copy(phasePreset.wash).lerp(bleachedWash, yearSeverity * 0.28);
+          const targetDensity = phasePreset.density + yearSeverity * 0.0015;
+          const targetBlend = THREE.MathUtils.clamp(phasePreset.blend * 0.62 + yearSeverity * 0.24, 0.02, 0.46);
+          const targetPressure = THREE.MathUtils.clamp(phasePreset.pressure * 0.58 + yearSeverity * 0.54, 0.02, 0.86);
+          const targetStructureLoss = phasePreset.structureLoss + yearSeverity * 0.018;
+          const targetLife = THREE.MathUtils.clamp(condition.health / 100, 0.24, 0.82);
+          const phaseEase = 1 - Math.exp(-delta * 0.82);
+          visiblePhase.fog.lerp(phaseFogTarget, phaseEase);
+          visiblePhase.wash.lerp(phaseWashTarget, phaseEase);
+          visiblePhase.density = THREE.MathUtils.lerp(visiblePhase.density, targetDensity, phaseEase);
+          visiblePhase.blend = THREE.MathUtils.lerp(visiblePhase.blend, targetBlend, phaseEase);
+          visiblePhase.pressure = THREE.MathUtils.lerp(visiblePhase.pressure, targetPressure, phaseEase);
+          visiblePhase.structureLoss = THREE.MathUtils.lerp(visiblePhase.structureLoss, targetStructureLoss, phaseEase);
+          visiblePhase.life = THREE.MathUtils.lerp(visiblePhase.life, targetLife, phaseEase);
           const runoff = stressorRef.current === "runoff";
           scene.fog!.color.lerp(visiblePhase.fog, 1 - Math.exp(-delta * 0.8));
           (scene.fog as InstanceType<typeof THREE.FogExp2>).density = THREE.MathUtils.lerp((scene.fog as InstanceType<typeof THREE.FogExp2>).density, visiblePhase.density + (runoff ? 0.016 : 0), 1 - Math.exp(-delta * 0.8));

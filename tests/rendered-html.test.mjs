@@ -1196,3 +1196,15 @@ test("lifts timeline years with room above them", async () => {
   assert.match(latest, /\.bottom-hud \.time-current nav button b\s*{[\s\S]*?transform: translateY\(-6px\)/);
   assert.match(latest, /\.bottom-hud \.time-current nav button b\s*{[\s\S]*?overflow: visible !important/);
 });
+
+test("centers the masthead and research dock without stacked translations", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v86 - mathematically center the masthead and research dock[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.sub-title\s*{[\s\S]*?left: 0 !important[\s\S]*?right: 0 !important/);
+  assert.match(latest, /margin-inline: auto !important/);
+  assert.match(latest, /translate: none !important/);
+  assert.match(latest, /transform: none !important/);
+  assert.match(latest, /\.bottom-hud__tools,[\s\S]*?justify-self: stretch !important[\s\S]*?width: 100% !important/);
+  assert.match(latest, /\.bottom-hud \.tool-console,[\s\S]*?margin-inline: auto !important/);
+});

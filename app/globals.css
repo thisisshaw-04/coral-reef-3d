@@ -10823,3 +10823,24 @@ a:focus-visible,
     padding-top: 12px !important;
   }
 }
+
+/* v86 - mathematically center the masthead and research dock */
+.sub-title {
+  left: 0 !important;
+  right: 0 !important;
+  margin-inline: auto !important;
+  translate: none !important;
+  transform: none !important;
+}
+
+.bottom-hud__tools,
+.bottom-hud.is-story .bottom-hud__tools {
+  justify-self: stretch !important;
+  width: 100% !important;
+  margin-inline: auto !important;
+}
+
+.bottom-hud .tool-console,
+.bottom-hud.is-story .tool-console {
+  margin-inline: auto !important;
+}

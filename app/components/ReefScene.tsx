@@ -2107,13 +2107,17 @@ export default function ReefScene({
           const heatSeverity = THREE.MathUtils.clamp(condition.dhw / 10.4, 0, 1);
           const temperatureSeverity = THREE.MathUtils.clamp(condition.temp / 1.8, 0, 1);
           const coverLoss = THREE.MathUtils.clamp((92 - condition.health) / 61, 0, 1);
-          const yearSeverity = Math.max(heatSeverity, temperatureSeverity, coverLoss);
-          phaseFogTarget.copy(phasePreset.fog).lerp(stressedFog, yearSeverity * 0.16);
-          phaseWashTarget.copy(phasePreset.wash).lerp(bleachedWash, yearSeverity * 0.28);
-          const targetDensity = phasePreset.density + yearSeverity * 0.0015;
-          const targetBlend = THREE.MathUtils.clamp(phasePreset.blend * 0.62 + yearSeverity * 0.24, 0.02, 0.46);
-          const targetPressure = THREE.MathUtils.clamp(phasePreset.pressure * 0.58 + yearSeverity * 0.54, 0.02, 0.86);
-          const targetStructureLoss = phasePreset.structureLoss + yearSeverity * 0.018;
+          const yearSeverity = THREE.MathUtils.clamp(
+            heatSeverity * 0.45 + temperatureSeverity * 0.25 + coverLoss * 0.3,
+            0,
+            1,
+          );
+          phaseFogTarget.copy(phasePreset.fog).lerp(stressedFog, yearSeverity * 0.28);
+          phaseWashTarget.copy(phasePreset.wash).lerp(bleachedWash, yearSeverity * 0.52);
+          const targetDensity = phasePreset.density + yearSeverity * 0.003;
+          const targetBlend = THREE.MathUtils.clamp(phasePreset.blend * 0.58 + yearSeverity * 0.44, 0.02, 0.72);
+          const targetPressure = THREE.MathUtils.clamp(phasePreset.pressure * 0.55 + yearSeverity * 0.78, 0.02, 1);
+          const targetStructureLoss = phasePreset.structureLoss + yearSeverity * 0.052;
           const targetLife = THREE.MathUtils.clamp(condition.health / 100, 0.24, 0.82);
           const phaseEase = 1 - Math.exp(-delta * 0.82);
           visiblePhase.fog.lerp(phaseFogTarget, phaseEase);
@@ -2136,7 +2140,7 @@ export default function ReefScene({
             const blend = THREE.MathUtils.clamp(visiblePhase.blend + stressBlend + runoffPenalty - recoveryReturn, 0.02, 0.88);
             targetColor.copy(entry.base).lerp(visiblePhase.wash, blend);
             if (phaseRef.current === "recovery") targetColor.lerp(entry.base, profile.recovery * 0.22);
-            entry.material.color.lerp(targetColor, 1 - Math.exp(-delta * (0.42 + entry.transitionLag * 0.28)));
+            entry.material.color.lerp(targetColor, 1 - Math.exp(-delta * (0.78 + entry.transitionLag * 0.34)));
           }
           lifeMaterial.opacity = THREE.MathUtils.lerp(lifeMaterial.opacity, visiblePhase.life, 1 - Math.exp(-delta * 0.7));
 

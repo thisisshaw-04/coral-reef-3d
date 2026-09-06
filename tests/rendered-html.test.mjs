@@ -1171,6 +1171,9 @@ test("plays every reef year and maps its condition into gradual coral transition
   assert.match(scene, /const heatSeverity = [\s\S]*?condition\.dhw/);
   assert.match(scene, /const temperatureSeverity = [\s\S]*?condition\.temp/);
   assert.match(scene, /const coverLoss = [\s\S]*?condition\.health/);
+  assert.match(scene, /heatSeverity \* 0\.45 \+ temperatureSeverity \* 0\.25 \+ coverLoss \* 0\.3/);
+  assert.match(scene, /yearSeverity \* 0\.52/);
+  assert.match(scene, /yearSeverity \* 0\.052/);
   assert.match(scene, /entry\.material\.color\.lerp\(targetColor/);
 });
 

@@ -10893,3 +10893,36 @@ a:focus-visible,
     --bottom-hud-row-gap: 8px;
   }
 }
+
+/* v89 - viewport-center the tool dock on a full-width strip */
+.bottom-hud__tools,
+.bottom-hud.is-story .bottom-hud__tools {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  transform: none !important;
+  translate: none !important;
+  display: flex !important;
+  justify-content: center !important;
+  justify-self: stretch !important;
+  pointer-events: none !important;
+  bottom: calc(var(--bottom-hud-timeline-height) + var(--bottom-hud-row-gap)) !important;
+}
+
+.bottom-hud .tool-console,
+.bottom-hud.is-story .tool-console {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  inset: auto !important;
+  transform: none !important;
+  translate: none !important;
+  margin: 0 auto !important;
+  width: max-content !important;
+  max-width: calc(100vw - (2 * var(--bottom-hud-edge))) !important;
+  pointer-events: auto !important;
+}

@@ -1239,3 +1239,14 @@ test("keeps the research dock page-centered beside Story and Stress", async () =
   assert.match(latest, /transform: translateX\(-50%\) !important/);
   assert.match(latest, /bottom: calc\(var\(--bottom-hud-timeline-height\) \+ var\(--bottom-hud-row-gap\)\) !important/);
 });
+
+test("viewport-centers the tool dock on a full-width strip", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v89 - viewport-center the tool dock on a full-width strip[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.bottom-hud__tools,[\s\S]*?left: 0 !important[\s\S]*?right: 0 !important/);
+  assert.match(latest, /\.bottom-hud__tools,[\s\S]*?justify-content: center !important/);
+  assert.match(latest, /\.bottom-hud__tools,[\s\S]*?transform: none !important/);
+  assert.match(latest, /\.bottom-hud \.tool-console,[\s\S]*?width: max-content !important/);
+  assert.match(latest, /\.bottom-hud \.tool-console,[\s\S]*?margin: 0 auto !important/);
+});

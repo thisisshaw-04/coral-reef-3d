@@ -1228,3 +1228,14 @@ test("centers the complete research dock against the page content box", async ()
   assert.match(latest, /\.bottom-hud__tools,[\s\S]*?display: flex !important[\s\S]*?justify-content: center !important/);
   assert.match(latest, /\.bottom-hud \.tool-console,[\s\S]*?flex: 0 0 auto !important[\s\S]*?margin-inline: 0 !important/);
 });
+
+test("keeps the research dock page-centered beside Story and Stress", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v88 - keep the research dock page-centered even beside Story and Stress[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.bottom-hud__tools,[\s\S]*?position: absolute !important/);
+  assert.match(latest, /left: 50% !important/);
+  assert.match(latest, /width: max-content !important/);
+  assert.match(latest, /transform: translateX\(-50%\) !important/);
+  assert.match(latest, /bottom: calc\(var\(--bottom-hud-timeline-height\) \+ var\(--bottom-hud-row-gap\)\) !important/);
+});

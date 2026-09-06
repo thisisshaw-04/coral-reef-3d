@@ -10866,3 +10866,30 @@ a:focus-visible,
   flex: 0 0 auto !important;
   margin-inline: 0 !important;
 }
+
+/* v88 - keep the research dock page-centered even beside Story and Stress */
+.bottom-hud,
+.bottom-hud.is-story {
+  --bottom-hud-timeline-height: 72px;
+  --bottom-hud-row-gap: 10px;
+}
+
+.bottom-hud__tools,
+.bottom-hud.is-story .bottom-hud__tools {
+  position: absolute !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: calc(var(--bottom-hud-timeline-height) + var(--bottom-hud-row-gap)) !important;
+  width: max-content !important;
+  max-width: calc(100% - (2 * var(--bottom-hud-edge))) !important;
+  margin: 0 !important;
+  transform: translateX(-50%) !important;
+}
+
+@media (max-width: 760px) {
+  .bottom-hud,
+  .bottom-hud.is-story {
+    --bottom-hud-timeline-height: 66px;
+    --bottom-hud-row-gap: 8px;
+  }
+}

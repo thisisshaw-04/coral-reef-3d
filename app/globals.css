@@ -10826,10 +10826,10 @@ a:focus-visible,
 
 /* v86 - mathematically center the masthead and research dock */
 .sub-title {
-  left: 0 !important;
-  right: 0 !important;
-  margin-inline: auto !important;
-  translate: none !important;
+  left: 50% !important;
+  right: auto !important;
+  margin-inline: 0 !important;
+  translate: -50% 0 !important;
   transform: none !important;
 }
 

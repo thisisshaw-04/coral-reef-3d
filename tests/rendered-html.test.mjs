@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { access, readFile } from "node:fs/promises";
+import { access, readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
 test("builds the Reef Relay production worker and client", async () => {
@@ -17,6 +17,15 @@ test("builds the Reef Relay production worker and client", async () => {
   await access(new URL("../dist/client/models/smithsonian-endoxocrinus-parrae.glb", import.meta.url));
   await access(new URL("../dist/client/models/polyhaven/rock_07/rock_07_1k.gltf", import.meta.url));
   await access(new URL("../dist/client/models/polyhaven/stone_01/stone_01_1k.gltf", import.meta.url));
+
+  const assetNames = await readdir(new URL("../dist/client/assets/", import.meta.url));
+  const stylesheet = assetNames.find((name) => name.endsWith(".css"));
+  assert.ok(stylesheet, "expected a compiled client stylesheet");
+  const builtCss = await readFile(new URL(`../dist/client/assets/${stylesheet}`, import.meta.url), "utf8");
+  assert.match(
+    builtCss,
+    /\.sub-title\{margin-inline:0!important;left:50%!important;right:auto!important;transform:none!important\}/,
+  );
 });
 
 test("publishes truthful product metadata and preview contract", async () => {
@@ -1201,9 +1210,9 @@ test("centers the masthead and research dock without stacked translations", asyn
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
   const latest = css.match(/v86 - mathematically center the masthead and research dock[\s\S]*$/)?.[0] ?? "";
 
-  assert.match(latest, /\.sub-title\s*{[\s\S]*?left: 0 !important[\s\S]*?right: 0 !important/);
+  assert.match(latest, /\.sub-title\s*{[\s\S]*?left: 50% !important[\s\S]*?right: auto !important/);
   assert.match(latest, /margin-inline: auto !important/);
-  assert.match(latest, /translate: none !important/);
+  assert.match(latest, /translate: -50% 0 !important/);
   assert.match(latest, /transform: none !important/);
   assert.match(latest, /\.bottom-hud__tools,[\s\S]*?justify-self: stretch !important[\s\S]*?width: 100% !important/);
   assert.match(latest, /\.bottom-hud \.tool-console,[\s\S]*?margin-inline: auto !important/);

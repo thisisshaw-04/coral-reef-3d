@@ -1217,3 +1217,14 @@ test("centers the masthead and research dock without stacked translations", asyn
   assert.match(latest, /\.bottom-hud__tools,[\s\S]*?justify-self: stretch !important[\s\S]*?width: 100% !important/);
   assert.match(latest, /\.bottom-hud \.tool-console,[\s\S]*?margin-inline: auto !important/);
 });
+
+test("centers the complete research dock against the page content box", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const latest = css.match(/v87 - center the complete research dock against the page content box[\s\S]*$/)?.[0] ?? "";
+
+  assert.match(latest, /\.bottom-hud,[\s\S]*?left: 0 !important[\s\S]*?right: 0 !important/);
+  assert.match(latest, /width: 100% !important/);
+  assert.match(latest, /padding-inline: var\(--bottom-hud-edge\) !important/);
+  assert.match(latest, /\.bottom-hud__tools,[\s\S]*?display: flex !important[\s\S]*?justify-content: center !important/);
+  assert.match(latest, /\.bottom-hud \.tool-console,[\s\S]*?flex: 0 0 auto !important[\s\S]*?margin-inline: 0 !important/);
+});

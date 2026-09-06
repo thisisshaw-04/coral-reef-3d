@@ -10844,3 +10844,25 @@ a:focus-visible,
 .bottom-hud.is-story .tool-console {
   margin-inline: auto !important;
 }
+
+/* v87 - center the complete research dock against the page content box */
+.bottom-hud,
+.bottom-hud.is-story {
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding-inline: var(--bottom-hud-edge) !important;
+}
+
+.bottom-hud__tools,
+.bottom-hud.is-story .bottom-hud__tools {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+.bottom-hud .tool-console,
+.bottom-hud.is-story .tool-console {
+  flex: 0 0 auto !important;
+  margin-inline: 0 !important;
+}
